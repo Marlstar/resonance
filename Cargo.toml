@@ -4,3 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+ytdlp_bindings = "*"
+directories = "*"
+hashbrown = { version = "0.15.2", features = ["serde"] }
+serde = { version = "1.0.218", features = ["derive"] }
