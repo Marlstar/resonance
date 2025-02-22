@@ -6,10 +6,7 @@ use super::Player;
 
 impl super::Player {
     pub(super) fn download_song(&mut self, url: &str) -> Result<Song, DownloadError> {
-        let id = match Player::get_id_from_url(url) {
-            Some(a) => a,
-            None => return Err(DownloadError::InvalidID)
-        };
+        let id = Player::get_id_from_url(url)?;
         let path = Self::get_path(id.as_str());
         Self::download_audio(url, path)?;
         return Ok(Song{
@@ -23,11 +20,14 @@ impl super::Player {
         YtDlp::new()?.download_audio(url, path)
     }
 
-    fn get_id_from_url(url: &str) -> Option<String> {
+    pub(super) fn get_id_from_url(url: &str) -> Result<String, DownloadError> {
         // https://regex101.com/r/dgnOi5/3
         let re = Regex::new(r".*\.youtube\.com/watch\?v=(?<id>(?:\w|-)+).*").unwrap();
-        let captures = re.captures(url);
-        return Some(captures?["id"].to_string());
+        let captures = match re.captures(url) {
+            Some(a) => a,
+            None => return Err(DownloadError::IDNotFound)
+        };
+        return Ok(captures["id"].to_string());
     }
 
     fn get_path(id: &str) -> PathBuf {
@@ -35,13 +35,21 @@ impl super::Player {
     }
 }
 
+#[derive(Debug)]
 pub enum DownloadError {
     InvalidID,
-    YtDlp(YtDlpError)
+    IDNotFound,
+    YtDlp(YtDlpError),
+    State(crate::state::StateError)
 }
 impl From<YtDlpError> for DownloadError {
     fn from(value: YtDlpError) -> Self {
         return DownloadError::YtDlp(value);
+    }
+}
+impl From<crate::state::StateError> for DownloadError {
+    fn from(value: crate::state::StateError) -> Self {
+        return DownloadError::State(value);
     }
 }
 

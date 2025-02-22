@@ -3,7 +3,7 @@ use std::sync::OnceLock;
 
 pub static DIRS: OnceLock<Dirs> = OnceLock::new();
 pub fn dirs() -> &'static Dirs {
-    return DIRS.get_or_init(|| Dirs::new());
+    return DIRS.get_or_init(Dirs::new);
 }
 
 pub struct Dirs {
@@ -24,6 +24,13 @@ impl Dirs {
 impl Dirs {
     pub fn base(&self) -> PathBuf {
         return self.dirs.data_dir().to_owned().join("player");
+    }
+
+    pub fn state(&self) -> PathBuf {
+        return self.base().join("state.ron");
+    }
+    pub fn state_backup(&self) -> PathBuf {
+        return self.base().join("state.bak");
     }
 
     pub fn audio_files(&self) -> PathBuf {
