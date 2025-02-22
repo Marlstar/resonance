@@ -4,7 +4,7 @@ use crate::Song;
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct State {
-    songs: HashSet<Song>
+    pub songs: HashSet<Song>
 }
 impl State {
     pub fn new() -> Self {

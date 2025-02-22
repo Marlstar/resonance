@@ -3,14 +3,11 @@
 mod player;
 pub use player::Player;
 
-mod download;
-pub use download::download;
-
 mod input;
 pub use input::get_input;
 
 mod dirs;
-pub use dirs::Dirs;
+pub use dirs::dirs;
 
 mod song;
 pub use song::Song;
