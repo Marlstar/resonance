@@ -6,6 +6,7 @@ pub struct Song {
     pub url: String,
     pub id: String,
     pub file: PathBuf,
+    pub name: Option<String>,
 }
 impl Hash for Song {
     fn hash<H: std::hash::Hasher>(&self, state: &mut H) {

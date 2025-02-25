@@ -61,4 +61,18 @@ impl Player {
         self.state.add_song(song)?;
         return Ok(());
     }
+
+    pub fn delete(&mut self, id: &String) -> Result<(), StateError> {
+        return self.state.remove_song(id);
+    }
+
+    pub fn rename(&mut self, id: &String, name: String) -> Result<(), StateError> {
+        let mut song = match self.state.songs.get(id) {
+            Some(a) => a.clone(),
+            None => return Err(StateError::SongNotInstalled)
+        };
+        song.name = Some(name);
+        //self.state.songs.insert(song);
+        return Ok(());
+    }
 }

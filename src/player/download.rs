@@ -13,6 +13,7 @@ impl super::Player {
             url: url.to_string(),
             file: Self::get_path(id.as_str()),
             id,
+            name: None
         })
     }
 
