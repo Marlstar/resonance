@@ -23,7 +23,7 @@ impl Dirs {
 }
 impl Dirs {
     pub fn base(&self) -> PathBuf {
-        return self.dirs.data_dir().to_owned().join("player");
+        return self.dirs.data_dir().to_owned().join("resonance");
     }
 
     pub fn state(&self) -> PathBuf {
