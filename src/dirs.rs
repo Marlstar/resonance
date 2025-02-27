@@ -27,7 +27,7 @@ impl Dirs {
     }
 
     pub fn state(&self) -> PathBuf {
-        return self.base().join("state.ron");
+        return self.base().join("state.db");
     }
     pub fn state_backup(&self) -> PathBuf {
         return self.base().join("state.bak");

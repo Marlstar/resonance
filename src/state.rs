@@ -1,70 +1,97 @@
-use std::io::Read;
-
-use serde::{Serialize, Deserialize};
-use hashbrown::HashSet;
 use crate::Song;
+use rusqlite::Connection;
 
-#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+type IOError = std::io::Error;
+
+#[derive(Debug)]
 pub struct State {
-    pub songs: HashSet<Song>
+    pub db: Connection
 }
 impl State { // Init stuff
-    pub fn new() -> Self {
-        Default::default()
-    }
-    
-    pub fn load() -> Result<Self, StateError> {
-        let mut buf = String::new();
-        std::fs::File::open(crate::dirs().state())?.read_to_string(&mut buf)?;
-        return Ok(ron::from_str::<State>(buf.as_str())?);
+    pub fn init() -> Result<Self, StateError> {
+        return Ok(Self {
+            db: Self::setup_db()?
+        });
     }
 
-    pub fn save(&self) -> Result<(), StateError> {
-        let ser = ron::to_string(self)?;
-        // Create state backup
-        'backup: {
-            let current_save_path = crate::dirs().state();
-            let backup_path = crate::dirs().state_backup();
+    fn setup_db() -> Result<Connection, rusqlite::Error> {
+        eprintln!("connecting to db");
+        let db = Connection::open(crate::dirs().state())?;
+        db.execute(
+            "CREATE TABLE IF NOT EXISTS songs (
+                id TEXT PRIMARY KEY,
+                name TEXT NOT NULL,
+                url TEXT NOT NULL,
+                path TEXT NOT NULL,
+                duration INTEGER NOT NULL
+            )",
+            ()
+        )?;
 
-            match std::fs::copy(current_save_path, backup_path) {
-                Ok(_) => (),
-                Err(_) => break 'backup // No save to backup
-            }
-        }
+        return Ok(db);
+    }
 
-        std::fs::write(crate::dirs().state(), ser)?;
+    pub fn backup(&self) -> Result<(), IOError> {
+        let current_save_path = crate::dirs().state();
+        let backup_path = crate::dirs().state_backup();
+
+        std::fs::copy(current_save_path, backup_path)?;
+
         return Ok(());
     }
 }
 
 impl State { // Songs
     pub fn add_song(&mut self, song: Song) -> Result<(), StateError> {
-        return match self.songs.insert(song) {
-            true => Ok(()),
-            false => Err(StateError::SongAlreadyInstalled)
+        use rusqlite::ffi::{Error as FFIError, ErrorCode as FFIErrorCode};
+        println!("adding song");
+        return match self.db.execute(
+            "INSERT INTO songs
+            VALUES (?1, ?2, ?3, ?4, ?5)",
+            (&song.id, &song.name, &song.url, &song.path, &song.duration)
+        ) {
+            Ok(0) => Err(StateError::SongAlreadyInstalled),
+            Ok(_) => Ok(()),
+            // If song already installed
+            Err(rusqlite::Error::SqliteFailure(FFIError{
+                code:FFIErrorCode::ConstraintViolation, extended_code:1555
+            }, _)) => Err(StateError::SongAlreadyInstalled),
+            // Propogate other errors
+            Err(e) => Err(e.into())
         };
     }
 
     pub fn remove_song(&mut self, id: &String) -> Result<(), StateError> {
-        return match self.songs.remove(id) {
-            true => Ok(()),
-            false => Err(StateError::SongNotInstalled)
+        return match self.db.execute("DELETE FROM songs WHERE id=?1", [id])? {
+            0 => Err(StateError::SongNotInstalled),
+            _ => Ok(()),
         };
     }
 
-    pub fn get_song(&self, id: &String) -> Result<&Song, StateError> {
-        return match self.songs.get(id) {
-            Some(a) => Ok(a),
+    pub fn get_song_by_id(&self, id: &str) -> Result<Song, StateError> {
+        let mut query = self.db.prepare(format!("SELECT * FROM songs WHERE id='{id}'").as_str())?;
+        let mut song_iter = query.query_map([], |row| {
+            Ok(Song{
+                id: row.get(0)?,
+                name: row.get(1)?,
+                url: row.get(2)?,
+                path: row.get(3)?,
+                duration: row.get(4)?
+            })
+        })?;
+
+        return match song_iter.next() {
+            Some(a) => Ok(a?),
             None => Err(StateError::SongNotInstalled)
         };
     }
 
-    pub fn song_is_installed(&self, id: &String) -> bool {
-        return self.songs.get(id).is_some();
+    pub fn check_song_by_id(&self, id: &str) -> bool {
+        return self.get_song_by_id(id).is_ok();
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub enum StateError {
     // Addition
     SongAlreadyInstalled,
@@ -72,10 +99,9 @@ pub enum StateError {
     SongNotInstalled,
 
     // Loading/saving
-    Serialisation(ron::Error),
-    Deserialisation(ron::de::SpannedError),
     StateFileNotFound,
     IOError(std::io::ErrorKind),
+    Rusqlite(rusqlite::Error)
 }
 impl From<std::io::Error> for StateError {
     fn from(value: std::io::Error) -> Self {
@@ -85,13 +111,8 @@ impl From<std::io::Error> for StateError {
         };
     }
 }
-impl From<ron::Error> for StateError {
-    fn from(value: ron::Error) -> Self {
-        return StateError::Serialisation(value)
-    }
-}
-impl From<ron::de::SpannedError> for StateError {
-    fn from(value: ron::de::SpannedError) -> Self {
-        return StateError::Deserialisation(value)
+impl From<rusqlite::Error> for StateError {
+    fn from(value: rusqlite::Error) -> Self {
+        return StateError::Rusqlite(value);
     }
 }

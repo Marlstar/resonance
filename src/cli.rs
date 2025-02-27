@@ -1,19 +1,20 @@
-use crate::{get_input, prompt_input};
+use crate::{get_input, prompt_input, state::StateError};
 use colored::Colorize;
 
 type Args = Vec<String>;
 
-#[derive(Default)]
 pub struct CLI {
     player: crate::Player
 }
 impl CLI {
-    pub fn new() -> Self {
-        Default::default()
+    pub fn new() -> Result<Self, StateError> {
+        return Ok(Self {
+            player: crate::Player::new()?
+        });
     }
 }
 impl CLI {
-    pub fn run(&mut self) {
+    pub fn run(mut self) {
         'main: loop {
             let (cmd, args) = Self::get_command();
             match cmd.as_str() {
@@ -27,7 +28,7 @@ impl CLI {
             println!(" "); // Leave a gap between commands
         }
 
-        let _ = self.player.save_state();
+        self.player.exit();
     }
 }
 impl CLI { // Managing input
@@ -57,6 +58,7 @@ impl CLI { // Commands
             prompt_input("Enter URL to download")
         } else { args[0].clone() };
 
-        let _ = self.player.download(url.as_str());
+        let result = self.player.download(url.as_str());
+        dbg!(result);
     }
 }
