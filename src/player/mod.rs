@@ -8,32 +8,11 @@ use download::DownloadError;
 pub struct Player {
     state: State
 }
-impl Default for Player {
-    fn default() -> Self {
-        Player {
-            state: State::new()
-        }
-    }
-}
 impl Player {
-    pub fn new() -> Self {
-        let state = match State::load() {
-            Ok(a) => {
-                println!("Loaded state from file");
-                a
-            },
-            Err(_) => {
-                println!("No state loaded");
-                State::default()
-            }
-        };
-        return Self {
-            state
-        }
-    }
-
-    pub fn save_state(&self) -> Result<(), StateError> {
-        self.state.save()
+    pub fn new() -> Result<Self, StateError> {
+        return Ok(Self {
+            state: State::init()?
+        });
     }
 }
 impl Player {
@@ -45,9 +24,18 @@ impl Player {
         println!("Exiting!");
     }
 
+    pub fn exit(self) {
+        let _ = self.state.db.close();
+    }
+
     pub fn download(&mut self, url: &str) -> Result<(), DownloadError> {
-        let id = Self::get_id_from_url(url)?;
-        if self.state.song_is_installed(&id) {
+        let id = match crate::util::get_id_from_url(url) {
+            Some(a) => a,
+            None => return Err(DownloadError::InvalidURL)
+        };
+
+        // TODO: refactor to do this as part of the download function
+        if self.state.check_song_by_id(&id) {
             println!("Song ({id}) already installed!");
             return Err(DownloadError::State(StateError::SongAlreadyInstalled));
         }
@@ -66,13 +54,7 @@ impl Player {
         return self.state.remove_song(id);
     }
 
-    pub fn rename(&mut self, id: &String, name: String) -> Result<(), StateError> {
-        let mut song = match self.state.songs.get(id) {
-            Some(a) => a.clone(),
-            None => return Err(StateError::SongNotInstalled)
-        };
-        song.name = Some(name);
-        //self.state.songs.insert(song);
-        return Ok(());
+    pub fn rename(&mut self, id: &str, name: String) -> Result<(), StateError> {
+        todo!();
     }
 }
