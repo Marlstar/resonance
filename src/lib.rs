@@ -1,7 +1,12 @@
 #![allow(clippy::needless_return)]
 
-mod player;
-pub use player::Player;
+pub mod db;
+
+mod error;
+pub use error::Error;
+
+mod resonance;
+pub use resonance::Resonance;
 
 mod input;
 pub use input::get_input;
@@ -10,11 +15,12 @@ pub use input::prompt_input;
 mod dirs;
 pub use dirs::dirs;
 
-mod song;
-pub use song::Song;
+mod models;
+pub use models::{Song, NewSong};
+pub use models::Playlist;
 
-mod state;
-pub use state::State;
+mod database;
+pub use database::Database;
 
 pub mod util;
 

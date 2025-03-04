@@ -1,5 +1,5 @@
 fn main() {
-    let mut cli = player::CLI::new().unwrap();
-    println!("created player");
+    //let mut db = resonance::Database::load().unwrap();
+    let cli = resonance::CLI::new().unwrap();
     cli.run();
 }
