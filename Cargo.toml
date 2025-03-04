@@ -8,8 +8,5 @@ ytdlp_bindings = "*"
 directories = "*"
 regex = "*"
 hashbrown = { version = "0.15.2", features = ["serde"] }
-serde = { version = "1.0.218", features = ["derive"] }
-ron = "*"
 colored = "*"
-rusqlite = { version = "0.33.0", features = ["bundled"] }
 diesel = { version = "2.2.7", default-features = false, features = ["sqlite", "returning_clauses_for_sqlite_3_35"] }
