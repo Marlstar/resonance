@@ -1,15 +1,15 @@
-use crate::{get_input, prompt_input, state::StateError};
+use crate::{get_input, prompt_input, Error};
 use colored::Colorize;
 
 type Args = Vec<String>;
 
 pub struct CLI {
-    player: crate::Player
+    resonance: crate::Resonance
 }
 impl CLI {
-    pub fn new() -> Result<Self, StateError> {
+    pub fn new() -> Result<Self, Error> {
         return Ok(Self {
-            player: crate::Player::new()?
+            resonance: crate::Resonance::new()?
         });
     }
 }
@@ -20,6 +20,8 @@ impl CLI {
             match cmd.as_str() {
                 "help" => self.help(),
                 "download" => self.download(args),
+                "rename" => self.rename(),
+                "list" => self.list(),
                 "exit" => break 'main,
                 "" => (),
                 unknown => println!("Unknown command \"{unknown}\"")
@@ -28,7 +30,7 @@ impl CLI {
             println!(" "); // Leave a gap between commands
         }
 
-        self.player.exit();
+        self.resonance.exit();
     }
 }
 impl CLI { // Managing input
@@ -49,6 +51,8 @@ impl CLI { // Commands
         };
         println!("Available commands:");
         cmd("download", "Download a song by URL");
+        cmd("rename", "Rename a song by ID");
+        cmd("list", "List all downloaded songs");
         cmd("help", "Show this help page");
         cmd("exit", "Quit Player");
     }
@@ -58,7 +62,21 @@ impl CLI { // Commands
             prompt_input("Enter URL to download")
         } else { args[0].clone() };
 
-        let result = self.player.download(url.as_str());
-        dbg!(result);
+        let result = self.resonance.download(url.as_str());
+        match result {
+            // TODO: nice output here
+            Ok(song) => { dbg!(song); },
+            Err(e) => { println!("Error: {e:?}") }
+        }
     }
+
+    fn rename(&mut self) {
+        let id = prompt_input("Enter song YTID");
+        let name = prompt_input("New name");
+        let _result = self.resonance.rename_by_ytid(&id, &name);
+    }
+
+    fn list(&mut self) {
+        let _ = self.resonance.list_songs();
+    } 
 }

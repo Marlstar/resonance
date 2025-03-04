@@ -26,10 +26,10 @@ impl Dirs {
         return self.dirs.data_dir().to_owned().join("resonance");
     }
 
-    pub fn state(&self) -> PathBuf {
+    pub fn db(&self) -> PathBuf {
         return self.base().join("state.db");
     }
-    pub fn state_backup(&self) -> PathBuf {
+    pub fn db_backup(&self) -> PathBuf {
         return self.base().join("state.bak");
     }
 

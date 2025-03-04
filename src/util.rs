@@ -1,10 +1,11 @@
 use std::io::Write;
+use std::path::Path;
 
 pub fn flush_stdout() {
     let _ = std::io::stdout().flush();
 }
 
-pub fn get_id_from_url(url: &str) -> Option<String> {
+pub fn get_ytid_from_url(url: &str) -> Option<String> {
     use regex::Regex;
 
     // https://regex101.com/r/dgnOi5/3
@@ -14,4 +15,8 @@ pub fn get_id_from_url(url: &str) -> Option<String> {
         None => return None
     };
     return Some(captures["id"].to_string());
+}
+
+pub fn path_to_string(path: &Path) -> String {
+    format!("{}", path.display())
 }

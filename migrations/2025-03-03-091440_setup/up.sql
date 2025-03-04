@@ -1,0 +1,23 @@
+-- Your SQL goes here
+CREATE TABLE song (
+	id INTEGER PRIMARY KEY NOT NULL,
+	ytid TEXT NOT NULL UNIQUE,
+	name TEXT NOT NULL,
+	author TEXT NOT NULL,
+	path TEXT NOT NULL,
+	duration INTEGER NOT NULL
+);
+
+CREATE TABLE playlist (
+	id INTEGER PRIMARY KEY NOT NULL,
+	name TEXT NOT NULL UNIQUE
+);
+
+CREATE TABLE playlist_entry (
+	id INTEGER PRIMARY KEY NOT NULL,
+	idx INTEGER NOT NULL,
+	song_id INTEGER NOT NULL,
+	playlist_id INTEGER NOT NULL,
+	FOREIGN KEY (song_id) REFERENCES song (id),
+	FOREIGN KEY (playlist_id) REFERENCES playlist (id)
+);
