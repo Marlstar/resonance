@@ -1,6 +1,8 @@
 use crate::{Error, Database, Song};
 
 mod download;
+mod audio_metadata;
+use audio_metadata::get_mp3_metadata;
 
 pub struct Resonance {
     db: Database
@@ -30,13 +32,19 @@ impl Resonance {
             return Err(Error::SongAlreadyInstalled);
         }
 
-        print!("Downloading song ({ytid})");
+        print!("Downloading song ({ytid}) ");
         crate::util::flush_stdout();
 
         let path = self.download_song(url)?;
-        println!(" | DONE!");
+        let path_str = crate::util::path_to_string(&path);
 
-        self.db.add_song(&ytid, "name", "author", &path, 200)
+        let metadata = get_mp3_metadata(path)?;
+        let duration = metadata.duration().as_secs() as i32;
+
+
+        println!("| DONE!");
+
+        self.db.add_song(&ytid, "name", "author", &path_str, duration)
     }
 
     pub fn delete(&mut self, id: &str) -> Result<(), Error> {

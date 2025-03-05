@@ -54,7 +54,7 @@ impl CLI { // Commands
         cmd("rename", "Rename a song by ID");
         cmd("list", "List all downloaded songs");
         cmd("help", "Show this help page");
-        cmd("exit", "Quit Player");
+        cmd("exit", "Quit Resonance CLI");
     }
 
     fn download(&mut self, args: Args) {

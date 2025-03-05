@@ -10,3 +10,4 @@ regex = "*"
 hashbrown = { version = "0.15.2", features = ["serde"] }
 colored = "*"
 diesel = { version = "2.2.7", default-features = false, features = ["sqlite", "returning_clauses_for_sqlite_3_35"] }
+lofty = "0.22.2"

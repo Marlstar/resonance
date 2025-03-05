@@ -7,6 +7,8 @@ pub enum Error {
     DatabaseConnection(diesel::ConnectionError),
     DatabaseResult(diesel::result::Error),
     YtDlp(ytdlp_bindings::YtDlpError),
+    AudioMetadata(lofty::error::LoftyError),
+    AudioFileRead(std::io::Error),
 
     BackupFailed(std::io::Error),
 
@@ -33,3 +35,5 @@ from_error!(DieselResultError, DatabaseResult);
 use ytdlp_bindings::YtDlpError;
 from_error!(YtDlpError, YtDlp);
 
+use lofty::error::LoftyError;
+from_error!(LoftyError, AudioMetadata);
