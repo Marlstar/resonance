@@ -1,5 +1,5 @@
 fn main() {
     //let mut db = resonance::Database::load().unwrap();
-    let cli = resonance::CLI::new().unwrap();
+    let cli = resonance_backend::CLI::new().unwrap();
     cli.run();
 }
