@@ -10,10 +10,7 @@ pub fn get_ytid_from_url(url: &str) -> Option<String> {
 
     // https://regex101.com/r/dgnOi5/3
     let re = Regex::new(r".*\.youtube\.com/watch\?v=(?<id>(?:\w|-)+).*").unwrap();
-    let captures = match re.captures(url) {
-        Some(a) => a,
-        None => return None
-    };
+    let captures = re.captures(url)?;
     return Some(captures["id"].to_string());
 }
 
