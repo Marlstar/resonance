@@ -39,4 +39,8 @@ impl Dirs {
     pub fn audio_file(&self, name: &str) -> PathBuf {
         return self.audio_files().join(format!("{name}.mp3"));
     }
+
+    pub fn downloads(&self) -> PathBuf {
+        return self.base().join("downloads");
+    }
 }

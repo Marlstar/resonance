@@ -1,8 +1,6 @@
 use crate::{Error, Database, Song};
 
 mod download;
-mod audio_metadata;
-use audio_metadata::get_mp3_metadata;
 
 pub struct Resonance {
     db: Database
@@ -35,11 +33,16 @@ impl Resonance {
         print!("Downloading song ({ytid}) ");
         crate::util::flush_stdout();
 
-        let path = self.download_song(url)?;
-        let path_str = crate::util::path_to_string(&path);
+        let (vid, path) = self.download_song(url)?;
+        println!("| DONE!");
 
-        let metadata = get_mp3_metadata(path)?;
-        let duration = metadata.duration().as_secs() as i32;
+        let name = vid.title.expect("failed to get video title");
+        let author = vid.channel.expect("failed to get video channel");
+        let path_str = crate::util::path_to_string(&path);
+        let duration = vid.duration.expect("failed to get video duration").as_i64().unwrap() as i32;
+
+        self.db.add_song(&ytid, &name, &author, &path_str, duration)
+    }
 
 
         println!("| DONE!");

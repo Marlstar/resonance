@@ -64,8 +64,10 @@ impl CLI { // Commands
 
         let result = self.resonance.download(url.as_str());
         match result {
-            // TODO: nice output here
-            Ok(song) => { dbg!(song); },
+            Ok(song) => {
+                let purple = |text: &str| text.purple();
+                println!("Downloaded \"{}\" by {} ({}s)", purple(&song.name), purple(&song.author), purple(&format!("{}", &song.duration)));
+            },
             Err(e) => { println!("Error: {e:?}") }
         }
     }
