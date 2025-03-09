@@ -15,13 +15,13 @@ impl super::Resonance {
             None => return Err(Error::YtDlNotSingleVideo),
         };
 
-        let out_dir = crate::dirs().audio_files();
-        ytdl.output_template("%(id)s.%(ext)s");
+        let out_dir = crate::dirs().song(&info.id);
+        let out_path = out_dir.join("song.m4a");
+
+        ytdl.output_template("song.%(ext)s");
         ytdl.extract_audio(true);
         ytdl.format("140");
         ytdl.download_to(&out_dir)?;
-
-        let out_path = out_dir.join(format!("{}.m4a", info.id));
 
         return Ok((info, out_path));
     }
