@@ -1,4 +1,5 @@
 use crate::{Error, Database, Song};
+use youtube_dl::SingleVideo;
 
 mod download;
 mod search;
@@ -45,18 +46,22 @@ impl Resonance {
         self.db.add_song(&ytid, &name, &author, duration)
     }
 
-    pub fn search(&self, query: &str, count: usize) -> Result<(), Error> {
+    pub fn search(&self, query: &str, count: usize) -> Result<Vec<SingleVideo>, Error> {
         if count == 0 { return Err(Error::NoSearchResults); }
 
         let ids = search_youtube_for_ids(query)?;
         if ids.is_empty() { return Err(Error::NoSearchResults); }
         // TODO: when frontend made, update straight away with available info and fill in later using a task
+        let mut songs: Vec<SingleVideo> = Vec::with_capacity(count);
+
         for id in ids.iter().take(count) {
-            let song = get_full_metadata(id)?;
-            println!("| {}", song.title.unwrap());
+            match get_full_metadata(id) {
+                Ok(s) => songs.push(s),
+                Err(_) => continue
+            };
         }
 
-        return Ok(());
+        return Ok(songs);
     }
 
     pub fn delete(&mut self, id: i32) -> Result<(), Error> {
@@ -70,20 +75,15 @@ impl Resonance {
         return Ok(());
     }
 
-    pub fn rename(&mut self, id: i32, name: String) -> Result<(), Error> {
-        self.db.rename_song(id, &name)?;
-        return Ok(());
+    pub fn rename(&mut self, id: i32, name: String) -> Result<Song, Error> {
+        self.db.rename_song(id, &name)
     }
 
     pub fn rename_by_ytid(&mut self, id: &str, new_name: &str) -> Result<Song, Error> {
         self.db.rename_song_by_ytid(id, new_name)
     }
 
-    pub fn list_songs(&mut self) -> Result<(), Error> {
-        let songs = self.db.get_all_songs()?;
-        for song in songs {
-            println!("| {}", song.name);
-        }
-        return Ok(());
+    pub fn list_songs(&mut self) -> Result<Vec<Song>, Error> {
+        self.db.get_all_songs()
     }
 }
