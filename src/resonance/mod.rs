@@ -62,8 +62,10 @@ impl Resonance {
     pub fn delete(&mut self, id: i32) -> Result<(), Error> {
         let song = self.db.get_song(id)?;
         self.db.delete_song(id)?;
-        // TODO: when thumbnails implemented, remove thumbnail file
         let _ = std::fs::remove_file(crate::dirs().song_file(&song.ytid));
+        let _ = std::fs::remove_file(crate::dirs().song_thumbnail(&song.ytid));
+        // Shouldn't still exist, but remove it in case
+        let _ = std::fs::remove_file(crate::dirs().song_thumbnail_uncropped(&song.ytid));
         let _ = std::fs::remove_dir(crate::dirs().song(&song.ytid));
         return Ok(());
     }

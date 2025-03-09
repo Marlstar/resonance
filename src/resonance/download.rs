@@ -19,7 +19,19 @@ impl super::Resonance {
         ytdl.output_template("song.%(ext)s");
         ytdl.extract_audio(true);
         ytdl.format("140");
+        ytdl.extra_arg("--write-thumbnail");
         ytdl.download_to(&out_dir)?;
+
+        // Crop thumbnail
+        let uncropped_path = crate::dirs().song_thumbnail_uncropped(&info.id);
+        let uncropped = image::open(&uncropped_path)?;
+        let size = uncropped.height();
+        let padding = (uncropped.width() - size)/2;
+        let cropped = uncropped.crop_imm(padding, 0, size, size);
+        cropped.save(crate::dirs().song_thumbnail(&info.id))?;
+
+        // Remove uncropped image
+        std::fs::remove_file(uncropped_path)?;
 
         return Ok(info);
     }

@@ -13,6 +13,10 @@ pub enum Error {
 
     NoSearchResults,
 
+    IOError(std::io::Error),
+
+    Image(image::ImageError),
+
     AudioFileRead(std::io::Error),
 
     BackupFailed(std::io::Error),
@@ -39,3 +43,9 @@ from_error!(DieselResultError, DatabaseResult);
 
 use youtube_dl::Error as ytdlError;
 from_error!(ytdlError, YtDl);
+
+use std::io::Error as _IOError;
+from_error!(_IOError, IOError);
+
+use image::ImageError;
+from_error!(ImageError, Image);

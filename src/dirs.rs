@@ -44,6 +44,13 @@ impl Dirs {
     pub fn song_file(&self, ytid: &str) -> PathBuf {
         return self.song(ytid).join("song.m4a");
     }
+    /// Song thumbnail
+    pub fn song_thumbnail(&self, ytid: &str) -> PathBuf {
+        return self.song(ytid).join("thumbnail.jpg");
+    }
+    pub fn song_thumbnail_uncropped(&self, ytid: &str) -> PathBuf {
+        return self.song(ytid).join("song.webp");
+    }
 
     pub fn downloads(&self) -> PathBuf {
         return self.base().join("downloads");
