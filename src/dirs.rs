@@ -36,9 +36,11 @@ impl Dirs {
     pub fn songs(&self) -> PathBuf {
         return self.base().join("songs");
     }
+    /// Base directory for a song's files
     pub fn song(&self, ytid: &str) -> PathBuf {
         return self.songs().join(ytid);
     }
+    /// Song audio file
     pub fn song_file(&self, ytid: &str) -> PathBuf {
         return self.song(ytid).join("song.m4a");
     }
