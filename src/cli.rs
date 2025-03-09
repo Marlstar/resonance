@@ -20,6 +20,7 @@ impl CLI {
             match cmd.as_str() {
                 "help" => self.help(),
                 "download" => self.download(args),
+                "search" => self.search(),
                 "rename" => self.rename(),
                 "list" => self.list(),
                 "exit" => break 'main,
@@ -51,6 +52,7 @@ impl CLI { // Commands
         };
         println!("Available commands:");
         cmd("download", "Download a song by URL");
+        cmd("search", "Search YouTube Music");
         cmd("rename", "Rename a song by ID");
         cmd("list", "List all downloaded songs");
         cmd("help", "Show this help page");
@@ -70,6 +72,11 @@ impl CLI { // Commands
             },
             Err(e) => { println!("Error: {e:?}") }
         }
+    }
+
+    fn search(&mut self) {
+        let query = prompt_input("Query");
+        let _ = self.resonance.search(&query, 1);
     }
 
     fn rename(&mut self) {

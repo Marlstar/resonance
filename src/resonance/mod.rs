@@ -1,6 +1,8 @@
 use crate::{Error, Database, Song};
 
 mod download;
+mod search;
+use search::{search_youtube_for_ids, get_full_metadata};
 
 pub struct Resonance {
     db: Database
@@ -44,19 +46,27 @@ impl Resonance {
         self.db.add_song(&ytid, &name, &author, &path_str, duration)
     }
 
+    pub fn search(&self, query: &str, count: usize) -> Result<(), Error> {
+        if count == 0 { return Err(Error::NoSearchResults); }
 
-        println!("| DONE!");
+        let ids = search_youtube_for_ids(query)?;
+        if ids.is_empty() { return Err(Error::NoSearchResults); }
+        // TODO: when frontend made, update straight away with available info and fill in later using a task
+        for id in ids.iter().take(count) {
+            let song = get_full_metadata(id)?;
+            println!("| {}", song.title.unwrap());
+        }
 
-        self.db.add_song(&ytid, "name", "author", &path_str, duration)
+        return Ok(());
     }
 
-    pub fn delete(&mut self, id: &str) -> Result<(), Error> {
-        //return self.state.remove_song(id);
-        todo!()
+    pub fn delete(&mut self, id: i32) -> Result<(), Error> {
+        self.db.delete_song(id)
     }
 
     pub fn rename(&mut self, id: i32, name: String) -> Result<(), Error> {
-        todo!()
+        self.db.rename_song(id, &name)?;
+        return Ok(());
     }
 
     pub fn rename_by_ytid(&mut self, id: &str, new_name: &str) -> Result<Song, Error> {

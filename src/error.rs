@@ -9,7 +9,9 @@ pub enum Error {
 
     YtDl(youtube_dl::Error),
     YtDlNotSingleVideo,
+    YtDlMalformedOutput,
 
+    NoSearchResults,
 
     AudioFileRead(std::io::Error),
 
