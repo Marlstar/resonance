@@ -22,6 +22,7 @@ impl CLI {
                 "download" => self.download(args),
                 "search" => self.search(),
                 "rename" => self.rename(),
+                "delete" => self.delete(args),
                 "list" => self.list(),
                 "exit" => break 'main,
                 "" => (),
@@ -83,6 +84,14 @@ impl CLI { // Commands
         let id = prompt_input("Enter song YTID");
         let name = prompt_input("New name");
         let _result = self.resonance.rename_by_ytid(&id, &name);
+    }
+
+    fn delete(&mut self, args: Args) {
+        let id = if args.is_empty() {
+            prompt_input("Song id")
+        } else { args[0].clone() }.parse::<i32>().unwrap();
+
+        let _result = self.resonance.delete(id);
     }
 
     fn list(&mut self) {

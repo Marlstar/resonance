@@ -61,7 +61,11 @@ impl Resonance {
     }
 
     pub fn delete(&mut self, id: i32) -> Result<(), Error> {
-        self.db.delete_song(id)
+        let song = self.db.get_song(id)?;
+        let dir = song.path;
+        self.db.delete_song(id)?;
+        // TODO: remove on-disk files
+        return Ok(());
     }
 
     pub fn rename(&mut self, id: i32, name: String) -> Result<(), Error> {
