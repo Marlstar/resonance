@@ -1,20 +1,29 @@
-use std::path::Path;
-use ytdlp_bindings::{YtDlp, YtDlpError};
+use youtube_dl::{SingleVideo, YoutubeDl};
+use std::path::PathBuf;
 use crate::Error;
 
 impl super::Resonance {
-    pub(super) fn download_song(&mut self, url: &str) -> Result<String, Error> {
-        let id = match crate::util::get_ytid_from_url(url) {
-            Some(a) => a,
-            None => return Err(Error::InvalidURL),
-        };
-        let path = crate::dirs().audio_file(&id);
-        Self::download_audio(url, &path)?;
-        return Ok(crate::util::path_to_string(&path));
-    }
+    pub(super) fn download_song(&mut self, url: &str) -> Result<(SingleVideo, PathBuf), Error> {
+        let mut ytdl = YoutubeDl::new(url);
+        ytdl.format("ba");
 
-    fn download_audio(url: &str, path: impl AsRef<Path>) -> Result<(), YtDlpError> {
-        YtDlp::new()?.download_audio(url, path)
+        // TODO: songs/playlists both in this function
+        // `ytdl_output` is an enum of playlist and single video
+        // see https://docs.rs/youtube_dl/0.10.0/youtube_dl/enum.YoutubeDlOutput.html
+        let info = match ytdl.run()?.into_single_video() {
+            Some(a) => a,
+            None => return Err(Error::YtDlNotSingleVideo),
+        };
+
+        let out_dir = crate::dirs().song(&info.id);
+        let out_path = out_dir.join("song.m4a");
+
+        ytdl.output_template("song.%(ext)s");
+        ytdl.extract_audio(true);
+        ytdl.format("140");
+        ytdl.download_to(&out_dir)?;
+
+        return Ok((info, out_path));
     }
 }
 

@@ -30,10 +30,14 @@ impl Database { // Setup
 }
 impl Database { // Songs
     pub fn add_song(&mut self, ytid: &str, name: &str, author: &str, path: &str, duration: i32) -> Result<Song, Error> {
+        if self.ytid_is_used(ytid)? {
+            return self.get_song_by_ytid(ytid);
+        }
+
         return match crate::models::song::create(&mut self.db, ytid, name, author, path, duration) {
             Ok(song) => Ok(song),
-            // TODO: return the actual song entry instead of just failing
-            Err(diesel::result::Error::DatabaseError(DatabaseErrorKind::UniqueViolation, _)) => Err(Error::SongAlreadyInstalled),
+            // This match arm shouldn't be reached, should return early if this is the case
+            Err(diesel::result::Error::DatabaseError(DatabaseErrorKind::UniqueViolation, _)) => self.get_song_by_ytid(ytid),
             Err(e) => Err(e.into())
         };
     }
@@ -56,11 +60,13 @@ impl Database { // Songs
             .get_result(&mut self.db)?);
     }
 
-    pub fn delete_song(&mut self, id: i32) -> Result<usize, Error> {
+    pub fn delete_song(&mut self, id: i32) -> Result<(), Error> {
         use crate::db::schema::song::dsl::song;
 
-        return Ok(diesel::delete(song.find(id))
-            .execute(&mut self.db)?);
+        diesel::delete(song.find(id))
+            .execute(&mut self.db)?;
+
+        return Ok(());
     }
 
     pub fn get_song(&mut self, id: i32) -> Result<Song, Error> {
@@ -77,6 +83,22 @@ impl Database { // Songs
             Err(e) => Err(e.into())
         };
     }
+
+    pub fn get_song_by_ytid(&mut self, id: &str) -> Result<Song, Error> {
+        use crate::db::schema::song::dsl::{song, ytid};
+
+        let s = song
+            .filter(ytid.eq(id))
+            .first(&mut self.db)
+            .optional();
+
+        return match s {
+            Ok(Some(a)) => Ok(a),
+            Ok(None) => Err(Error::SongNotInstalled),
+            Err(e) => Err(e.into())
+        };
+    }
+
 
     pub fn ytid_is_used(&mut self, id: &str) -> Result<bool, Error> {
         use crate::db::schema::song::dsl::{song, ytid};

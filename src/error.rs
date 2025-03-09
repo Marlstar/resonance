@@ -6,7 +6,14 @@ pub enum Error {
 
     DatabaseConnection(diesel::ConnectionError),
     DatabaseResult(diesel::result::Error),
-    YtDlp(ytdlp_bindings::YtDlpError),
+
+    YtDl(youtube_dl::Error),
+    YtDlNotSingleVideo,
+    YtDlMalformedOutput,
+
+    NoSearchResults,
+
+    AudioFileRead(std::io::Error),
 
     BackupFailed(std::io::Error),
 
@@ -30,6 +37,5 @@ from_error!(DieselConnectionError, DatabaseConnection);
 use diesel::result::Error as DieselResultError;
 from_error!(DieselResultError, DatabaseResult);
 
-use ytdlp_bindings::YtDlpError;
-from_error!(YtDlpError, YtDlp);
-
+use youtube_dl::Error as ytdlError;
+from_error!(ytdlError, YtDl);

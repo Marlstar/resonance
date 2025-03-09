@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-ytdlp_bindings = "*"
+youtube_dl = "0.10.0"
 directories = "*"
 regex = "*"
 hashbrown = { version = "0.15.2", features = ["serde"] }

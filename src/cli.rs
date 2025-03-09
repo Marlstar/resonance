@@ -20,7 +20,9 @@ impl CLI {
             match cmd.as_str() {
                 "help" => self.help(),
                 "download" => self.download(args),
+                "search" => self.search(),
                 "rename" => self.rename(),
+                "delete" => self.delete(args),
                 "list" => self.list(),
                 "exit" => break 'main,
                 "" => (),
@@ -51,10 +53,11 @@ impl CLI { // Commands
         };
         println!("Available commands:");
         cmd("download", "Download a song by URL");
+        cmd("search", "Search YouTube Music");
         cmd("rename", "Rename a song by ID");
         cmd("list", "List all downloaded songs");
         cmd("help", "Show this help page");
-        cmd("exit", "Quit Player");
+        cmd("exit", "Quit Resonance CLI");
     }
 
     fn download(&mut self, args: Args) {
@@ -64,16 +67,31 @@ impl CLI { // Commands
 
         let result = self.resonance.download(url.as_str());
         match result {
-            // TODO: nice output here
-            Ok(song) => { dbg!(song); },
+            Ok(song) => {
+                let purple = |text: &str| text.purple();
+                println!("Downloaded \"{}\" by {} ({}s)", purple(&song.name), purple(&song.author), purple(&format!("{}", &song.duration)));
+            },
             Err(e) => { println!("Error: {e:?}") }
         }
+    }
+
+    fn search(&mut self) {
+        let query = prompt_input("Query");
+        let _ = self.resonance.search(&query, 1);
     }
 
     fn rename(&mut self) {
         let id = prompt_input("Enter song YTID");
         let name = prompt_input("New name");
         let _result = self.resonance.rename_by_ytid(&id, &name);
+    }
+
+    fn delete(&mut self, args: Args) {
+        let id = if args.is_empty() {
+            prompt_input("Song id")
+        } else { args[0].clone() }.parse::<i32>().unwrap();
+
+        let _result = self.resonance.delete(id);
     }
 
     fn list(&mut self) {
