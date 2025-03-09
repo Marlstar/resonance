@@ -9,7 +9,6 @@ pub struct Song {
     pub ytid: String,
     pub name: String,
     pub author: String,
-    pub path: String,
     pub duration: i32
 }
 
@@ -19,18 +18,16 @@ pub struct NewSong<'a> {
     pub ytid: &'a str,
     pub name: &'a str,
     pub author: &'a str,
-    pub path: &'a str,
     pub duration: i32
 }
 
-pub fn create(conn: &mut SqliteConnection, ytid: &str, name: &str, author: &str, path: &str, duration: i32) -> Result<Song, diesel::result::Error> {
+pub fn create(conn: &mut SqliteConnection, ytid: &str, name: &str, author: &str, duration: i32) -> Result<Song, diesel::result::Error> {
     use crate::db::schema::song;
 
     let new_song = NewSong {
         ytid,
         name,
         author,
-        path,
         duration
     };
 

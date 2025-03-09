@@ -1,9 +1,8 @@
 use youtube_dl::{SingleVideo, YoutubeDl};
-use std::path::PathBuf;
 use crate::Error;
 
 impl super::Resonance {
-    pub(super) fn download_song(&mut self, url: &str) -> Result<(SingleVideo, PathBuf), Error> {
+    pub(super) fn download_song(&mut self, url: &str) -> Result<SingleVideo, Error> {
         let mut ytdl = YoutubeDl::new(url);
         ytdl.format("ba");
 
@@ -16,14 +15,13 @@ impl super::Resonance {
         };
 
         let out_dir = crate::dirs().song(&info.id);
-        let out_path = out_dir.join("song.m4a");
 
         ytdl.output_template("song.%(ext)s");
         ytdl.extract_audio(true);
         ytdl.format("140");
         ytdl.download_to(&out_dir)?;
 
-        return Ok((info, out_path));
+        return Ok(info);
     }
 }
 

@@ -22,7 +22,6 @@ diesel::table! {
         ytid -> Text,
         name -> Text,
         author -> Text,
-        path -> Text,
         duration -> Integer,
     }
 }

@@ -35,15 +35,14 @@ impl Resonance {
         print!("Downloading song ({ytid}) ");
         crate::util::flush_stdout();
 
-        let (vid, path) = self.download_song(url)?;
+        let vid = self.download_song(url)?;
         println!("| DONE!");
 
         let name = vid.title.expect("failed to get video title");
         let author = vid.channel.expect("failed to get video channel");
-        let path_str = crate::util::path_to_string(&path);
         let duration = vid.duration.expect("failed to get video duration").as_i64().unwrap() as i32;
 
-        self.db.add_song(&ytid, &name, &author, &path_str, duration)
+        self.db.add_song(&ytid, &name, &author, duration)
     }
 
     pub fn search(&self, query: &str, count: usize) -> Result<(), Error> {
