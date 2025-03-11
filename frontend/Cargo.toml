@@ -4,3 +4,17 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+colored = "*"
+
+[dependencies.iced]
+version = "0.14.0-dev"
+git = "https://github.com/iced-rs/iced.git"
+no-default-features = true
+features = [
+	"fira-sans",
+	"wgpu",
+	"tiny-skia"
+]
+
+[dependencies.resonance_backend]
+path = "../backend"

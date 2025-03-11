@@ -14,12 +14,12 @@ impl CLI {
     }
 }
 impl CLI {
-    pub fn run(mut self) {
+    pub async fn run(mut self) {
         'main: loop {
             let (cmd, args) = Self::get_command();
             match cmd.as_str() {
                 "help" => self.help(),
-                "download" => self.download(args),
+                "download" => self.download(args).await,
                 "search" => self.search(),
                 "rename" => self.rename(),
                 "delete" => self.delete(args),
@@ -60,12 +60,14 @@ impl CLI { // Commands
         cmd("exit", "Quit Resonance CLI");
     }
 
-    fn download(&mut self, args: Args) {
+    async fn download(&mut self, args: Args) {
         let url = if args.is_empty() {
             prompt_input("Enter URL to download")
         } else { args[0].clone() };
 
-        let result = self.resonance.download(url.as_str());
+        let vid = crate::download_song(&url).await.unwrap();
+        let result = self.resonance.install_downloaded(vid);
+
         match result {
             Ok(song) => {
                 let purple = |text: &str| text.purple();

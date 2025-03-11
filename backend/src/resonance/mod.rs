@@ -1,7 +1,6 @@
 use crate::{Error, Database, Song};
 use youtube_dl::SingleVideo;
 
-mod download;
 mod search;
 use search::{search_youtube_for_ids, get_full_metadata};
 
@@ -16,34 +15,21 @@ impl Resonance {
     }
 }
 impl Resonance {
-    pub fn run(&mut self) {
-    }
-
     pub fn exit(self) {
         self.db.close();
     }
 
-    pub fn download(&mut self, url: &str) -> Result<Song, Error> {
-        let ytid = match crate::util::get_ytid_from_url(url) {
-            Some(a) => a,
-            None => return Err(Error::InvalidURL)
-        };
-
-        if self.db.ytid_is_used(&ytid)? {
+    pub fn install_downloaded(&mut self, vid: SingleVideo) -> Result<Song, Error> {
+        if self.db.ytid_is_used(&vid.id)? {
             return Err(Error::SongAlreadyInstalled);
         }
 
-        print!("Downloading song ({ytid}) ");
-        crate::util::flush_stdout();
-
-        let vid = self.download_song(url)?;
-        println!("| DONE!");
-
+        let id = vid.id;
         let name = vid.title.expect("failed to get video title");
         let author = vid.channel.expect("failed to get video channel");
         let duration = vid.duration.expect("failed to get video duration").as_i64().unwrap() as i32;
 
-        self.db.add_song(&ytid, &name, &author, duration)
+        self.db.add_song(&id, &name, &author, duration)
     }
 
     pub fn search(&self, query: &str, count: usize) -> Result<Vec<SingleVideo>, Error> {

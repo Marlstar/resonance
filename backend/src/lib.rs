@@ -8,6 +8,9 @@ pub use error::Error;
 mod resonance;
 pub use resonance::Resonance;
 
+mod download;
+pub use download::download_song;
+
 mod input;
 pub use input::get_input;
 pub use input::prompt_input;
@@ -26,3 +29,6 @@ pub mod util;
 
 mod cli;
 pub use cli::CLI;
+
+// Re-exports
+pub use youtube_dl::SingleVideo;

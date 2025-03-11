@@ -1,3 +1,5 @@
-fn main() {
-    println!("Hello, world!");
+use resonance_frontend::Resonance;
+
+fn main() -> iced::Result {
+    iced::application("Resonance", Resonance::update, Resonance::view).run()
 }
