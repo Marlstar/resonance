@@ -1,14 +1,14 @@
 use resonance_backend as backend;
 use crate::screens::Screen;
-use crate::screens::Home;
+use crate::screens::Library;
 
 mod update;
 mod view;
 
 pub struct Resonance {
     backend: backend::Resonance,
-
     screen: Screen,
+    theme: iced::Theme
 }
 impl Default for Resonance {
     fn default() -> Self {
@@ -17,9 +17,14 @@ impl Default for Resonance {
 }
 impl Resonance {
     pub fn new() -> Resonance {
+        let mut backend = Self::try_load_backend();
+        // TODO: error handling
+        let songs = backend.list_songs().unwrap();
+
         return Self {
-            backend: Self::try_load_backend(),
-            screen: Screen::Home(Home::new())
+            backend,
+            screen: Screen::Library(Library::new(songs)),
+            theme: iced::Theme::CatppuccinMocha,
         };
     }
     
@@ -31,5 +36,9 @@ impl Resonance {
                 std::process::exit(1);
             }
         };
+    }
+
+    pub fn theme(&self) -> iced::Theme {
+        self.theme.clone()
     }
 }

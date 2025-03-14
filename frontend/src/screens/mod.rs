@@ -1,14 +1,21 @@
 pub mod home;
 pub use home::Home;
+pub use home::HomeMessage;
+
+pub mod library;
+pub use library::Library;
+pub use library::LibraryMessage;
 
 #[derive(Debug, Clone)]
 pub enum Screen {
     Home(Home),
+    Library(Library),
 }
 impl Screen {
     pub fn view<'a>(&self) -> iced::Element<'a, crate::Message> {
         match self {
             Screen::Home(s) => s.view(),
+            Screen::Library(s) => s.view()
         }
     }
 }

@@ -11,6 +11,7 @@ version = "0.14.0-dev"
 git = "https://github.com/iced-rs/iced.git"
 no-default-features = true
 features = [
+	"image",
 	"fira-sans",
 	"wgpu",
 	"tiny-skia"

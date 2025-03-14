@@ -32,7 +32,10 @@ impl ScreenCore for Home {
             .on_press(Message::DeleteSong(1)),
 
             text_input("Enter URL to download", &self.download_url_input)
-            .on_input(|content| Message::Home(HomeMessage::DownloadURLChanged(content)))
+            .on_input(|content| Message::Home(HomeMessage::DownloadURLChanged(content))),
+
+            button("Library")
+            .on_press(Message::SwitchToLibraryScreen)
         ])
     }
 

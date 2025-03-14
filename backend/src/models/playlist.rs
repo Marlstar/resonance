@@ -15,6 +15,7 @@ pub struct NewPlaylist<'a> {
     pub name: &'a str
 }
 
+#[allow(dead_code)]
 pub fn create(conn: &mut SqliteConnection, name: &str) -> Result<Playlist, diesel::result::Error> {
     use crate::db::schema::playlist;
 

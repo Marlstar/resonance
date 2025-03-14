@@ -13,3 +13,5 @@ pub use message::Message;
 pub mod screens;
 
 pub mod tasks;
+
+pub mod appearance;
