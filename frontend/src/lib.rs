@@ -15,3 +15,5 @@ pub mod screens;
 pub mod tasks;
 
 pub mod appearance;
+
+pub mod assets;

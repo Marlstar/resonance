@@ -5,6 +5,7 @@ edition = "2024"
 
 [dependencies]
 colored = "*"
+iced_aw = { version = "0.12.2", features = ["spinner"], default-features = false }
 
 [dependencies.iced]
 version = "0.14.0-dev"
@@ -12,6 +13,8 @@ git = "https://github.com/iced-rs/iced.git"
 no-default-features = true
 features = [
 	"image",
+	"svg",
+	"advanced",
 	"fira-sans",
 	"wgpu",
 	"tiny-skia"

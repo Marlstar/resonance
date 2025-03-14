@@ -1,5 +1,7 @@
 pub use iced::Color;
 
+pub const HOVER: Color = Color::from_rgba(49.0/255.0, 50.0/255.0, 68.0/255.0, 200.0/255.0);
+
 pub const ROSEWATER: Color = Color::from_rgb(245.0/255.0, 224.0/255.0, 220.0/255.0);
 pub const FLAMINGO: Color = Color::from_rgb(242.0/255.0, 205.0/255.0, 205.0/255.0);
 pub const PINK: Color = Color::from_rgb(245.0/255.0, 194.0/255.0, 231.0/255.0);

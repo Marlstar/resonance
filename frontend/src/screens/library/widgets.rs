@@ -1,8 +1,9 @@
+use crate::Message;
 use crate::backend::Song;
 use crate::appearance::colours;
-use iced::alignment::Vertical;
-use iced::widget::{ column, container, image, row, text };
-use iced::{Background, Border, Element, Theme};
+use iced::alignment::{Horizontal, Vertical};
+use iced::widget::{ button, column, container, hover, image, svg, row, text };
+use iced::{Background, Border, Element, Length, Theme};
 
 pub fn song<'a>(song: &Song) -> Element<'a, crate::Message> {
     let grey_text = |_: &Theme| -> text::Style {
@@ -10,36 +11,52 @@ pub fn song<'a>(song: &Song) -> Element<'a, crate::Message> {
             color: Some(colours::OVERLAY2)
         }
     };
+    const THUMBNAIL_SIZE: u32 = 48;
 
-    let thumbnail = image(crate::backend::dirs().song_thumbnail(&song.ytid))
-        .height(50);
-    let thumbnail = container(thumbnail)
-        .padding(0)
-        .style(|_: &Theme| {
-            container::Style::default()
-                .border(Border::default().rounded(6))
-        });
+    let thumbnail = container(image(crate::backend::dirs().song_thumbnail(&song.ytid))
+        .height(THUMBNAIL_SIZE))
+        .align_y(Vertical::Center);
+
+    let play_icon = container(svg(crate::assets::icon_svg()).width(Length::Fill).height(Length::Fill))
+        .center(Length::Fill);
+    let play_button = button(play_icon)
+        .style(|_: &Theme, _: button::Status| {
+            button::Style {
+                background: Some(Background::Color(colours::HOVER)),
+                ..Default::default()
+            }
+        })
+        .width(Length::Fill)
+        .height(Length::Fill)
+        .on_press(Message::PlaySong(song.id));
+    let play_overlay = container(play_button)
+        .center(Length::Fill);
+    let thumbnail_overlay = hover(thumbnail, play_overlay);
+
     let title = text(song.name.clone())
         .size(22);
     let artist = text(song.author.clone())
         .style(grey_text)
         .size(16);
-    let duration = text(format!("{}s", song.duration))
+    let album = text(song.album.clone())
         .style(grey_text)
         .size(16);
-
-    // TODO: album
+    let duration = text(format!("{}:{}", (song.duration - (song.duration % 60))/60, song.duration % 60))
+        .style(grey_text)
+        .size(16);
 
     let song_info = column![
         title,
         row![
             artist,
             text("·"),
+            album,
+            text("·"),
             duration,
         ].spacing(5),
     ].spacing(5);
 
-    let contents = row![thumbnail, song_info]
+    let contents = row![thumbnail_overlay, song_info]
         .spacing(10)
         .align_y(Vertical::Center);
 

@@ -12,12 +12,13 @@ use colored::Colorize;
 impl super::Resonance {
     pub fn update(&mut self, message: Message) -> Task {
         return match message {
-
             Message::Download(url) => self.download(url),
             Message::DownloadComplete(url, vid) => self.download_complete(&url, vid),
             Message::DownloadFailed(url) => self.download_failed(&url),
 
             Message::DeleteSong(id) => self.delete_song(id),
+
+            Message::PlaySong(id) => self.play_song(id),
 
             Message::SwitchToHomeScreen => self.switch_to_home(),
             Message::SwitchToLibraryScreen => self.switch_to_library(),
@@ -74,6 +75,14 @@ impl super::Resonance {
     fn delete_song(&mut self, id: i32) -> Task {
         // TODO: error handling
         let _ = self.backend.delete(id);
+        Task::none()
+    }
+
+    fn play_song(&mut self, id: i32) -> Task {
+        // TODO: error handling
+        let song = self.backend.get_song(id).unwrap();
+        // TODO: playback
+        println!("Playing {} by {}", song.name, song.author);
         Task::none()
     }
 

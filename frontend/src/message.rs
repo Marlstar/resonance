@@ -10,6 +10,8 @@ pub enum Message {
 
     DeleteSong(i32),
 
+    PlaySong(i32),
+
     // Screens
     Home(screens::HomeMessage),
     SwitchToHomeScreen,

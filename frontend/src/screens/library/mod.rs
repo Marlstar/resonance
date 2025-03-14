@@ -1,4 +1,4 @@
-use iced::widget::{ button, column, Column };
+use iced::widget::{ button, column, Column, image };
 use iced::Element;
 use crate::screens::ScreenCore;
 use crate::Task;
