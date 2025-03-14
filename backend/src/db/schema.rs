@@ -23,6 +23,7 @@ diesel::table! {
         name -> Text,
         author -> Text,
         duration -> Integer,
+        album -> Text,
     }
 }
 

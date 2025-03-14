@@ -9,7 +9,8 @@ pub struct Song {
     pub ytid: String,
     pub name: String,
     pub author: String,
-    pub duration: i32
+    pub duration: i32,
+    pub album: String,
 }
 
 #[derive(Insertable)]
@@ -18,16 +19,18 @@ pub struct NewSong<'a> {
     pub ytid: &'a str,
     pub name: &'a str,
     pub author: &'a str,
-    pub duration: i32
+    pub duration: i32,
+    pub album: &'a str,
 }
 
-pub fn create(conn: &mut SqliteConnection, ytid: &str, name: &str, author: &str, duration: i32) -> Result<Song, diesel::result::Error> {
+pub fn create(conn: &mut SqliteConnection, ytid: &str, name: &str, author: &str, album: &str, duration: i32) -> Result<Song, diesel::result::Error> {
     use crate::db::schema::song;
 
     let new_song = NewSong {
         ytid,
         name,
         author,
+        album,
         duration
     };
 

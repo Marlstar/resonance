@@ -29,12 +29,12 @@ impl Database { // Setup
     }
 }
 impl Database { // Songs
-    pub fn add_song(&mut self, ytid: &str, name: &str, author: &str, duration: i32) -> Result<Song, Error> {
+    pub fn add_song(&mut self, ytid: &str, name: &str, author: &str, album: &str, duration: i32) -> Result<Song, Error> {
         if self.ytid_is_used(ytid)? {
             return self.get_song_by_ytid(ytid);
         }
 
-        return match crate::models::song::create(&mut self.db, ytid, name, author, duration) {
+        return match crate::models::song::create(&mut self.db, ytid, name, author, album, duration) {
             Ok(song) => Ok(song),
             // This match arm shouldn't be reached, should return early if this is the case
             Err(diesel::result::Error::DatabaseError(DatabaseErrorKind::UniqueViolation, _)) => self.get_song_by_ytid(ytid),

@@ -1,0 +1,3 @@
+-- Your SQL goes here
+ALTER TABLE song
+ADD COLUMN album TEXT NOT NULL DEFAULT 'ALBUM NOT SET';
