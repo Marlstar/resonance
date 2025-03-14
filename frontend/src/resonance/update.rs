@@ -4,7 +4,7 @@ use crate::screens::LibraryMessage;
 use crate::screens::ScreenCore;
 use crate::Message;
 use crate::tasks;
-use crate::backend::SingleVideo;
+use backend::SingleVideo;
 use crate::Task;
 use crate::screens::Screen;
 use colored::Colorize;

@@ -1,7 +1,7 @@
 use crate::Message;
-use crate::backend::Song;
+use backend::Song;
 use crate::appearance::colours;
-use iced::alignment::{Horizontal, Vertical};
+use iced::alignment::Vertical;
 use iced::widget::{ button, column, container, hover, image, svg, row, text };
 use iced::{Background, Border, Element, Length, Theme};
 
@@ -13,7 +13,7 @@ pub fn song<'a>(song: &Song) -> Element<'a, crate::Message> {
     };
     const THUMBNAIL_SIZE: u32 = 48;
 
-    let thumbnail = container(image(crate::backend::dirs().song_thumbnail(&song.ytid))
+    let thumbnail = container(image(backend::dirs().song_thumbnail(&song.ytid))
         .height(THUMBNAIL_SIZE))
         .align_y(Vertical::Center);
 
@@ -44,6 +44,7 @@ pub fn song<'a>(song: &Song) -> Element<'a, crate::Message> {
     let duration = text(format!("{}:{}", (song.duration - (song.duration % 60))/60, song.duration % 60))
         .style(grey_text)
         .size(16);
+
 
     let song_info = column![
         title,

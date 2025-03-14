@@ -2,8 +2,6 @@
 
 pub type Task = iced::Task<Message>;
 
-pub use resonance_backend as backend;
-
 mod resonance;
 pub use resonance::Resonance;
 

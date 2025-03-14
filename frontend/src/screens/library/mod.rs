@@ -3,7 +3,7 @@ use iced::Element;
 use crate::screens::ScreenCore;
 use crate::Task;
 use crate::Message;
-use crate::backend::Song;
+use backend::Song;
 
 mod widgets;
 mod styles;
@@ -23,7 +23,8 @@ impl ScreenCore for Library {
     type Message = LibraryMessage;
 
     fn view<'a>(&self) -> iced::Element<'a, crate::Message> {
-        let songs = Column::from_vec(self.songs.iter().map(widgets::song).collect::<Vec<Element<'a, Message>>>())
+        let songs = self.songs.iter().map(widgets::song).collect::<Vec<Element<'a, Message>>>();
+        let songs = Column::from_vec(songs)
             .spacing(10);
         return Element::new(column![
             button("Home")

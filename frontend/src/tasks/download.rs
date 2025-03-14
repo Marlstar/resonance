@@ -1,5 +1,5 @@
 use crate::Message;
-use crate::backend::download_song;
+use backend::download_song;
 
 pub async fn download(url: String) -> Message {
     match download_song(&url).await {

@@ -1,4 +1,3 @@
-use resonance_backend as backend;
 use crate::screens::Screen;
 use crate::screens::Library;
 

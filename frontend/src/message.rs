@@ -1,5 +1,5 @@
 use crate::screens;
-use crate::backend::SingleVideo;
+use backend::SingleVideo;
 
 #[derive(Debug, Clone)]
 pub enum Message {

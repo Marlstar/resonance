@@ -5,11 +5,13 @@ edition = "2024"
 
 [dependencies]
 colored = "*"
-iced_aw = { version = "0.12.2", features = ["spinner"], default-features = false }
+hashbrown = "0.15.2"
 
 [dependencies.iced]
 version = "0.14.0-dev"
-git = "https://github.com/iced-rs/iced.git"
+# git = "https://github.com/iced-rs/iced.git"
+git = "https://github.com/edwloef/iced.git"
+branch = "fix_rectangle_snap"
 no-default-features = true
 features = [
 	"image",
@@ -20,5 +22,6 @@ features = [
 	"tiny-skia"
 ]
 
-[dependencies.resonance_backend]
+[dependencies.backend]
 path = "../backend"
+package = "resonance_backend"
