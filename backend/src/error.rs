@@ -18,6 +18,8 @@ pub enum Error {
     Image(image::ImageError),
 
     AudioFileRead(std::io::Error),
+    AudioPlay(rodio::PlayError),
+    AudioStream(rodio::StreamError),
 
     BackupFailed(std::io::Error),
 
@@ -49,3 +51,7 @@ from_error!(_IOError, IOError);
 
 use image::ImageError;
 from_error!(ImageError, Image);
+
+use rodio::{PlayError, StreamError};
+from_error!(PlayError, AudioPlay);
+from_error!(StreamError, AudioStream);

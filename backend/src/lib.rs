@@ -26,9 +26,13 @@ mod database;
 pub use database::Database;
 
 pub mod util;
+pub use util::AM;
 
 mod cli;
 pub use cli::CLI;
+
+mod audio;
+pub use audio::AudioPlayer;
 
 // Re-exports
 pub use youtube_dl::SingleVideo;
