@@ -81,10 +81,12 @@ impl super::Resonance {
     fn play_song(&mut self, id: i32) -> Task {
         // TODO: error handling
         let song = self.backend.get_song(id).unwrap();
-        // TODO: playback
         println!("Playing {} by {}", song.name, song.author);
+        self.backend.audio.play_song(song);
         Task::none()
     }
+
+    // TODO: queue songs
 
     fn refresh_library(&mut self) -> Task {
         // TODO: error handling
