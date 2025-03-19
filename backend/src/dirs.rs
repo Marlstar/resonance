@@ -54,9 +54,6 @@ impl Dirs {
     pub fn song_thumbnail(&self, ytid: &str) -> PathBuf {
         return self.song(ytid).join("thumbnail.jpg");
     }
-    pub fn song_thumbnail_blurred(&self, ytid: &str) -> PathBuf {
-        return self.song(ytid).join("blurred.jpg");
-    }
     pub fn song_thumbnail_uncropped(&self, ytid: &str) -> PathBuf {
         return self.song(ytid).join("song.webp");
     }

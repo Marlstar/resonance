@@ -1,8 +1,9 @@
-pub fn blur(ytid: &str) {
-    // TODO: error handling
-    let raw = image::open(crate::dirs().song_thumbnail(ytid)).unwrap()
-        //.blur(15.0);
-        .fast_blur(200.0);
+use image::RgbaImage;
 
-    let _ = raw.save(crate::dirs().song_thumbnail_blurred(ytid));
+pub fn blur(ytid: &str, sigma: f32) -> RgbaImage {
+    // TODO: error handling
+    return image::open(crate::dirs().song_thumbnail(ytid)).unwrap()
+        //.blur(15.0);
+        .fast_blur(sigma)
+        .to_rgba8();
 }

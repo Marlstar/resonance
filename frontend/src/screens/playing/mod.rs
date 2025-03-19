@@ -1,7 +1,9 @@
 use iced::alignment::{Horizontal, Vertical};
+use iced::widget::image::Handle;
 use iced::widget::{ self, button, column, stack, text, container, svg };
 use iced::{Background, Length};
 use iced::Color;
+use image::EncodableLayout;
 use crate::screens::ScreenCore;
 use crate::{appearance, Task};
 use crate::Message;
@@ -13,10 +15,12 @@ use backend::Song;
 pub struct Playing {
     song: Song,
     playing: bool,
+    bg: Box<[u8; 720*720*4]>,
 }
 impl Playing {
     pub fn new(song: Song) -> Self {
         return Self {
+            bg: Box::new([0u8; 720*720*4]),
             song,
             playing: true,
         };
@@ -25,7 +29,8 @@ impl Playing {
 impl ScreenCore for Playing {
     type Message = PlayingMessage;
     fn view<'a>(&self) -> iced::Element<'a, crate::Message> {
-        let bg = widget::image(backend::dirs().song_thumbnail_blurred(&self.song.ytid))
+        let bg = widget::image(Handle::from_rgba(720, 720, self.bg.to_vec()))
+        //let bg = widget::image(backend::dirs().song_thumbnail_blurred(&self.song.ytid))
             .width(Length::Fill)
             .height(Length::Fill)
             .content_fit(iced::ContentFit::Cover);
@@ -37,7 +42,6 @@ impl ScreenCore for Playing {
             .width(Length::Fixed(80.0))
             .on_press(if self.playing {Message::PauseSong} else {Message::ResumeSong})
             .style(|_,_| button::Style::default());
-        //let pause_play = button("hello");
 
 
         stack!(
@@ -66,8 +70,11 @@ impl ScreenCore for Playing {
 }
 impl Playing {
     fn update_song(&mut self, song: Song) -> Task {
+        const BLUR_SIGMA: f32 = 75.0;
+
         self.song = song;
-        // TODO: check if blurred image is saved to file, and if not, create it
+        let img = backend::blur(&self.song.ytid, BLUR_SIGMA);
+        self.bg.copy_from_slice(&img);
         Task::none()
     }
 

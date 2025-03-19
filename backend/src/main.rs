@@ -1,4 +1,5 @@
 fn main() {
+    println!("You are running the BACKEND");
     let mut r = resonance_backend::Resonance::new().unwrap();
     let song = r.get_song(2).unwrap();
     r.audio.play_song(song);

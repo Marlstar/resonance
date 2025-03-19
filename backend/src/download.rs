@@ -29,9 +29,6 @@ pub async fn download_song(url: &str) -> Result<SingleVideo, Error> {
     let cropped = uncropped.crop_imm(padding, 0, size, size);
     cropped.save(crate::dirs().song_thumbnail(&info.id))?;
 
-    let blurred = cropped.blur(15.0);
-    blurred.save(crate::dirs().song_thumbnail_blurred(&info.id))?;
-
     // Remove uncropped image
     std::fs::remove_file(uncropped_path)?;
 

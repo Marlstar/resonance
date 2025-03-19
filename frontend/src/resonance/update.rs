@@ -83,7 +83,7 @@ impl super::Resonance {
         // TODO: error handling
         println!("Downloaded {} by {}", vid.title.clone().unwrap().purple(), vid.channel.clone().unwrap().purple());
         let _ = self.backend.install_downloaded(vid);
-        Task::none()
+        Task::done(Message::Library(LibraryMessage::Refresh))
     }
 
     fn download_failed(&self, url: &str) -> Task {
