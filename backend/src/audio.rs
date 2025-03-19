@@ -58,7 +58,12 @@ impl AudioPlayer {
         }
     }
 
+    pub fn current(&self) -> Option<Song> {
+        return self.current_song.clone()
+    }
+
     pub fn play_song(&mut self, song: Song) {
+        self.current_song = Some(song.clone());
         self.send_command(Command::Play(song));
     }
 

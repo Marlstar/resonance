@@ -11,6 +11,9 @@ pub use resonance::Resonance;
 mod download;
 pub use download::download_song;
 
+mod blur;
+pub use blur::blur;
+
 mod input;
 pub use input::get_input;
 pub use input::prompt_input;

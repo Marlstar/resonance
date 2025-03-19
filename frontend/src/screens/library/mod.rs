@@ -48,5 +48,5 @@ impl ScreenCore for Library {
 #[derive(Debug, Clone)]
 pub enum LibraryMessage {
     Refresh,
-    RefreshResponse(Vec<Song>)
+    RefreshResponse(Vec<Song>),
 }

@@ -17,7 +17,7 @@ pub fn song<'a>(song: &Song) -> Element<'a, crate::Message> {
         .height(THUMBNAIL_SIZE))
         .align_y(Vertical::Center);
 
-    let play_icon = container(svg(crate::assets::icon_svg()).width(Length::Fill).height(Length::Fill))
+    let play_icon = container(svg(crate::assets::icon()).width(Length::Fill).height(Length::Fill))
         .center(Length::Fill);
     let play_button = button(play_icon)
         .style(|_: &Theme, _: button::Status| {
@@ -43,7 +43,7 @@ pub fn song<'a>(song: &Song) -> Element<'a, crate::Message> {
         .size(16);
     let mins = (song.duration - (song.duration % 60))/60;
     let secs = song.duration % 60;
-    let secs = format!("{}{secs}", if secs > 10 {""} else {"0"});
+    let secs = format!("{}{secs}", if secs >= 10 {""} else {"0"});
     let duration = text(format!("{}:{}", mins, secs))
         .style(grey_text)
         .size(16);

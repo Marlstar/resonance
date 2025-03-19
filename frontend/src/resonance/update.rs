@@ -1,6 +1,8 @@
 use crate::screens::Home;
 use crate::screens::Library;
 use crate::screens::LibraryMessage;
+use crate::screens::Playing;
+use crate::screens::PlayingMessage;
 use crate::screens::ScreenCore;
 use crate::Message;
 use crate::tasks;
@@ -19,9 +21,12 @@ impl super::Resonance {
             Message::DeleteSong(id) => self.delete_song(id),
 
             Message::PlaySong(id) => self.play_song(id),
+            Message::PauseSong => self.pause_song(),
+            Message::ResumeSong => self.resume_song(),
 
             Message::SwitchToHomeScreen => self.switch_to_home(),
             Message::SwitchToLibraryScreen => self.switch_to_library(),
+            Message::SwitchToPlayingScreen => self.switch_to_playing(),
 
             Message::Home(msg) => {
                 if let Screen::Home(home) = &mut self.screen {
@@ -38,6 +43,13 @@ impl super::Resonance {
                     }
                 } else { Task::none() }
             },
+
+            Message::Playing(msg) => {
+                if let Screen::Playing(screen) = &mut self.screen {
+                    screen.handle_message(msg)
+                }
+                else { Task::none() }
+            },
         }
     }
 }
@@ -51,6 +63,14 @@ impl super::Resonance {
         // TODO: error handling
         let lib = Library::new(self.backend.list_songs().unwrap());
         self.screen = Screen::Library(lib);
+        Task::none()
+    }
+
+    fn switch_to_playing(&mut self) -> Task {
+        if let Some(song) = self.backend.audio.current() {
+            self.screen = Screen::Playing(Playing::new(song.clone()));
+            return Task::done(Message::Playing(crate::screens::PlayingMessage::Update(song.clone())));
+        }
         Task::none()
     }
 }
@@ -83,7 +103,18 @@ impl super::Resonance {
         let song = self.backend.get_song(id).unwrap();
         println!("Playing {} by {}", song.name, song.author);
         self.backend.audio.play_song(song);
-        Task::none()
+        // TODO: don't auto-switch once things are implemented fully
+        Task::done(Message::SwitchToPlayingScreen)
+    }
+
+    fn pause_song(&mut self) -> Task {
+        self.backend.audio.pause();
+        Task::done(Message::Playing(PlayingMessage::PlayingStatus(false)))
+    }
+
+    fn resume_song(&mut self) -> Task {
+        self.backend.audio.resume();
+        Task::done(Message::Playing(PlayingMessage::PlayingStatus(true)))
     }
 
     // TODO: queue songs

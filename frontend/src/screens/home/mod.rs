@@ -1,5 +1,4 @@
-use hashbrown::HashSet;
-use iced::widget::{ button, column, row, text_input, Column };
+use iced::widget::{ text, button, column, row, text_input, svg };
 use iced::Element;
 use crate::screens::ScreenCore;
 use crate::Task;
@@ -16,7 +15,6 @@ impl Home {
     pub fn new() -> Self {
         return Self {
             download_url_input: String::from(""),
-            //downloading_songs: HashSet::new()
         }
     }
 }
@@ -46,6 +44,9 @@ impl ScreenCore for Home {
                 download_button,
             ],
             //Column::from_vec(downloading)
+            text(""),
+            text(""),
+            svg(crate::assets::icon())
         ].into();
     }
 
