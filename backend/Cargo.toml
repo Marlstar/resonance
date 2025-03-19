@@ -11,3 +11,6 @@ hashbrown = { version = "0.15.2", features = ["serde"] }
 colored = "*"
 diesel = { version = "2.2.7", default-features = false, features = ["sqlite", "returning_clauses_for_sqlite_3_35"] }
 image = { version = "0.25.5", default-features = false, features = ["jpeg", "webp"] }
+rodio = { version = "0.20.1", features = ["symphonia-aac", "symphonia-isomp4"] }
+orx-linked-list = "3.6.0"
+tempdir = "0.3.7"

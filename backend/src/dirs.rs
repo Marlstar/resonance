@@ -1,9 +1,15 @@
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::sync::OnceLock;
+use tempdir::TempDir;
 
 pub static DIRS: OnceLock<Dirs> = OnceLock::new();
 pub fn dirs() -> &'static Dirs {
     return DIRS.get_or_init(Dirs::new);
+}
+
+static TMP: OnceLock<TempDir> = OnceLock::new();
+pub fn tmp() -> &'static Path {
+    return TMP.get_or_init(|| TempDir::new("resonance").unwrap()).path()
 }
 
 pub struct Dirs {
@@ -47,6 +53,9 @@ impl Dirs {
     /// Song thumbnail
     pub fn song_thumbnail(&self, ytid: &str) -> PathBuf {
         return self.song(ytid).join("thumbnail.jpg");
+    }
+    pub fn song_thumbnail_blurred(&self, ytid: &str) -> PathBuf {
+        return self.song(ytid).join("blurred.jpg");
     }
     pub fn song_thumbnail_uncropped(&self, ytid: &str) -> PathBuf {
         return self.song(ytid).join("song.webp");

@@ -11,6 +11,8 @@ pub enum Message {
     DeleteSong(i32),
 
     PlaySong(i32),
+    ResumeSong,
+    PauseSong,
 
     // Screens
     Home(screens::HomeMessage),
@@ -18,4 +20,8 @@ pub enum Message {
 
     Library(screens::LibraryMessage),
     SwitchToLibraryScreen,
+
+
+    Playing(screens::PlayingMessage),
+    SwitchToPlayingScreen,
 }

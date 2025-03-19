@@ -11,6 +11,9 @@ pub use resonance::Resonance;
 mod download;
 pub use download::download_song;
 
+mod blur;
+pub use blur::blur;
+
 mod input;
 pub use input::get_input;
 pub use input::prompt_input;
@@ -26,9 +29,13 @@ mod database;
 pub use database::Database;
 
 pub mod util;
+pub use util::AM;
 
 mod cli;
 pub use cli::CLI;
+
+mod audio;
+pub use audio::AudioPlayer;
 
 // Re-exports
 pub use youtube_dl::SingleVideo;

@@ -1,5 +1,10 @@
 fn main() {
-    //let mut db = resonance::Database::load().unwrap();
-    let cli = resonance_backend::CLI::new().unwrap();
-    drop(cli.run());
+    let mut r = resonance_backend::Resonance::new().unwrap();
+    let song = r.get_song(2).unwrap();
+    r.audio.play_song(song);
+    std::thread::sleep(std::time::Duration::from_secs(10));
+    println!("skipping");
+    let song = r.get_song(4).unwrap();
+    r.audio.play_song(song);
+    std::thread::sleep(std::time::Duration::from_secs(10));
 }
