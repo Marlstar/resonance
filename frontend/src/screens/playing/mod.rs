@@ -1,9 +1,8 @@
 use iced::alignment::{Horizontal, Vertical};
-use iced::widget::image::Handle;
-use iced::widget::{ self, button, column, stack, text, container, svg };
-use iced::{Background, Length};
+use iced::widget::image::{self, Handle};
+use iced::widget::{ self, button, column, container, row, stack, svg, text, Space };
+use iced::{Background, Font, Length};
 use iced::Color;
-use image::EncodableLayout;
 use crate::screens::ScreenCore;
 use crate::{appearance, Task};
 use crate::Message;
@@ -30,7 +29,6 @@ impl ScreenCore for Playing {
     type Message = PlayingMessage;
     fn view<'a>(&self) -> iced::Element<'a, crate::Message> {
         let bg = widget::image(Handle::from_rgba(720, 720, self.bg.to_vec()))
-        //let bg = widget::image(backend::dirs().song_thumbnail_blurred(&self.song.ytid))
             .width(Length::Fill)
             .height(Length::Fill)
             .content_fit(iced::ContentFit::Cover);
@@ -39,10 +37,46 @@ impl ScreenCore for Playing {
         let icon = svg(icon);
             //.style(appearance::styles::colour_svg(Color::BLACK));
         let pause_play = button(container(icon))
-            .width(Length::Fixed(80.0))
+            .width(Length::Fixed(83.0))
             .on_press(if self.playing {Message::PauseSong} else {Message::ResumeSong})
             .style(|_,_| button::Style::default());
+        let pause_play = container(pause_play)
+            .align_x(Horizontal::Center)
+            .align_y(Vertical::Center);
 
+        let bold_font = Font {
+            weight: iced::font::Weight::Bold,
+            ..Default::default()
+        };
+
+        let title = text(self.song.name.clone())
+            .size(22.0)
+            .font(bold_font);
+        let author = text(self.song.author.clone())
+            .size(16);
+        let album = text(self.song.album.clone())
+            .size(16);
+
+        let song_info = column![
+            title,
+            row![author, text("·"), album].spacing(5),
+        ].align_x(Horizontal::Center).spacing(0.0);
+
+        let info = column![
+            song_info,
+            pause_play,
+        ].align_x(Horizontal::Center).spacing(30.0);
+
+        let cover = iced::widget::image(backend::dirs().song_thumbnail(&self.song.ytid))
+            .width(300)
+            .height(300);
+
+        let main = row![
+            cover,
+            Space::with_width(Length::Fixed(50.0)),
+            info,
+            Space::with_width(Length::Fixed(30.0)),
+        ].spacing(0).align_y(Vertical::Center).width(Length::Shrink);
 
         stack!(
             bg,
@@ -50,13 +84,12 @@ impl ScreenCore for Playing {
                 button("Library")
                 .on_press(Message::SwitchToLibraryScreen),
 
-                text(self.song.name.clone()),
-
-                container(pause_play)
-                    .align_x(Horizontal::Center)
-                    .align_y(Vertical::Center)
+                container(main)
                     .width(Length::Fill)
                     .height(Length::Fill)
+                    .align_x(Horizontal::Center)
+                    .align_y(Vertical::Center),
+
             ]
         ).into()
     }
