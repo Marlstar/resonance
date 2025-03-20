@@ -1,5 +1,6 @@
 use crate::{AudioPlayer, Database, Error, Song};
 use youtube_dl::SingleVideo;
+use crate::mpris::Mpris;
 
 mod search;
 use search::{search_youtube_for_ids, get_full_metadata};
@@ -7,12 +8,14 @@ use search::{search_youtube_for_ids, get_full_metadata};
 pub struct Resonance {
     db: Database,
     pub audio: AudioPlayer,
+    pub mpris: Mpris,
 }
 impl Resonance {
     pub fn new() -> Result<Self, Error> {
         return Ok(Self {
             db: Database::load()?,
-            audio: AudioPlayer::new()?
+            audio: AudioPlayer::new()?,
+            mpris: Mpris::new(),
         });
     }
 }

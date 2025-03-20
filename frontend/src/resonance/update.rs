@@ -102,18 +102,21 @@ impl super::Resonance {
         // TODO: error handling
         let song = self.backend.get_song(id).unwrap();
         println!("Playing {} by {}", song.name, song.author);
-        self.backend.audio.play_song(song);
+        self.backend.audio.play_song(song.clone());
+        self.backend.mpris.play_song(song);
         // TODO: don't auto-switch once things are implemented fully
         Task::done(Message::SwitchToPlayingScreen)
     }
 
     fn pause_song(&mut self) -> Task {
         self.backend.audio.pause();
+        self.backend.mpris.pause();
         Task::done(Message::Playing(PlayingMessage::PlayingStatus(false)))
     }
 
     fn resume_song(&mut self) -> Task {
         self.backend.audio.resume();
+        self.backend.mpris.resume();
         Task::done(Message::Playing(PlayingMessage::PlayingStatus(true)))
     }
 
