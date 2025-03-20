@@ -28,8 +28,11 @@ impl Resonance {
 
         let id = vid.id;
         let name = vid.title.expect("failed to get video title");
-        let author = vid.channel.expect("failed to get video channel");
-        let album = vid.album.expect("failed to get video album");
+        let mut author = vid.channel.expect("failed to get video channel");
+        if let Some(notopic) = author.strip_suffix(" - Topic") {
+            author = notopic.to_string();
+        }
+        let album = vid.album.unwrap_or("No album".to_string());
         let duration = vid.duration.expect("failed to get video duration").as_i64().unwrap() as i32;
 
         self.db.add_song(&id, &name, &author, &album, duration)
