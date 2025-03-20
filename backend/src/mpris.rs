@@ -25,6 +25,14 @@ impl Default for Mpris {
     }
 }
 impl Mpris {
+    pub fn recv(&self) -> Option<Recv> {
+        match self.rx.try_recv() {
+            Ok(a) => Some(a),
+            Err(TryRecvError::Empty) => None,
+            Err(TryRecvError::Disconnected) => panic!("mpris channel disconnected"),
+        }
+    }
+
     fn send(&self, msg: Emit) {
         match self.tx.send(msg) {
             Ok(()) => {},
@@ -65,17 +73,22 @@ impl MprisHandler {
     }
 
     pub async fn main(self) {
-        let mut mpris = mpris_server::Player::builder("resonance")
+        let mpris = mpris_server::Player::builder("resonance")
             .can_play(true)
             .can_pause(true)
             .can_seek(false)
             .build().await.unwrap();
 
+        let tx = self.tx.clone();
+        //let f = move |_| tx.send(Recv::PlayPause).unwrap();
+        //mpris.connect_play_pause(self.sender(Recv::PlayPause));
+        mpris.connect_play_pause(move |_| tx.send(Recv::PlayPause).unwrap());
+
         println!("started mpris server");
 
         self.main_loop(mpris).await;
     }
-    async fn main_loop(&self, mut mpris: Player) {
+    async fn main_loop(self, mpris: Player) {
         let l = async {
             loop {
                 'to_mpris: {
@@ -97,7 +110,6 @@ impl MprisHandler {
                 }
 
                 'to_resonance: {
-
                 }
 
                 tokio::time::sleep(Duration::from_millis(50)).await;
@@ -123,15 +135,33 @@ impl MprisHandler {
         metadata.set_art_url(Some(format!("file://{}", crate::dirs().song_thumbnail(&song.ytid).display())));
 
         let _ = mpris.set_metadata(metadata).await;
+        Self::play(mpris).await;
+    }
+}
+impl MprisHandler {
+    fn send(&self, msg: Recv) {
+        match self.tx.send(msg) {
+            Ok(()) => {},
+            Err(_) => panic!("mpris channel disconnected"),
+            //Err(TrySendError::Full(_)) => eprintln!("mpris emit channel full"),
+        }
+    }
+
+    fn sender(&self, msg: Recv) -> impl Fn(&Player) {
+        // TODO: error handling
+        let tx = self.tx.clone();
+        move |_| tx.send(msg.clone()).unwrap()
     }
 }
 
+#[derive(Debug, Clone)]
 pub enum Emit {
     Play,
     Pause,
     Song(crate::Song),
 }
 
+#[derive(Debug, Clone)]
 pub enum Recv {
     Play,
     Pause,
