@@ -1,5 +1,6 @@
-use iced::widget::{ button, column, Column, image };
+use iced::widget::{ button, column, Column, scrollable };
 use iced::Element;
+use iced::Length;
 use crate::screens::ScreenCore;
 use crate::Task;
 use crate::Message;
@@ -26,11 +27,13 @@ impl ScreenCore for Library {
         let songs = self.songs.iter().map(widgets::song).collect::<Vec<Element<'a, Message>>>();
         let songs = Column::from_vec(songs)
             .spacing(10);
+
         return Element::new(column![
             button("Home")
             .on_press(Message::SwitchToHomeScreen),
 
-            songs
+            scrollable(songs)
+                .width(Length::Fill),
         ]);
     }
 
