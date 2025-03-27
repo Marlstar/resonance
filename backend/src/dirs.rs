@@ -1,15 +1,9 @@
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 use std::sync::OnceLock;
-use tempdir::TempDir;
 
 pub static DIRS: OnceLock<Dirs> = OnceLock::new();
 pub fn dirs() -> &'static Dirs {
     return DIRS.get_or_init(Dirs::new);
-}
-
-static TMP: OnceLock<TempDir> = OnceLock::new();
-pub fn tmp() -> &'static Path {
-    return TMP.get_or_init(|| TempDir::new("resonance").unwrap()).path()
 }
 
 pub struct Dirs {

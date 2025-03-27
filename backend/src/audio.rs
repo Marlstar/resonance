@@ -9,6 +9,7 @@ use orx_linked_list::DoublyList;
 use rodio::{Decoder, OutputStream, OutputStreamHandle, Sink, Source};
 use crate::Song;
 use crate::Error;
+use crate::mpris::Emit;
 
 
 type Queue = DoublyList<Song>;
@@ -19,7 +20,11 @@ pub struct AudioPlayer {
     tx: SyncSender<Command>,
     rx: Receiver<Message>,
 
+    // Mpris channel comms runtime
+    rt: tokio::runtime::Runtime,
+
     // Main song control stuff
+    pub playing: bool,
     queue: AM<Queue>,
     current_song: Option<Song>,
     position: f32,
@@ -28,6 +33,7 @@ pub struct AudioPlayer {
 }
 impl AudioPlayer {
     pub fn new() -> Result<Self, Error> {
+        let playing = false;
         let queue: AM<Queue> = AM::new(DoublyList::new());
         let current_song: Option<Song> = None;
 
@@ -39,10 +45,14 @@ impl AudioPlayer {
 
         let _handle = AudioHandler::run(mtx, crx);
 
+        // TODO: error handling
+        let rt = tokio::runtime::Runtime::new().unwrap();
+
         Ok(Self {
             _handle,
             tx: ctx, rx: mrx,
-            queue, current_song,
+            rt,
+            playing, queue, current_song,
             position: 0.0, progress: 0.0,
             loop_type,
         })
@@ -65,16 +75,30 @@ impl AudioPlayer {
     pub fn play_song(&mut self, song: Song) {
         self.current_song = Some(song.clone());
         self.send_command(Command::Play(song));
+        self.playing = true;
     }
 
     pub fn pause(&mut self) {
         self.send_command(Command::Pause);
+        self.playing = false;
     }
     pub fn resume(&mut self) {
         self.send_command(Command::Resume);
+        self.playing = true;
     }
 
     fn send_command(&mut self, cmd: Command) {
+        // Mpris
+        let emit = match cmd {
+            Command::Pause => Emit::Pause,
+            Command::Resume => Emit::Play,
+            Command::Play(ref s) => Emit::Song(s.clone()),
+        };
+        self.rt.spawn(async move {
+            let _ = crate::mpris::CTX.get().unwrap().send(emit).await;
+        });
+
+        // Rodio
         match self.tx.try_send(cmd) {
             Ok(_) => {},
             Err(TrySendError::Full(_)) => eprintln!("command channel full"),

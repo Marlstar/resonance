@@ -34,5 +34,7 @@ pub use util::AM;
 mod audio;
 pub use audio::AudioPlayer;
 
+pub mod mpris;
+
 // Re-exports
 pub use youtube_dl::SingleVideo;

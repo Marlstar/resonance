@@ -14,6 +14,8 @@ use colored::Colorize;
 impl super::Resonance {
     pub fn update(&mut self, message: Message) -> Task {
         return match message {
+            Message::Mpris(received) => self.handle_mpris_message(received),
+
             Message::Download(url) => self.download(url),
             Message::DownloadComplete(url, vid) => self.download_complete(&url, vid),
             Message::DownloadFailed(url) => self.download_failed(&url),
@@ -75,6 +77,15 @@ impl super::Resonance {
     }
 }
 impl super::Resonance {
+    fn handle_mpris_message(&mut self, message: backend::mpris::Recv) -> Task {
+        use backend::mpris::Recv;
+        Task::done(match message {
+            Recv::Play => Message::ResumeSong,
+            Recv::Pause => Message::PauseSong,
+            Recv::PlayPause => if self.backend.audio.playing { Message::PauseSong } else { Message::ResumeSong },
+        })
+    }
+
     fn download(&mut self, url: String) -> Task {
         Task::future(tasks::download(url))
     }
