@@ -3,6 +3,8 @@ use backend::SingleVideo;
 
 #[derive(Debug, Clone)]
 pub enum Message {
+    Mpris(backend::mpris::Recv),
+
     /// Download a song by URL
     Download(String),
     DownloadComplete(String, SingleVideo),
