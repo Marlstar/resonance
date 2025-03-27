@@ -3,6 +3,7 @@ use crate::screens::Library;
 
 mod update;
 mod view;
+mod subscription;
 
 pub struct Resonance {
     backend: backend::Resonance,

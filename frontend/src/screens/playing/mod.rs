@@ -9,7 +9,6 @@ use crate::Message;
 use crate::assets;
 use backend::Song;
 
-
 #[derive(Debug, Clone)]
 pub struct Playing {
     song: Song,
