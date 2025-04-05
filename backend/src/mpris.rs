@@ -33,7 +33,7 @@ pub fn run() -> JoinHandle<()> {
 }
 
 async fn mpris() {
-    let mpris = mpris_server::Player::builder("test")
+    let mpris = mpris_server::Player::builder("Resonance")
         .can_play(true)
         .can_pause(true)
         .build().await.unwrap();
