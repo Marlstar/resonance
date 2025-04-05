@@ -39,7 +39,7 @@ async fn mpris() {
         .build().await.unwrap();
 
     let mut met = mpris.metadata().clone();
-    met.set_title(Some("test song"));
+    met.set_title(Some("Resonance"));
     let _ = mpris.set_metadata(met).await;
 
     let mut crx = CRX.get().unwrap().lock().await;
