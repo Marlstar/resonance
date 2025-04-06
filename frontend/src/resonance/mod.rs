@@ -18,7 +18,6 @@ impl Default for Resonance {
 impl Resonance {
     pub fn new() -> Resonance {
         let mut backend = Self::try_load_backend();
-        // TODO: error handling
         let songs = backend.list_songs().unwrap();
 
         return Self {

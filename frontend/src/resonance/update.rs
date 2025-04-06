@@ -66,7 +66,6 @@ impl super::Resonance {
     }
 
     fn switch_to_library(&mut self) -> Task {
-        // TODO: error handling
         let lib = Library::new(self.backend.list_songs().unwrap());
         self.screen = Screen::Library(lib);
         Task::none()
@@ -118,8 +117,9 @@ impl super::Resonance {
     }
 
     fn delete_song(&mut self, id: i32) -> Task {
-        // TODO: error handling
-        let _ = self.backend.delete(id);
+        if self.backend.delete(id).is_err() {
+            eprintln!("failed to delete id {id}");
+        };
         Task::none()
     }
 
@@ -145,7 +145,6 @@ impl super::Resonance {
     // TODO: queue songs
 
     fn refresh_library(&mut self) -> Task {
-        // TODO: error handling
         let songs = self.backend.list_songs().unwrap();
         Task::done(Message::Library(LibraryMessage::RefreshResponse(songs)))
     }

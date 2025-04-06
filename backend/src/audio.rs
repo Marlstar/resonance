@@ -42,7 +42,6 @@ impl AudioPlayer {
 
         let _handle = AudioHandler::run(mtx, crx);
 
-        // TODO: error handling
         let rt = tokio::runtime::Runtime::new().unwrap();
 
         Ok(Self {
