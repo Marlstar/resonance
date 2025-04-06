@@ -1,3 +1,4 @@
+use std::time::Duration;
 use iced::task::{sipper, Never};
 use iced::{task::Sipper, Subscription};
 use crate::Message;
@@ -9,7 +10,11 @@ impl super::Resonance {
 }
 
 fn mpris() -> Subscription<Message> {
-    Subscription::run(mpris_stream)
+    //Subscription::run(mpris_stream)
+    Subscription::batch([
+        Subscription::run(mpris_stream),
+        mpris_send_seek(),
+    ])
 }
 fn mpris_stream() -> impl Sipper<Never, Message> {
     sipper(async |mut output| {
@@ -19,4 +24,7 @@ fn mpris_stream() -> impl Sipper<Never, Message> {
             output.send(Message::Mpris(recv)).await;
         }
     })
+}
+fn mpris_send_seek() -> Subscription<Message> {
+    iced::time::every(Duration::from_millis(250)).map(|_| Message::SeekUpdate)
 }

@@ -15,6 +15,7 @@ impl super::Resonance {
     pub fn update(&mut self, message: Message) -> Task {
         return match message {
             Message::Mpris(received) => self.handle_mpris_message(received),
+            Message::SeekUpdate => self.seek_update(),
 
             Message::Download(url) => self.download(url),
             Message::DownloadComplete(url, vid) => self.download_complete(&url, vid),
@@ -84,6 +85,11 @@ impl super::Resonance {
             Recv::Pause => Message::PauseSong,
             Recv::PlayPause => if self.backend.audio.playing { Message::PauseSong } else { Message::ResumeSong },
         })
+    }
+
+    fn seek_update(&mut self) -> Task {
+        self.backend.audio.seek_update();
+        Task::none()
     }
 
     fn download(&mut self, url: String) -> Task {

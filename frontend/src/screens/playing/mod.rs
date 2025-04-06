@@ -1,10 +1,9 @@
 use iced::alignment::{Horizontal, Vertical};
-use iced::widget::image::{self, Handle};
+use iced::widget::image::Handle;
 use iced::widget::{ self, button, column, container, row, stack, svg, text, Space };
-use iced::{Background, Font, Length};
-use iced::Color;
+use iced::{Font, Length};
 use crate::screens::ScreenCore;
-use crate::{appearance, Task};
+use crate::Task;
 use crate::Message;
 use crate::assets;
 use backend::Song;

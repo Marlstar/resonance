@@ -1,4 +1,4 @@
-use mpris_server::Player;
+use mpris_server::{Player, Time, Metadata};
 use crate::Song;
 use std::thread::{self, JoinHandle};
 use tokio::sync::mpsc::{channel, Sender, Receiver};
@@ -33,13 +33,14 @@ pub fn run() -> JoinHandle<()> {
 }
 
 async fn mpris() {
-    let mpris = mpris_server::Player::builder("test")
+    let mpris = mpris_server::Player::builder("Resonance")
         .can_play(true)
         .can_pause(true)
+        .can_seek(true)
         .build().await.unwrap();
 
     let mut met = mpris.metadata().clone();
-    met.set_title(Some("test song"));
+    met.set_title(Some("Resonance"));
     let _ = mpris.set_metadata(met).await;
 
     let mut crx = CRX.get().unwrap().lock().await;
@@ -63,6 +64,7 @@ async fn mpris() {
                         Emit::Play => Mpris::resume(&mpris).await,
                         Emit::Pause => Mpris::pause(&mpris).await,
                         Emit::Song(s) => Mpris::song(&mpris, s).await,
+                        Emit::Seek(pos) => Mpris::seek(&mpris, pos).await,
                     }
                 },
             }
@@ -82,14 +84,28 @@ impl Mpris {
     }
 
     async fn song(mpris: &Player, song: crate::Song) {
-        let mut metadata = mpris.metadata().clone();
-        metadata.set_title(Some(&song.name));
-        metadata.set_artist(Some([&song.author]));
-        metadata.set_album(Some(&song.album));
-        metadata.set_art_url(Some(format!("file://{}", crate::dirs().song_thumbnail(&song.ytid).display())));
-
-        let _ = mpris.set_metadata(metadata).await;
+        let mut metadata = mpris.metadata().clone(); metadata.set_title(Some(&song.name));
+        let _ = mpris.set_metadata(Self::metadata(&song)).await;
         Self::resume(mpris).await;
+    }
+
+    fn metadata(song: &Song) -> Metadata {
+        //let tid = mpris_server::zbus::zvariant::ObjectPath::try_from(crate::dirs().base().join(format!("tid_{}", &song.ytid)));
+        let tids = format!("/TrackId/{}", &song.ytid.replace("-","_"));
+        let tid = mpris_server::zbus::zvariant::ObjectPath::try_from(tids).unwrap();
+        Metadata::builder()
+            .title(&song.name)
+            .artist([&song.author])
+            .album(&song.album)
+            .length(Time::from_secs(song.duration.into()))
+            .art_url(format!("file://{}", crate::dirs().song_thumbnail(&song.ytid).display()))
+            .trackid(tid)
+            .build()
+    }
+
+    async fn seek(mpris: &Player, pos: f32) {
+        let d = Time::from_secs(pos as i64);
+        mpris.set_position(d);
     }
 }
 
@@ -98,6 +114,7 @@ pub enum Emit {
     Play,
     Pause,
     Song(Song),
+    Seek(f32),
 }
 
 #[derive(Debug, Clone)]
