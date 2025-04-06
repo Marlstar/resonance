@@ -1,15 +1,13 @@
 use std::fs::File;
-use std::thread::{self, JoinHandle, Thread};
-use std::io::{BufReader, Read};
-use std::sync::Arc;
+use std::thread::{self, JoinHandle};
 use std::sync::mpsc::{sync_channel, Receiver, SyncSender, TrySendError};
 use std::time::Duration;
 use crate::AM;
 use orx_linked_list::DoublyList;
-use rodio::{Decoder, OutputStream, OutputStreamHandle, Sink, Source};
+use rodio::{Decoder, OutputStream, OutputStreamHandle, Sink};
 use crate::Song;
 use crate::Error;
-use crate::mpris::{Emit, Recv, CTX, ETX};
+use crate::mpris::Emit;
 
 
 type Queue = DoublyList<Song>;
@@ -222,7 +220,7 @@ impl AudioHandler {
     }
 
     fn seek(&self, pos: f32) {
-        //println!("seek");
+        todo!()
     }
 
     fn playback_pos_secs(&self) -> f32 {

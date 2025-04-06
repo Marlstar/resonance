@@ -1,6 +1,6 @@
-use mpris_server::{Player, Time, Metadata, TrackId};
+use mpris_server::{Player, Time, Metadata};
 use crate::Song;
-use std::{thread::{self, JoinHandle}, time::Duration};
+use std::thread::{self, JoinHandle};
 use tokio::sync::mpsc::{channel, Sender, Receiver};
 use std::sync::OnceLock;
 use tokio::sync::Mutex;
