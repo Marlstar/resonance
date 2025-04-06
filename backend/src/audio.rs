@@ -9,7 +9,7 @@ use orx_linked_list::DoublyList;
 use rodio::{Decoder, OutputStream, OutputStreamHandle, Sink, Source};
 use crate::Song;
 use crate::Error;
-use crate::mpris::Emit;
+use crate::mpris::{Emit, Recv, CTX, ETX};
 
 
 type Queue = DoublyList<Song>;
@@ -64,6 +64,7 @@ impl AudioPlayer {
             Message::Progress { percentage, seconds } => {
                 self.progress = percentage;
                 self.position = seconds;
+                self.send_command(Command::Seek(self.position));
             },
         }
     }
@@ -93,6 +94,7 @@ impl AudioPlayer {
             Command::Pause => Emit::Pause,
             Command::Resume => Emit::Play,
             Command::Play(ref s) => Emit::Song(s.clone()),
+            Command::Seek(pos) => Emit::Seek(pos),
         };
         self.rt.spawn(async move {
             let _ = crate::mpris::CTX.get().unwrap().send(emit).await;
@@ -104,6 +106,24 @@ impl AudioPlayer {
             Err(TrySendError::Full(_)) => eprintln!("command channel full"),
             Err(TrySendError::Disconnected(_)) => panic!("audio command channel disconnected"),
         };
+    }
+
+    pub fn seek_update(&mut self) {
+        let before = self.position.floor();
+        self.update();
+        //println!("{}", self.position);
+        if self.position.floor() != before {
+            self.send_command(Command::Seek(self.position));
+        }
+    }
+
+    fn update(&mut self) {
+        if let Ok(m) = self.rx.try_recv() { match m {
+            Message::Progress { percentage, seconds } => {
+                self.progress = percentage;
+                self.position = seconds;
+            }
+        }}
     }
 }
 
@@ -150,19 +170,26 @@ impl AudioHandler {
 
     fn main(tx: SyncSender<Message>, rx: Receiver<Command>) -> Result<(), Error> {
         let mut handler = Self::new(tx, rx)?;
+        let mpris_tx = crate::mpris::CTX.get().unwrap();
+        let rt = tokio::runtime::Runtime::new().unwrap();
+        let mut pos = 0f32;
         loop {
-            match handler.rx.recv() {
-                Ok(cmd) => handler.handle_cmd(cmd),
-                Err(_) => continue,
+            if let Ok(cmd) = handler.rx.try_recv() {
+                handler.handle_cmd(cmd)
             }
 
+            // Progress updates
             let percentage = handler.playback_percentage();
             let seconds = handler.playback_pos_secs();
-
-            match handler.tx.try_send(Message::Progress { percentage, seconds }) {
-                Ok(_) => {},
-                Err(std::sync::mpsc::TrySendError::Full(_)) => {},
-                Err(std::sync::mpsc::TrySendError::Disconnected(_)) => panic!("audio message channel disconnected"),
+            if seconds as i32 != pos as i32 {
+                match handler.tx.try_send(Message::Progress { percentage, seconds }) {
+                    Ok(_) => {
+                        rt.spawn(async move { mpris_tx.send(Emit::Seek(seconds)).await });
+                    },
+                    Err(std::sync::mpsc::TrySendError::Full(_)) => {},
+                    Err(std::sync::mpsc::TrySendError::Disconnected(_)) => panic!("audio message channel disconnected"),
+                }
+                pos = seconds;
             }
         }
     }
@@ -172,6 +199,7 @@ impl AudioHandler {
             Command::Play(song) => self.play_song(song),
             Command::Pause => self.pause(),
             Command::Resume => self.resume(),
+            Command::Seek(pos) => self.seek(pos),
         }
     }
 
@@ -191,6 +219,10 @@ impl AudioHandler {
 
     fn resume(&self) {
         self.sink.play();
+    }
+
+    fn seek(&self, pos: f32) {
+        //println!("seek");
     }
 
     fn playback_pos_secs(&self) -> f32 {
@@ -221,6 +253,7 @@ enum Command {
     Play(Song),
     Pause,
     Resume,
+    Seek(f32),
 }
 #[derive(Debug, Clone)]
 enum Message {
