@@ -7,7 +7,6 @@ use crate::Message;
 use backend::Song;
 
 mod widgets;
-mod styles;
 
 #[derive(Debug, Clone)]
 pub struct Library {

@@ -1,16 +1,11 @@
 use crate::Message;
 use backend::Song;
-use crate::appearance::colours;
+use crate::appearance::{colours, styles};
 use iced::alignment::Vertical;
 use iced::widget::{ button, column, container, hover, image, svg, row, text };
 use iced::{Background, Border, Element, Length, Theme};
 
 pub fn song<'a>(song: &Song) -> Element<'a, crate::Message> {
-    let grey_text = |_: &Theme| -> text::Style {
-        text::Style {
-            color: Some(colours::OVERLAY2)
-        }
-    };
     const THUMBNAIL_SIZE: u32 = 48;
 
     let thumbnail = container(image(backend::dirs().song_thumbnail(&song.ytid))
@@ -36,16 +31,16 @@ pub fn song<'a>(song: &Song) -> Element<'a, crate::Message> {
     let title = text(song.name.clone())
         .size(22);
     let artist = text(song.author.clone())
-        .style(grey_text)
+        .style(styles::grey_text)
         .size(16);
     let album = text(song.album.clone())
-        .style(grey_text)
+        .style(styles::grey_text)
         .size(16);
     let mins = (song.duration - (song.duration % 60))/60;
     let secs = song.duration % 60;
     let secs = format!("{}{secs}", if secs >= 10 {""} else {"0"});
     let duration = text(format!("{}:{}", mins, secs))
-        .style(grey_text)
+        .style(styles::grey_text)
         .size(16);
 
 

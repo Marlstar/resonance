@@ -1,6 +1,12 @@
-use iced::widget::{ svg, container} ;
+use iced::widget::{text, svg, container} ;
 use iced::{Background, Border, Theme};
 use crate::appearance::colours;
+
+pub fn grey_text(_: &Theme) -> text::Style {
+    text::Style {
+        color: Some(colours::OVERLAY2)
+    }
+}
 
 pub fn rounded_bg_container(_: &Theme) -> container::Style {
     container::Style::default()
