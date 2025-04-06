@@ -14,7 +14,10 @@ use colored::Colorize;
 impl super::Resonance {
     pub fn update(&mut self, message: Message) -> Task {
         return match message {
+            Message::None => Task::none(),
+
             Message::Mpris(received) => self.handle_mpris_message(received),
+            Message::Seek(pos) => self.seek(pos),
             Message::SeekUpdate => self.seek_update(),
 
             Message::Download(url) => self.download(url),
@@ -87,9 +90,14 @@ impl super::Resonance {
         })
     }
 
+    fn seek(&mut self, pos: f32) -> Task {
+        self.backend.audio.seek(pos);
+        Task::none()
+    }
+
     fn seek_update(&mut self) -> Task {
         self.backend.audio.seek_update();
-        Task::none()
+        Task::done(Message::Playing(PlayingMessage::Seek(self.backend.audio.position)))
     }
 
     fn download(&mut self, url: String) -> Task {

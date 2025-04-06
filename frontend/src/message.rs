@@ -3,7 +3,10 @@ use backend::SingleVideo;
 
 #[derive(Debug, Clone)]
 pub enum Message {
+    None,
+
     Mpris(backend::mpris::Recv),
+    Seek(f32),
     SeekUpdate,
 
     /// Download a song by URL

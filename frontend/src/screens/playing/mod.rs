@@ -1,7 +1,7 @@
 use iced::alignment::{Horizontal, Vertical};
 use iced::widget::image::Handle;
-use iced::widget::{ self, button, column, container, row, stack, svg, text, Space };
-use iced::{Font, Length};
+use iced::widget::{ self, button, column, container, row, slider, stack, svg, text, Space };
+use iced::{Background, Color, Font, Length};
 use crate::screens::ScreenCore;
 use crate::Task;
 use crate::Message;
@@ -13,6 +13,7 @@ pub struct Playing {
     song: Song,
     playing: bool,
     bg: Box<[u8; 720*720*4]>,
+    pos: f32,
 }
 impl Playing {
     pub fn new(song: Song) -> Self {
@@ -20,6 +21,7 @@ impl Playing {
             bg: Box::new([0u8; 720*720*4]),
             song,
             playing: true,
+            pos: 0f32,
         };
     }
 }
@@ -55,6 +57,9 @@ impl ScreenCore for Playing {
         let album = text(self.song.album.clone())
             .size(16);
 
+        let slider = slider(0.0..=(self.song.duration as f32), self.pos, Message::Seek)
+            .width(Length::Fill);
+
         let song_info = column![
             title,
             row![author, text("·"), album].spacing(5),
@@ -63,7 +68,9 @@ impl ScreenCore for Playing {
         let info = column![
             song_info,
             pause_play,
-        ].align_x(Horizontal::Center).spacing(30.0);
+            slider,
+            Space::new(Length::Fixed(250.0), Length::Fixed(0.0)),
+        ].align_x(Horizontal::Center).width(Length::Shrink).spacing(30.0);
 
         let cover = iced::widget::image(backend::dirs().song_thumbnail(&self.song.ytid))
             .width(300)
@@ -74,7 +81,7 @@ impl ScreenCore for Playing {
             Space::with_width(Length::Fixed(50.0)),
             info,
             Space::with_width(Length::Fixed(30.0)),
-        ].spacing(0).align_y(Vertical::Center).width(Length::Shrink);
+        ].spacing(0).align_y(Vertical::Center);//.width(Length::Shrink);
 
         stack!(
             bg,
@@ -96,6 +103,7 @@ impl ScreenCore for Playing {
         match msg {
             PlayingMessage::Update(s) => self.update_song(s),
             PlayingMessage::PlayingStatus(playing) => self.update_playing(playing),
+            PlayingMessage::Seek(pos) => self.seeked(pos),
         }
     }
 }
@@ -103,6 +111,7 @@ impl Playing {
     fn update_song(&mut self, song: Song) -> Task {
         const BLUR_SIGMA: f32 = 75.0;
 
+        self.pos = 0.0;
         self.song = song;
         let img = backend::blur(&self.song.ytid, BLUR_SIGMA);
         self.bg.copy_from_slice(&img);
@@ -113,10 +122,16 @@ impl Playing {
         self.playing = p;
         return Task::none()
     }
+
+    fn seeked(&mut self, pos: f32) -> Task {
+        self.pos = pos;
+        Task::none()
+    }
 }
 
 #[derive(Debug, Clone)]
 pub enum PlayingMessage {
     Update(Song), // When song changes
     PlayingStatus(bool),
+    Seek(f32),
 }

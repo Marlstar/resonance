@@ -25,7 +25,7 @@ pub struct AudioPlayer {
     pub playing: bool,
     queue: AM<Queue>,
     current_song: Option<Song>,
-    position: f32,
+    pub position: f32,
     progress: f32,
     loop_type: AM<LoopType>,
 }
@@ -35,9 +35,8 @@ impl AudioPlayer {
         let queue: AM<Queue> = AM::new(DoublyList::new());
         let current_song: Option<Song> = None;
 
-        let (ctx, crx) = sync_channel::<Command>(3);
-        // TODO: check whether 10 is enough
-        let (mtx, mrx) = sync_channel::<Message>(10);
+        let (ctx, crx) = sync_channel::<Command>(50);
+        let (mtx, mrx) = sync_channel::<Message>(50);
 
         let loop_type = AM::new(LoopType::None);
 
@@ -101,18 +100,17 @@ impl AudioPlayer {
         // Rodio
         match self.tx.try_send(cmd) {
             Ok(_) => {},
-            Err(TrySendError::Full(_)) => eprintln!("command channel full"),
+            Err(TrySendError::Full(c)) => eprintln!("command channel full (sending {c:?})"),
             Err(TrySendError::Disconnected(_)) => panic!("audio command channel disconnected"),
         };
     }
+    
+    pub fn seek(&mut self, pos: f32) {
+        self.send_command(Command::Seek(pos))
+    }
 
     pub fn seek_update(&mut self) {
-        let before = self.position.floor();
         self.update();
-        //println!("{}", self.position);
-        if self.position.floor() != before {
-            self.send_command(Command::Seek(self.position));
-        }
     }
 
     fn update(&mut self) {
@@ -220,18 +218,18 @@ impl AudioHandler {
     }
 
     fn seek(&self, pos: f32) {
-        todo!()
+        self.sink.try_seek(Duration::from_secs_f32(pos)).unwrap();
     }
 
-    fn playback_pos_secs(&self) -> f32 {
+    pub fn playback_pos_secs(&self) -> f32 {
         self.sink.get_pos().as_secs_f32().floor()
     }
-    fn playback_remaining(&self) -> f32 {
+    pub fn playback_remaining(&self) -> f32 {
         return self.duration() - self.playback_pos_secs();
     }
-    fn duration(&self) -> f32 {
+    pub fn duration(&self) -> f32 {
         match &self.current {
-            Some(s) => Duration::from_secs(s.duration as u64).as_secs_f32(),
+            Some(s) => s.duration as f32,
             None => 0.0
         }
     }
