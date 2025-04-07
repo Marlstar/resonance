@@ -52,9 +52,9 @@ async fn mpris() {
         });
     };
 
-    //mpris.connect_play(move |_| { sender(Recv::Play) });
-    //mpris.connect_pause(move |_| { sender(Recv::Pause) });
     mpris.connect_play_pause(move |_| { sender(Recv::PlayPause) });
+    mpris.connect_set_position(move |_,_,t| sender(Recv::Position(t)));
+    mpris.connect_seek(move |_,t| sender(Recv::SeekRelative(t)));
 
     let l = async {
         loop {
@@ -122,4 +122,6 @@ pub enum Recv {
     Play,
     Pause,
     PlayPause,
+    Position(Time),
+    SeekRelative(Time),
 }

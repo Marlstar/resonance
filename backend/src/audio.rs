@@ -108,6 +108,10 @@ impl AudioPlayer {
         self.send_command(Command::Seek(pos))
     }
 
+    pub fn seek_relative(&mut self, offset: f32) {
+        self.send_command(Command::Seek((self.position + offset).clamp(0.0, f32::MAX)))
+    }
+
     pub fn seek_update(&mut self) {
         self.update();
     }

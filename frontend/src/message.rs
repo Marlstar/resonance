@@ -7,6 +7,7 @@ pub enum Message {
 
     Mpris(backend::mpris::Recv),
     Seek(f32),
+    SeekRelative(f32),
     SeekUpdate,
 
     /// Download a song by URL

@@ -18,6 +18,7 @@ impl super::Resonance {
 
             Message::Mpris(received) => self.handle_mpris_message(received),
             Message::Seek(pos) => self.seek(pos),
+            Message::SeekRelative(offset) => self.seek_relative(offset),
             Message::SeekUpdate => self.seek_update(),
 
             Message::Download(url) => self.download(url),
@@ -86,11 +87,18 @@ impl super::Resonance {
             Recv::Play => Message::ResumeSong,
             Recv::Pause => Message::PauseSong,
             Recv::PlayPause => if self.backend.audio.playing { Message::PauseSong } else { Message::ResumeSong },
+            Recv::Position(t) => Message::Seek(t.as_secs() as f32),
+            Recv::SeekRelative(t) => Message::SeekRelative(t.as_secs() as f32),
         })
     }
 
     fn seek(&mut self, pos: f32) -> Task {
         self.backend.audio.seek(pos);
+        Task::none()
+    }
+
+    fn seek_relative(&mut self, offset: f32) -> Task {
+        self.backend.audio.seek_relative(offset);
         Task::none()
     }
 
