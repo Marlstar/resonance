@@ -86,12 +86,7 @@ impl AudioPlayer {
 
     fn send_command(&mut self, cmd: Command) {
         // Mpris
-        let emit = match cmd {
-            Command::Pause => Emit::Pause,
-            Command::Resume => Emit::Play,
-            Command::Play(ref s) => Emit::Song(s.clone()),
-            Command::Seek(pos) => Emit::Seek(pos),
-        };
+        let emit = cmd.to_emit();
         self.rt.spawn(async move {
             let _ = crate::mpris::CTX.get().unwrap().send(emit).await;
         });
@@ -253,6 +248,21 @@ enum Command {
     Pause,
     Resume,
     Seek(f32),
+}
+impl From<Command> for Emit {
+    fn from(value: Command) -> Self {
+        Command::to_emit(&value)
+    }
+}
+impl Command {
+    pub fn to_emit(&self) -> Emit {
+        match self {
+            Command::Pause => Emit::Pause,
+            Command::Resume => Emit::Play,
+            Command::Play(s) => Emit::Song(s.clone()),
+            Command::Seek(pos) => Emit::Seek(*pos),
+        }
+    }
 }
 #[derive(Debug, Clone)]
 enum Message {
