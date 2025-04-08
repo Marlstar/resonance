@@ -27,13 +27,17 @@ impl ScreenCore for Library {
         let songs = Column::from_vec(songs)
             .spacing(10);
 
+        let mut playing_button = button("Playing");
+        if backend.audio.current_song.is_some() {
+            playing_button = playing_button.on_press(Message::SwitchToPlayingScreen)
+        }
+
         return Element::new(column![
             iced::widget::row![
                 button("Home")
                 .on_press(Message::SwitchToHomeScreen),
 
-                button("Playing")
-                .on_press(Message::SwitchToPlayingScreen)
+                playing_button,
             ],
 
             scrollable(songs)
