@@ -20,6 +20,12 @@ pub fn path_to_string(path: &Path) -> String {
     format!("{}", path.display())
 }
 
+pub fn format_duration(d: usize) -> String {
+    let mins = (d - (d % 60))/60;
+    let secs = d % 60;
+    format!("{mins}:{}{secs}", if secs >= 10 {""} else {"0"})
+}
+
 
 // Types
 pub struct AM<T> {

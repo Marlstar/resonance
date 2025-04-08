@@ -1,3 +1,4 @@
+use backend::util::format_duration;
 use iced::alignment::{Horizontal, Vertical};
 use iced::widget::image::Handle;
 use iced::widget::{ self, button, column, container, row, slider, stack, svg, text, Space };
@@ -76,6 +77,13 @@ impl ScreenCore for Playing {
         let slider = slider(0.0..=(self.song.duration as f32), self.pos, Message::Seek)
             .width(Length::Fill);
 
+        let pos = text(format_duration(self.pos as usize));
+        let duration = text(format_duration(self.song.duration as usize));
+        // let time = row![pos, Space::new(Length::Fill, Length::Fixed(0.0)), duration]
+        let time = row![pos, slider, duration]
+            .spacing(10.0)
+            .align_y(Vertical::Center);
+
         let song_info = column![
             title,
             row![author, text("·"), album].spacing(5),
@@ -87,8 +95,8 @@ impl ScreenCore for Playing {
         let info = column![
             song_info,
             controls,
-            slider,
-            Space::new(Length::Fixed(250.0), Length::Fixed(0.0)),
+            time,
+            Space::new(Length::Fixed(400.0), Length::Fixed(0.0)),
         ].align_x(Horizontal::Center).width(Length::Shrink).spacing(30.0);
 
         let cover = iced::widget::image(backend::dirs().song_thumbnail(&self.song.ytid))

@@ -37,10 +37,7 @@ pub fn song<'a>(song: &Song) -> Element<'a, crate::Message> {
     let album = text(song.album.clone())
         .style(styles::grey_text)
         .size(16);
-    let mins = (song.duration - (song.duration % 60))/60;
-    let secs = song.duration % 60;
-    let secs = format!("{}{secs}", if secs >= 10 {""} else {"0"});
-    let duration = text(format!("{}:{}", mins, secs))
+    let duration = text(backend::util::format_duration(song.duration as usize))
         .style(styles::grey_text)
         .size(16);
 
