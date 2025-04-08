@@ -3,7 +3,7 @@ use std::thread::{self, JoinHandle};
 use std::sync::mpsc::{sync_channel, Receiver, SyncSender, TrySendError};
 use std::time::Duration;
 use crate::AM;
-use orx_linked_list::DoublyList;
+use orx_linked_list::{DoublyIdx, DoublyIterable, DoublyList};
 use rodio::{Decoder, OutputStream, OutputStreamHandle, Sink};
 use crate::Song;
 use crate::Error;
@@ -23,16 +23,18 @@ pub struct AudioPlayer {
 
     // Main song control stuff
     pub playing: bool,
-    queue: AM<Queue>,
-    current_song: Option<Song>,
+    queue: Queue,
+    idx: DoublyIdx<Song>,
+    pub current_song: Option<Song>,
     pub position: f32,
-    progress: f32,
-    loop_type: AM<LoopType>,
+    pub progress: f32,
+    pub loop_type: AM<LoopType>,
 }
 impl AudioPlayer {
     pub fn new() -> Result<Self, Error> {
         let playing = false;
-        let queue: AM<Queue> = AM::new(DoublyList::new());
+        let mut queue: Queue = DoublyList::new();
+        let idx = queue.push_back(Song::NONE());
         let current_song: Option<Song> = None;
 
         let (ctx, crx) = sync_channel::<Command>(50);
@@ -48,7 +50,7 @@ impl AudioPlayer {
             _handle,
             tx: ctx, rx: mrx,
             rt,
-            playing, queue, current_song,
+            playing, queue, idx, current_song,
             position: 0.0, progress: 0.0,
             loop_type,
         })
@@ -60,7 +62,6 @@ impl AudioPlayer {
             Message::Progress { percentage, seconds } => {
                 self.progress = percentage;
                 self.position = seconds;
-                self.send_command(Command::Seek(self.position));
             },
         }
     }
@@ -86,12 +87,7 @@ impl AudioPlayer {
 
     fn send_command(&mut self, cmd: Command) {
         // Mpris
-        let emit = match cmd {
-            Command::Pause => Emit::Pause,
-            Command::Resume => Emit::Play,
-            Command::Play(ref s) => Emit::Song(s.clone()),
-            Command::Seek(pos) => Emit::Seek(pos),
-        };
+        let emit = cmd.to_emit();
         self.rt.spawn(async move {
             let _ = crate::mpris::CTX.get().unwrap().send(emit).await;
         });
@@ -117,12 +113,41 @@ impl AudioPlayer {
     }
 
     fn update(&mut self) {
-        if let Ok(m) = self.rx.try_recv() { match m {
-            Message::Progress { percentage, seconds } => {
-                self.progress = percentage;
-                self.position = seconds;
-            }
-        }}
+        if let Ok(m) = self.rx.try_recv() { self.handle_message(m); }
+    }
+}
+impl AudioPlayer { // Queue
+    /// Add a song to the end of the queue
+    pub fn queue_add_back(&mut self, song: Song) {
+        self.queue.push_back(song);
+    }
+    
+    // /// Add a song to play next in the queue
+    // pub fn queue_add_next(&mut self, song: Song) {
+    //     let mut q = self.queue;
+    // }
+
+    // Queue interaction
+    pub fn skip(&mut self, forward: bool) -> bool {
+        use orx_linked_list::DoublyEnds;
+
+        // TODO: remove
+        let next = if forward {
+            self.queue.next_idx_of(&self.idx)
+        } else {
+            self.queue.prev_idx_of(&self.idx)
+        };
+        if let Some(next) = next {
+            let s = self.queue.get(&next).unwrap().clone();
+            self.current_song = Some(s.clone());
+            self.idx = next;
+            self.play_song(s);
+            return true;
+        }
+        else {
+            println!("No song in queue to skip to!");
+        }
+        return false;
     }
 }
 
@@ -173,7 +198,7 @@ impl AudioHandler {
         let rt = tokio::runtime::Runtime::new().unwrap();
         let mut pos = 0f32;
         loop {
-            if let Ok(cmd) = handler.rx.try_recv() {
+            while let Ok(cmd) = handler.rx.try_recv() {
                 handler.handle_cmd(cmd)
             }
 
@@ -220,6 +245,7 @@ impl AudioHandler {
         self.sink.play();
     }
 
+    // FIX: seeking does not work if song has finished
     fn seek(&self, pos: f32) {
         self.sink.try_seek(Duration::from_secs_f32(pos)).unwrap();
     }
@@ -254,13 +280,34 @@ enum Command {
     Resume,
     Seek(f32),
 }
+impl From<Command> for Emit {
+    fn from(value: Command) -> Self {
+        Command::to_emit(&value)
+    }
+}
+impl Command {
+    pub fn to_emit(&self) -> Emit {
+        match self {
+            Command::Pause => Emit::Pause,
+            Command::Resume => Emit::Play,
+            Command::Play(s) => Emit::Song(s.clone()),
+            Command::Seek(pos) => Emit::Seek(*pos),
+        }
+    }
+}
 #[derive(Debug, Clone)]
 enum Message {
     Progress{ percentage: f32, seconds: f32 },
 }
 
 #[derive(Debug, Clone)]
-enum LoopType {
+pub enum QueueEvent {
+    AddToEnd(Song),
+    AddNext(Song),
+}
+
+#[derive(Debug, Clone)]
+pub enum LoopType {
     None,
     Song,
     Playlist

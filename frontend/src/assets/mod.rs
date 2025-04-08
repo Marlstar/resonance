@@ -14,5 +14,7 @@ macro_rules! svg {
 svg!(icon, "resonance.svg");
 svg!(pause, "pause.svg");
 svg!(play, "play.svg");
+svg!(skip_forward, "skip_forward.svg");
+svg!(skip_back, "skip_back.svg");
 
 svg!(circle, "circle.svg");

@@ -13,11 +13,12 @@ pub struct Resonance {
 }
 impl Resonance {
     pub fn new() -> Result<Self, Error> {
-        return Ok(Self {
+        let s = Self {
             db: Database::load()?,
             audio: AudioPlayer::new()?,
             _mpris_handle: crate::mpris::run(),
-        });
+        };
+        Ok(s)
     }
 }
 impl Resonance {

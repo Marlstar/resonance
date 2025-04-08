@@ -39,3 +39,22 @@ pub fn create(conn: &mut SqliteConnection, ytid: &str, name: &str, author: &str,
         .returning(Song::as_returning())
         .get_result(conn)
 }
+
+// TODO: fix this jank after queueing works fully
+impl Song {
+    #[allow(non_snake_case)]
+    pub fn NONE() -> Song {
+        Song {
+            id: -1,
+            name: String::with_capacity(1),
+            ytid: "".to_string(),
+            author: "".to_string(),
+            duration: 0,
+            album: "".to_string(),
+        }
+    }
+    #[allow(non_snake_case)]
+    pub fn IS_NONE(&self) -> bool {
+        return self.id == -1;
+    }
+}

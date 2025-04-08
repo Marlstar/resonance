@@ -1,3 +1,4 @@
+use backend::util::format_duration;
 use iced::alignment::{Horizontal, Vertical};
 use iced::widget::image::Handle;
 use iced::widget::{ self, button, column, container, row, slider, stack, svg, text, Space };
@@ -44,6 +45,22 @@ impl ScreenCore for Playing {
             .align_x(Horizontal::Center)
             .align_y(Vertical::Center);
 
+        let skip_forward = button(container(svg(assets::skip_forward())))
+            .width(Length::Fixed(83.0))
+            .on_press(Message::Skip(1))
+            .style(|_,_| button::Style::default());
+        let skip_forward = container(skip_forward)
+            .align_x(Horizontal::Center)
+            .align_y(Vertical::Center);
+
+        let skip_back = button(container(svg(assets::skip_back())))
+            .width(Length::Fixed(83.0))
+            .on_press(Message::Skip(-1))
+            .style(|_,_| button::Style::default());
+        let skip_back = container(skip_back)
+            .align_x(Horizontal::Center)
+            .align_y(Vertical::Center);
+
         let bold_font = Font {
             weight: iced::font::Weight::Bold,
             ..Default::default()
@@ -60,16 +77,26 @@ impl ScreenCore for Playing {
         let slider = slider(0.0..=(self.song.duration as f32), self.pos, Message::Seek)
             .width(Length::Fill);
 
+        let pos = text(format_duration(self.pos as usize));
+        let duration = text(format_duration(self.song.duration as usize));
+        // let time = row![pos, Space::new(Length::Fill, Length::Fixed(0.0)), duration]
+        let time = row![pos, slider, duration]
+            .spacing(10.0)
+            .align_y(Vertical::Center);
+
         let song_info = column![
             title,
             row![author, text("·"), album].spacing(5),
         ].align_x(Horizontal::Center).spacing(0.0);
 
+        let controls = row![skip_back, pause_play, skip_forward]
+            .align_y(Vertical::Center);
+
         let info = column![
             song_info,
-            pause_play,
-            slider,
-            Space::new(Length::Fixed(250.0), Length::Fixed(0.0)),
+            controls,
+            time,
+            Space::new(Length::Fixed(400.0), Length::Fixed(0.0)),
         ].align_x(Horizontal::Center).width(Length::Shrink).spacing(30.0);
 
         let cover = iced::widget::image(backend::dirs().song_thumbnail(&self.song.ytid))

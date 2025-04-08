@@ -28,8 +28,13 @@ impl ScreenCore for Library {
             .spacing(10);
 
         return Element::new(column![
-            button("Home")
-            .on_press(Message::SwitchToHomeScreen),
+            iced::widget::row![
+                button("Home")
+                .on_press(Message::SwitchToHomeScreen),
+
+                button("Playing")
+                .on_press(Message::SwitchToPlayingScreen)
+            ],
 
             scrollable(songs)
                 .width(Length::Fill),

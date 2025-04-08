@@ -33,6 +33,7 @@ pub use util::AM;
 
 mod audio;
 pub use audio::AudioPlayer;
+pub use audio::QueueEvent;
 
 pub mod mpris;
 
