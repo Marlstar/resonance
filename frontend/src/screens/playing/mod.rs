@@ -28,7 +28,7 @@ impl Playing {
 }
 impl ScreenCore for Playing {
     type Message = PlayingMessage;
-    fn view<'a>(&self) -> iced::Element<'a, crate::Message> {
+    fn view<'a>(&self, backend: &backend::Resonance) -> iced::Element<'a, crate::Message> {
         let bg = widget::image(Handle::from_rgba(720, 720, self.bg.to_vec()))
             .width(Length::Fill)
             .height(Length::Fill)

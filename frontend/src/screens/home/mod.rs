@@ -26,7 +26,7 @@ impl Default for Home {
 impl ScreenCore for Home {
     type Message = HomeMessage;
 
-    fn view<'a>(&self) -> Element<'a, Message> {
+    fn view<'a>(&self, backend: &backend::Resonance) -> Element<'a, Message> {
         let library_button = button("Library")
             .on_press(Message::SwitchToLibraryScreen);
 
