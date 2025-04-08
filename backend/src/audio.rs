@@ -198,7 +198,7 @@ impl AudioHandler {
         let rt = tokio::runtime::Runtime::new().unwrap();
         let mut pos = 0f32;
         loop {
-            if let Ok(cmd) = handler.rx.try_recv() {
+            while let Ok(cmd) = handler.rx.try_recv() {
                 handler.handle_cmd(cmd)
             }
 
