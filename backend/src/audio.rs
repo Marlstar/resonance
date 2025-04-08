@@ -3,7 +3,7 @@ use std::thread::{self, JoinHandle};
 use std::sync::mpsc::{sync_channel, Receiver, SyncSender, TrySendError};
 use std::time::Duration;
 use crate::AM;
-use orx_linked_list::{DoublyIdx, DoublyList};
+use orx_linked_list::{DoublyIdx, DoublyIterable, DoublyList};
 use rodio::{Decoder, OutputStream, OutputStreamHandle, Sink};
 use crate::Song;
 use crate::Error;
@@ -129,10 +129,17 @@ impl AudioPlayer { // Queue
     // }
 
     // Queue interaction
-    pub fn skip(&mut self) -> bool {
+    pub fn skip(&mut self, forward: bool) -> bool {
         use orx_linked_list::DoublyEnds;
+
         let q = self.queue.lock().unwrap();
-        if let Some(next) = q.next_idx_of(&self.idx) {
+        // TODO: remove
+        let next = if forward {
+            q.next_idx_of(&self.idx)
+        } else {
+            q.prev_idx_of(&self.idx)
+        };
+        if let Some(next) = next {
             let s = q.get(&next).unwrap().clone();
             drop(q);
             self.current_song = Some(s.clone());
@@ -241,6 +248,7 @@ impl AudioHandler {
         self.sink.play();
     }
 
+    // FIX: seeking does not work if song has finished
     fn seek(&self, pos: f32) {
         self.sink.try_seek(Duration::from_secs_f32(pos)).unwrap();
     }

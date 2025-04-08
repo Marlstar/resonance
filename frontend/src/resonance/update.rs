@@ -159,8 +159,7 @@ impl super::Resonance {
 
     fn skip(&mut self, num: i32) -> Task {
         for _ in 0..num.abs() {
-            if num >= 0 { self.backend.audio.skip(); }
-            else { todo!("backwards skipping") }
+            self.backend.audio.skip(num > 0);
         }
         Task::done(Message::Playing(PlayingMessage::Update(self.backend.audio.current_song.clone().unwrap())))
     }
@@ -174,8 +173,6 @@ impl super::Resonance {
         self.backend.audio.resume();
         Task::done(Message::Playing(PlayingMessage::PlayingStatus(true)))
     }
-
-    // TODO: queue songs
 
     fn refresh_library(&mut self) -> Task {
         let songs = self.backend.list_songs().unwrap();
