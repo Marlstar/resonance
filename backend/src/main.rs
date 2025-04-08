@@ -9,7 +9,7 @@ fn main() {
         r.audio.queue_add_back(song);
     }
     for _ in 1..=5 {
-        r.audio.skip();
+        r.audio.skip(true);
         sleep(Duration::from_secs(4));
     }
 }

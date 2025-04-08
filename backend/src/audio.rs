@@ -23,7 +23,7 @@ pub struct AudioPlayer {
 
     // Main song control stuff
     pub playing: bool,
-    queue: AM<Queue>,
+    queue: Queue,
     idx: DoublyIdx<Song>,
     pub current_song: Option<Song>,
     pub position: f32,
@@ -33,8 +33,8 @@ pub struct AudioPlayer {
 impl AudioPlayer {
     pub fn new() -> Result<Self, Error> {
         let playing = false;
-        let queue: AM<Queue> = AM::new(DoublyList::new());
-        let idx = queue.lock().unwrap().push_back(Song::NONE());
+        let mut queue: Queue = DoublyList::new();
+        let idx = queue.push_back(Song::NONE());
         let current_song: Option<Song> = None;
 
         let (ctx, crx) = sync_channel::<Command>(50);
@@ -119,29 +119,26 @@ impl AudioPlayer {
 impl AudioPlayer { // Queue
     /// Add a song to the end of the queue
     pub fn queue_add_back(&mut self, song: Song) {
-        let mut q = self.queue.lock().unwrap();
-        q.push_back(song);
+        self.queue.push_back(song);
     }
     
     // /// Add a song to play next in the queue
     // pub fn queue_add_next(&mut self, song: Song) {
-    //     let mut q = self.queue.lock().unwrap();
+    //     let mut q = self.queue;
     // }
 
     // Queue interaction
     pub fn skip(&mut self, forward: bool) -> bool {
         use orx_linked_list::DoublyEnds;
 
-        let q = self.queue.lock().unwrap();
         // TODO: remove
         let next = if forward {
-            q.next_idx_of(&self.idx)
+            self.queue.next_idx_of(&self.idx)
         } else {
-            q.prev_idx_of(&self.idx)
+            self.queue.prev_idx_of(&self.idx)
         };
         if let Some(next) = next {
-            let s = q.get(&next).unwrap().clone();
-            drop(q);
+            let s = self.queue.get(&next).unwrap().clone();
             self.current_song = Some(s.clone());
             self.idx = next;
             self.play_song(s);
