@@ -3,7 +3,7 @@ use std::thread::{self, JoinHandle};
 use std::sync::mpsc::{sync_channel, Receiver, SyncSender, TrySendError};
 use std::time::Duration;
 use crate::AM;
-use orx_linked_list::DoublyList;
+use orx_linked_list::{DoublyIdx, DoublyList, NodeIdx};
 use rodio::{Decoder, OutputStream, OutputStreamHandle, Sink};
 use crate::Song;
 use crate::Error;
@@ -24,6 +24,7 @@ pub struct AudioPlayer {
     // Main song control stuff
     pub playing: bool,
     queue: AM<Queue>,
+    idx: DoublyIdx<Song>,
     current_song: Option<Song>,
     pub position: f32,
     progress: f32,
@@ -33,6 +34,7 @@ impl AudioPlayer {
     pub fn new() -> Result<Self, Error> {
         let playing = false;
         let queue: AM<Queue> = AM::new(DoublyList::new());
+        let idx = queue.lock().unwrap().push_back(Song::NONE());
         let current_song: Option<Song> = None;
 
         let (ctx, crx) = sync_channel::<Command>(50);
@@ -48,7 +50,7 @@ impl AudioPlayer {
             _handle,
             tx: ctx, rx: mrx,
             rt,
-            playing, queue, current_song,
+            playing, queue, idx, current_song,
             position: 0.0, progress: 0.0,
             loop_type,
         })
@@ -118,6 +120,46 @@ impl AudioPlayer {
                 self.position = seconds;
             }
         }}
+    }
+}
+impl AudioPlayer { // Queue
+    /// Add a song to the end of the queue
+    pub fn queue_add_back(&mut self, song: Song) {
+        let mut q = self.queue.lock().unwrap();
+        q.push_back(song);
+    }
+    
+    // /// Add a song to play next in the queue
+    // pub fn queue_add_next(&mut self, song: Song) {
+    //     let mut q = self.queue.lock().unwrap();
+    // }
+
+    // Queue interaction
+    pub fn skip(&mut self) -> bool {
+        use orx_linked_list::DoublyEnds;
+        let q = self.queue.lock().unwrap();
+        if let Some(next) = q.next_idx_of(&self.idx) {
+            self.idx = next;
+            drop(q);
+            self.update_playing_from_queue();
+            return true;
+        }
+        return false;
+    }
+
+    // TODO: test if this actually works (I think it should?)
+    fn update_playing_from_queue(&mut self) {
+        use orx_linked_list::DoublyEnds;
+        let q = self.queue.lock().unwrap();
+        if let Some(queued) = q.get(&self.idx) {
+            if let Some(playing) = &self.current_song {
+                if queued == playing { return }
+            }
+            let queued = queued.clone();
+            drop(q);
+            self.current_song = Some(queued.clone());
+            self.play_song(queued);
+        }
     }
 }
 
