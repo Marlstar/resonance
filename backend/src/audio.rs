@@ -133,30 +133,17 @@ impl AudioPlayer { // Queue
         use orx_linked_list::DoublyEnds;
         let q = self.queue.lock().unwrap();
         if let Some(next) = q.next_idx_of(&self.idx) {
-            self.idx = next;
+            let s = q.get(&next).unwrap().clone();
             drop(q);
-            self.update_playing_from_queue();
+            self.current_song = Some(s.clone());
+            self.idx = next;
+            self.play_song(s);
             return true;
         }
         else {
             println!("No song in queue to skip to!");
         }
         return false;
-    }
-
-    // TODO: test if this actually works (I think it should?)
-    fn update_playing_from_queue(&mut self) {
-        use orx_linked_list::DoublyEnds;
-        let q = self.queue.lock().unwrap();
-        if let Some(queued) = q.get(&self.idx) {
-            if let Some(playing) = &self.current_song {
-                if queued == playing { return }
-            }
-            let queued = queued.clone();
-            drop(q);
-            self.current_song = Some(queued.clone());
-            self.play_song(queued);
-        }
     }
 }
 
