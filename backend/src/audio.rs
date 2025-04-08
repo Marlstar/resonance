@@ -3,7 +3,7 @@ use std::thread::{self, JoinHandle};
 use std::sync::mpsc::{sync_channel, Receiver, SyncSender, TrySendError};
 use std::time::Duration;
 use crate::AM;
-use orx_linked_list::{DoublyIdx, DoublyList, NodeIdx};
+use orx_linked_list::{DoublyIdx, DoublyList};
 use rodio::{Decoder, OutputStream, OutputStreamHandle, Sink};
 use crate::Song;
 use crate::Error;
@@ -25,10 +25,10 @@ pub struct AudioPlayer {
     pub playing: bool,
     queue: AM<Queue>,
     idx: DoublyIdx<Song>,
-    current_song: Option<Song>,
+    pub current_song: Option<Song>,
     pub position: f32,
-    progress: f32,
-    loop_type: AM<LoopType>,
+    pub progress: f32,
+    pub loop_type: AM<LoopType>,
 }
 impl AudioPlayer {
     pub fn new() -> Result<Self, Error> {
@@ -62,7 +62,6 @@ impl AudioPlayer {
             Message::Progress { percentage, seconds } => {
                 self.progress = percentage;
                 self.position = seconds;
-                self.send_command(Command::Seek(self.position));
             },
         }
     }
@@ -114,12 +113,7 @@ impl AudioPlayer {
     }
 
     fn update(&mut self) {
-        if let Ok(m) = self.rx.try_recv() { match m {
-            Message::Progress { percentage, seconds } => {
-                self.progress = percentage;
-                self.position = seconds;
-            }
-        }}
+        if let Ok(m) = self.rx.try_recv() { self.handle_message(m); }
     }
 }
 impl AudioPlayer { // Queue
@@ -143,6 +137,9 @@ impl AudioPlayer { // Queue
             drop(q);
             self.update_playing_from_queue();
             return true;
+        }
+        else {
+            println!("No song in queue to skip to!");
         }
         return false;
     }
@@ -312,7 +309,13 @@ enum Message {
 }
 
 #[derive(Debug, Clone)]
-enum LoopType {
+pub enum QueueEvent {
+    AddToEnd(Song),
+    AddNext(Song),
+}
+
+#[derive(Debug, Clone)]
+pub enum LoopType {
     None,
     Song,
     Playlist

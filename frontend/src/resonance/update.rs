@@ -6,9 +6,10 @@ use crate::screens::PlayingMessage;
 use crate::screens::ScreenCore;
 use crate::Message;
 use crate::tasks;
-use backend::SingleVideo;
 use crate::Task;
 use crate::screens::Screen;
+use backend::SingleVideo;
+use backend::QueueEvent;
 use colored::Colorize;
 
 impl super::Resonance {
@@ -28,6 +29,8 @@ impl super::Resonance {
             Message::DeleteSong(id) => self.delete_song(id),
 
             Message::PlaySong(id) => self.play_song(id),
+            Message::Queue(event) => self.queue_event(event),
+            Message::Skip(num) => self.skip(num),
             Message::PauseSong => self.pause_song(),
             Message::ResumeSong => self.resume_song(),
 
@@ -138,6 +141,28 @@ impl super::Resonance {
         self.backend.audio.play_song(song);
         // TODO: don't auto-switch once things are implemented fully
         Task::done(Message::SwitchToPlayingScreen)
+    }
+
+    fn queue_event(&mut self, event: QueueEvent) -> Task {
+        match event {
+            QueueEvent::AddToEnd(song) => self.backend.audio.queue_add_back(song),
+            e => todo!("queue event {e:?}"),
+        }
+        if !self.backend.audio.playing {
+            // TODO: un-jankify
+            Task::batch([
+                Task::done(Message::Skip(1)),
+                Task::done(Message::ResumeSong),
+            ])
+        } else { Task::none() }
+    }
+
+    fn skip(&mut self, num: i32) -> Task {
+        for _ in 0..num.abs() {
+            if num >= 0 { self.backend.audio.skip(); }
+            else { todo!("backwards skipping") }
+        }
+        Task::done(Message::Playing(PlayingMessage::Update(self.backend.audio.current_song.clone().unwrap())))
     }
 
     fn pause_song(&mut self) -> Task {

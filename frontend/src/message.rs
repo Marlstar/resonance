@@ -18,6 +18,8 @@ pub enum Message {
     DeleteSong(i32),
 
     PlaySong(i32),
+    Queue(backend::QueueEvent),
+    Skip(i32),
     ResumeSong,
     PauseSong,
 

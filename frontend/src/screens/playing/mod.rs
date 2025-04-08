@@ -44,6 +44,14 @@ impl ScreenCore for Playing {
             .align_x(Horizontal::Center)
             .align_y(Vertical::Center);
 
+        let skip_forward = button(container(svg(assets::skip_forward())))
+            .width(Length::Fixed(83.0))
+            .on_press(Message::Skip(1))
+            .style(|_,_| button::Style::default());
+        let skip_forward = container(skip_forward)
+            .align_x(Horizontal::Center)
+            .align_y(Vertical::Center);
+
         let bold_font = Font {
             weight: iced::font::Weight::Bold,
             ..Default::default()
@@ -67,7 +75,7 @@ impl ScreenCore for Playing {
 
         let info = column![
             song_info,
-            pause_play,
+            row![pause_play, skip_forward],
             slider,
             Space::new(Length::Fixed(250.0), Length::Fixed(0.0)),
         ].align_x(Horizontal::Center).width(Length::Shrink).spacing(30.0);

@@ -23,7 +23,8 @@ pub fn song<'a>(song: &Song) -> Element<'a, crate::Message> {
         })
         .width(Length::Fill)
         .height(Length::Fill)
-        .on_press(Message::PlaySong(song.id));
+        // .on_press(Message::PlaySong(song.id));
+        .on_press(Message::Queue(backend::QueueEvent::AddToEnd(song.clone())));
     let play_overlay = container(play_button)
         .center(Length::Fill);
     let thumbnail_overlay = hover(thumbnail, play_overlay);
