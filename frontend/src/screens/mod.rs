@@ -29,5 +29,5 @@ impl Screen {
 pub trait ScreenCore {
     type Message;
     fn view<'a>(&self, backend: &backend::Resonance) -> iced::Element<'a, crate::Message>;
-    fn handle_message(&mut self, msg: Self::Message) -> crate::Task;
+    fn handle_message(&mut self, msg: Self::Message, backend: &mut backend::Resonance) -> crate::Task;
 }

@@ -40,23 +40,20 @@ impl super::Resonance {
 
             Message::Home(msg) => {
                 if let Screen::Home(home) = &mut self.screen {
-                    home.handle_message(msg)
+                    home.handle_message(msg, &mut self.backend)
                 }
                 else { Task::none() }
             },
 
             Message::Library(msg) => {
                 if let Screen::Library(lib) = &mut self.screen {
-                    match msg {
-                        LibraryMessage::Refresh => self.refresh_library(),
-                        _ => lib.handle_message(msg)
-                    }
+                    lib.handle_message(msg, &mut self.backend)
                 } else { Task::none() }
             },
 
             Message::Playing(msg) => {
                 if let Screen::Playing(screen) = &mut self.screen {
-                    screen.handle_message(msg)
+                    screen.handle_message(msg, &mut self.backend)
                 }
                 else { Task::none() }
             },
@@ -78,7 +75,7 @@ impl super::Resonance {
     fn switch_to_playing(&mut self) -> Task {
         if let Some(song) = self.backend.audio.current() {
             self.screen = Screen::Playing(Playing::new(song.clone()));
-            return Task::done(Message::Playing(crate::screens::PlayingMessage::Update(song.clone())));
+            return Task::done(Message::Playing(crate::screens::PlayingMessage::SongUpdate));
         }
         Task::none()
     }
@@ -107,7 +104,7 @@ impl super::Resonance {
 
     fn seek_update(&mut self) -> Task {
         self.backend.audio.seek_update();
-        Task::done(Message::Playing(PlayingMessage::Seek(self.backend.audio.position)))
+        Task::done(Message::Playing(PlayingMessage::PositionUpdate))
     }
 
     fn download(&mut self, url: String) -> Task {
@@ -161,21 +158,16 @@ impl super::Resonance {
         for _ in 0..num.abs() {
             self.backend.audio.skip(num > 0);
         }
-        Task::done(Message::Playing(PlayingMessage::Update(self.backend.audio.current_song.clone().unwrap())))
+        Task::done(Message::Playing(PlayingMessage::SongUpdate))
     }
 
     fn pause_song(&mut self) -> Task {
         self.backend.audio.pause();
-        Task::done(Message::Playing(PlayingMessage::PlayingStatus(false)))
+        Task::done(Message::Playing(PlayingMessage::PlaybackUpdate))
     }
 
     fn resume_song(&mut self) -> Task {
         self.backend.audio.resume();
-        Task::done(Message::Playing(PlayingMessage::PlayingStatus(true)))
-    }
-
-    fn refresh_library(&mut self) -> Task {
-        let songs = self.backend.list_songs().unwrap();
-        Task::done(Message::Library(LibraryMessage::RefreshResponse(songs)))
+        Task::done(Message::Playing(PlayingMessage::PlaybackUpdate))
     }
 }

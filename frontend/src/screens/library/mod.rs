@@ -45,19 +45,20 @@ impl ScreenCore for Library {
         ]);
     }
 
-    fn handle_message(&mut self, msg: Self::Message) -> Task {
+    fn handle_message(&mut self, msg: Self::Message, backend: &mut backend::Resonance) -> Task {
         match msg {
-            LibraryMessage::Refresh => Task::none(), // Handled in the main program
-            LibraryMessage::RefreshResponse(songs) => {
-                self.songs = songs;
-                Task::none()
-            },
+            LibraryMessage::Refresh => self.refresh_songs(backend),
         }
+    }
+}
+impl Library {
+    fn refresh_songs(&mut self, backend: &mut backend::Resonance) -> Task {
+        self.songs = backend.list_songs().unwrap();
+        Task::none()
     }
 }
 
 #[derive(Debug, Clone)]
 pub enum LibraryMessage {
     Refresh,
-    RefreshResponse(Vec<Song>),
 }

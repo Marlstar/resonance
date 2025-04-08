@@ -126,16 +126,20 @@ impl ScreenCore for Playing {
         ).into()
     }
 
-    fn handle_message(&mut self, msg: Self::Message) -> crate::Task {
+    fn handle_message(&mut self, msg: Self::Message, backend: &mut backend::Resonance) -> crate::Task {
         match msg {
-            PlayingMessage::Update(s) => self.update_song(s),
-            PlayingMessage::PlayingStatus(playing) => self.update_playing(playing),
-            PlayingMessage::Seek(pos) => self.seeked(pos),
+            PlayingMessage::SongUpdate => self.update_song(backend.audio.current_song.clone()),
+            PlayingMessage::PlaybackUpdate => self.update_playing(backend.audio.playing),
+            PlayingMessage::PositionUpdate => self.position_update(backend.audio.position),
         }
     }
 }
 impl Playing {
-    fn update_song(&mut self, song: Song) -> Task {
+    fn update_song(&mut self, song: Option<Song>) -> Task {
+        if song.is_none() {
+            todo!("no song playing in playing screen")
+        }
+        let song = song.unwrap();
         const BLUR_SIGMA: f32 = 75.0;
 
         self.pos = 0.0;
@@ -150,7 +154,7 @@ impl Playing {
         return Task::none()
     }
 
-    fn seeked(&mut self, pos: f32) -> Task {
+    fn position_update(&mut self, pos: f32) -> Task {
         self.pos = pos;
         Task::none()
     }
@@ -158,7 +162,7 @@ impl Playing {
 
 #[derive(Debug, Clone)]
 pub enum PlayingMessage {
-    Update(Song), // When song changes
-    PlayingStatus(bool),
-    Seek(f32),
+    SongUpdate, // When song changes
+    PlaybackUpdate,
+    PositionUpdate,
 }

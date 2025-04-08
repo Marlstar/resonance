@@ -26,7 +26,7 @@ impl Default for Home {
 impl ScreenCore for Home {
     type Message = HomeMessage;
 
-    fn view<'a>(&self, backend: &backend::Resonance) -> Element<'a, Message> {
+    fn view<'a>(&self, _backend: &backend::Resonance) -> Element<'a, Message> {
         let library_button = button("Library")
             .on_press(Message::SwitchToLibraryScreen);
 
@@ -50,7 +50,7 @@ impl ScreenCore for Home {
         ].into();
     }
 
-    fn handle_message(&mut self, message: HomeMessage) -> Task {
+    fn handle_message(&mut self, message: HomeMessage, _backend: &mut backend::Resonance) -> Task {
         match message {
             HomeMessage::DownloadURLChanged(content) => self.download_url_input = content,
         }
