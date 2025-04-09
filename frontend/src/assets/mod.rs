@@ -6,8 +6,17 @@ macro_rules! svg {
                 iced::advanced::svg::Handle::from_memory(BYTES)
             );
         }
+    };
+    ($n:ident, $f:expr, $rotation:expr) => {
+        pub fn $n<'a>() -> iced::widget::Svg<'a> {
+            const BYTES: &[u8] = include_bytes!($f);
+            return iced::widget::svg(
+                iced::advanced::svg::Handle::from_memory(BYTES)
+            ).rotation($rotation);
+        }
     }
 }
+
 svg!(icon, "resonance.svg");
 svg!(pause, "pause.svg");
 svg!(play, "play.svg");
