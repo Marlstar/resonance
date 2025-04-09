@@ -29,6 +29,9 @@ pub struct AudioPlayer {
     pub position: f32,
     pub progress: f32,
     pub loop_type: AM<LoopType>,
+
+    // Frontend comms
+    pub song_refresh_pending: bool,
 }
 impl AudioPlayer {
     pub fn new() -> Result<Self, Error> {
@@ -53,6 +56,7 @@ impl AudioPlayer {
             playing, queue, idx, current_song,
             position: 0.0, progress: 0.0,
             loop_type,
+            song_refresh_pending: false,
         })
     }
 
@@ -62,6 +66,16 @@ impl AudioPlayer {
             Message::Progress { percentage, seconds } => {
                 self.progress = percentage;
                 self.position = seconds;
+            },
+            Message::Empty => {
+                if self.song_queued_next() {
+                    self.skip(true);
+                    // TODO: nicer comms than this jank
+                    self.song_refresh_pending = true;
+                }
+                else {
+                    self.pause();
+                }
             },
         }
     }
@@ -182,6 +196,10 @@ impl AudioPlayer { // Queue
         self.queue_post();
     }
 
+    pub fn song_queued_next(&self) -> bool {
+        self.queue.next_of(&self.idx).is_some()
+    }
+
     fn queue_post(&mut self) {
         if self.current_song.is_none() {
             let song = self.queue.get(&self.idx).unwrap().clone();
@@ -257,10 +275,20 @@ impl AudioHandler {
         let mpris_tx = crate::mpris::CTX.get().unwrap();
         let rt = tokio::runtime::Runtime::new().unwrap();
         let mut pos = 0f32;
+        let mut was_empty = false;
         loop {
+            // Handle pending commands
             while let Ok(cmd) = handler.rx.try_recv() {
                 handler.handle_cmd(cmd)
             }
+
+            // Song completion
+            if handler.sink.empty() {
+                if !was_empty {
+                    handler.tx.try_send(Message::Empty).unwrap();
+                    was_empty = true;
+                }
+            } else { was_empty = false; }
 
             // Progress updates
             let percentage = handler.playback_percentage();
@@ -362,6 +390,7 @@ impl Command {
 #[derive(Debug, Clone)]
 enum Message {
     Progress{ percentage: f32, seconds: f32 },
+    Empty,
 }
 
 #[derive(Debug, Clone)]

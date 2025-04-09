@@ -138,7 +138,8 @@ impl ScreenCore for Playing {
     }
 
     fn handle_message(&mut self, msg: Self::Message, backend: &mut backend::Resonance) -> crate::Task {
-        match msg {
+        let t1 = self.check_backend_updates(backend, &msg);
+        let t2 = match msg {
             PlayingMessage::SongUpdate => self.update_song(backend.audio.current_song.clone()),
             PlayingMessage::PlaybackUpdate => Task::none(),
             PlayingMessage::PositionUpdate => self.position_update(backend.audio.position),
@@ -146,7 +147,9 @@ impl ScreenCore for Playing {
                 self.queue_shown = shown;
                 Task::none()
             },
-        }
+        };
+
+        Task::batch([t1, t2])
     }
 }
 impl Playing {
@@ -160,6 +163,16 @@ impl Playing {
     }
 }
 impl Playing {
+    // TODO: fix jank
+    fn check_backend_updates(&mut self, backend: &mut backend::Resonance, current_message: &PlayingMessage) -> Task {
+        let mut task = Task::none();
+        if backend.audio.song_refresh_pending && *current_message != PlayingMessage::SongUpdate {
+            task = self.update_song(backend.audio.current_song.clone());
+            backend.audio.song_refresh_pending = false;
+        }
+        task
+    }
+
     fn update_song(&mut self, song: Option<Song>) -> Task {
         if song.is_none() {
             todo!("no song playing in playing screen")
@@ -180,7 +193,7 @@ impl Playing {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum PlayingMessage {
     SongUpdate, // When song changes
     PlaybackUpdate,
