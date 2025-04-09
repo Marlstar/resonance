@@ -7,7 +7,7 @@ use crate::screens::ScreenCore;
 use crate::Task;
 use crate::Message;
 use crate::assets;
-use backend::Song;
+use backend::{QueueEvent, Song};
 
 #[derive(Debug, Clone)]
 pub struct Playing {
@@ -154,7 +154,8 @@ impl ScreenCore for Playing {
 impl Playing {
     fn queue<'a>(&self, backend: &backend::Resonance) -> iced::Element<'a, Message> {
         use backend::linked_list::DoublyIterable;
-        let songs = backend.audio.queue.iter().map(crate::screens::library::widgets::song).collect();
+        // TODO: skip to the song in the queue
+        let songs = backend.audio.queue.iter().map(|s| crate::screens::library::widgets::song(s, Message::PlaySong(s.id), false)).collect();
         let col = Column::from_vec(songs)
             .width(Length::FillPortion(1));
         col.into()

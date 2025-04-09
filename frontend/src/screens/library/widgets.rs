@@ -5,7 +5,7 @@ use iced::alignment::{Horizontal, Vertical};
 use iced::widget::{ button, column, container, hover, image, row, svg, text, Space };
 use iced::{Background, Border, Element, Theme, Fill};
 
-pub fn song<'a>(song: &Song) -> Element<'a, crate::Message> {
+pub fn song<'a>(song: &Song, cover_click_message: Message, show_queue_button: bool) -> Element<'a, crate::Message> {
     const THUMBNAIL_SIZE: u32 = 48;
 
     let thumbnail = container(image(backend::dirs().song_thumbnail(&song.ytid))
@@ -24,7 +24,7 @@ pub fn song<'a>(song: &Song) -> Element<'a, crate::Message> {
         .width(Fill)
         .height(Fill)
         // .on_press(Message::PlaySong(song.id));
-        .on_press(Message::Queue(backend::QueueEvent::AddToEnd(song.clone())));
+        .on_press(cover_click_message);
     let play_overlay = container(play_button)
         .center(Fill);
     let thumbnail_overlay = hover(thumbnail, play_overlay);
@@ -41,6 +41,9 @@ pub fn song<'a>(song: &Song) -> Element<'a, crate::Message> {
         .style(styles::grey_text)
         .size(16);
 
+    let queue_end_button = button(svg(crate::assets::queue_end()).width(30.0).height(30.0))
+        .style(|_,_| button::Style::default())
+        .on_press(Message::Queue(backend::QueueEvent::AddToEnd(song.clone())));
 
     let song_info = column![
         title,
@@ -53,9 +56,13 @@ pub fn song<'a>(song: &Song) -> Element<'a, crate::Message> {
         ].spacing(5),
     ].spacing(5);
 
-    let contents = row![thumbnail_overlay, song_info]
+    let mut contents = row![thumbnail_overlay, song_info]
         .spacing(10)
         .align_y(Vertical::Center);
+    if show_queue_button {
+        contents = contents.push(Space::new(Fill, 0.0))
+            .push(queue_end_button);
+    }
 
     // Container style
     let container = container(contents)
