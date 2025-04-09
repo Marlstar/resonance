@@ -41,7 +41,7 @@ pub fn song<'a>(song: &Song, cover_click_message: Message, show_queue_button: bo
         .style(styles::grey_text)
         .size(16);
 
-    let queue_end_button = button(svg(crate::assets::queue_end()).width(30.0).height(30.0))
+    let queue_end_button = button(crate::assets::queue_end().width(30.0).height(30.0))
         .style(|_,_| button::Style::default())
         .on_press(Message::Queue(backend::QueueEvent::AddToEnd(song.clone())));
 

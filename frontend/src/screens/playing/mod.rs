@@ -35,7 +35,6 @@ impl ScreenCore for Playing {
             .content_fit(iced::ContentFit::Cover);
 
         let icon = if backend.audio.playing {assets::pause()} else {assets::play()};
-        let icon = svg(icon);
             //.style(appearance::styles::colour_svg(Color::BLACK));
         let pause_play = button(container(icon))
             .width(Length::Fixed(83.0))
@@ -45,7 +44,7 @@ impl ScreenCore for Playing {
             .align_x(Horizontal::Center)
             .align_y(Vertical::Center);
 
-        let skip_forward = button(container(svg(assets::skip_forward())))
+        let skip_forward = button(container(assets::skip_forward()))
             .width(Length::Fixed(83.0))
             .on_press(Message::Skip(1))
             .style(|_,_| button::Style::default());
@@ -53,7 +52,7 @@ impl ScreenCore for Playing {
             .align_x(Horizontal::Center)
             .align_y(Vertical::Center);
 
-        let skip_back = button(container(svg(assets::skip_back())))
+        let skip_back = button(container(assets::skip_back()))
             .width(Length::Fixed(83.0))
             .on_press(Message::Skip(-1))
             .style(|_,_| button::Style::default());

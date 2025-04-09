@@ -1,7 +1,10 @@
 macro_rules! svg {
     ($n:ident, $f:expr) => {
-        pub fn $n() -> iced::advanced::svg::Handle {
-            return iced::advanced::svg::Handle::from_memory(include_bytes!($f).as_slice());
+        pub fn $n<'a>() -> iced::widget::Svg<'a> {
+            const BYTES: &[u8] = include_bytes!($f);
+            return iced::widget::svg(
+                iced::advanced::svg::Handle::from_memory(BYTES)
+            );
         }
     }
 }

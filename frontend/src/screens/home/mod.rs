@@ -46,7 +46,7 @@ impl ScreenCore for Home {
             iced::widget::Column::from_vec(downloading),
             text(""),
             text(""),
-            svg(crate::assets::icon())
+            crate::assets::icon(),
         ].into();
     }
 
