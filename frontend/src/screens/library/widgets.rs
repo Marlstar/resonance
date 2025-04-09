@@ -12,7 +12,7 @@ pub fn song<'a>(song: &Song, cover_click_message: Message, show_queue_button: bo
         .height(THUMBNAIL_SIZE))
         .align_y(Vertical::Center);
 
-    let play_icon = container(svg(crate::assets::icon()).width(Fill).height(Fill))
+    let play_icon = container(crate::assets::icon().width(Fill).height(Fill))
         .center(Fill);
     let play_button = button(play_icon)
         .style(|_: &Theme, _: button::Status| {
