@@ -6,7 +6,7 @@ use crate::Task;
 use crate::Message;
 use backend::Song;
 
-mod widgets;
+pub mod widgets;
 
 #[derive(Debug, Clone)]
 pub struct Library {

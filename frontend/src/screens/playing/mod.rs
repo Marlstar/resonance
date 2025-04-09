@@ -1,7 +1,7 @@
 use backend::util::format_duration;
 use iced::alignment::{Horizontal, Vertical};
 use iced::widget::image::Handle;
-use iced::widget::{ self, button, column, container, row, slider, stack, svg, text, Space };
+use iced::widget::{ self, button, column, container, row, slider, stack, svg, text, Column, Space };
 use iced::{Font, Length};
 use crate::screens::ScreenCore;
 use crate::Task;
@@ -15,6 +15,7 @@ pub struct Playing {
     playing: bool,
     bg: Box<[u8; 720*720*4]>,
     pos: f32,
+    queue_shown: bool,
 }
 impl Playing {
     pub fn new(song: Song) -> Self {
@@ -23,12 +24,13 @@ impl Playing {
             song,
             playing: true,
             pos: 0f32,
+            queue_shown: true,
         };
     }
 }
 impl ScreenCore for Playing {
     type Message = PlayingMessage;
-    fn view<'a>(&self, _backend: &backend::Resonance) -> iced::Element<'a, crate::Message> {
+    fn view<'a>(&self, backend: &backend::Resonance) -> iced::Element<'a, crate::Message> {
         let bg = widget::image(Handle::from_rgba(720, 720, self.bg.to_vec()))
             .width(Length::Fill)
             .height(Length::Fill)
@@ -109,6 +111,17 @@ impl ScreenCore for Playing {
             info,
             Space::with_width(Length::Fixed(30.0)),
         ].spacing(0).align_y(Vertical::Center);//.width(Length::Shrink);
+        let main = container(main)
+            .align_x(Horizontal::Center);
+
+        let queue = self.queue(backend);
+        let queue = container(queue)
+            .align_x(Horizontal::Center);
+
+        let main = row![
+            main.width(Length::FillPortion(2)),
+            queue,
+        ].align_y(Vertical::Center);
 
         stack!(
             bg,
@@ -131,7 +144,20 @@ impl ScreenCore for Playing {
             PlayingMessage::SongUpdate => self.update_song(backend.audio.current_song.clone()),
             PlayingMessage::PlaybackUpdate => self.update_playing(backend.audio.playing),
             PlayingMessage::PositionUpdate => self.position_update(backend.audio.position),
+            PlayingMessage::QueueShown(shown) => {
+                self.queue_shown = shown;
+                Task::none()
+            },
         }
+    }
+}
+impl Playing {
+    fn queue<'a>(&self, backend: &backend::Resonance) -> iced::Element<'a, Message> {
+        use backend::linked_list::DoublyIterable;
+        let songs = backend.audio.queue.iter().map(crate::screens::library::widgets::song).collect();
+        let col = Column::from_vec(songs)
+            .width(Length::FillPortion(1));
+        col.into()
     }
 }
 impl Playing {
@@ -165,4 +191,5 @@ pub enum PlayingMessage {
     SongUpdate, // When song changes
     PlaybackUpdate,
     PositionUpdate,
+    QueueShown(bool),
 }

@@ -23,7 +23,7 @@ pub struct AudioPlayer {
 
     // Main song control stuff
     pub playing: bool,
-    queue: Queue,
+    pub queue: Queue,
     idx: DoublyIdx<Song>,
     pub current_song: Option<Song>,
     pub position: f32,
