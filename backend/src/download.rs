@@ -17,7 +17,10 @@ pub async fn download_song(url: &str) -> Result<SingleVideo, Error> {
 
     ytdl.output_template("song.%(ext)s");
     ytdl.extract_audio(true);
-    ytdl.format("140");
+    // ytdl.format("140");
+    ytdl.format("bestaudio");
+    ytdl.extra_arg("--audio-format");
+    ytdl.extra_arg("m4a");
     ytdl.extra_arg("--write-thumbnail");
     ytdl.download_to(&out_dir)?;
 
