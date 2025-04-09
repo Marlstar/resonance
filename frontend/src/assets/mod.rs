@@ -1,3 +1,4 @@
+use iced::Radians;
 macro_rules! svg {
     ($n:ident, $f:expr) => {
         pub fn $n<'a>() -> iced::widget::Svg<'a> {
@@ -20,8 +21,8 @@ macro_rules! svg {
 svg!(icon, "resonance.svg");
 svg!(pause, "pause.svg");
 svg!(play, "play.svg");
-svg!(skip_forward, "skip_forward.svg");
-svg!(skip_back, "skip_back.svg");
+svg!(skip_forward, "skip.svg");
+svg!(skip_back, "skip.svg", Radians::PI);
 svg!(queue_next, "queue_next.svg");
 svg!(queue_end, "queue_end.svg");
 
