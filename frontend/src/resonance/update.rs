@@ -150,13 +150,7 @@ impl super::Resonance {
             QueueEvent::AddToEnd(song) => self.backend.audio.queue_add_back(song),
             e => todo!("queue event {e:?}"),
         }
-        if !self.backend.audio.playing {
-            // TODO: un-jankify
-            Task::batch([
-                Task::done(Message::Skip(1)),
-                Task::done(Message::ResumeSong),
-            ])
-        } else { Task::none() }
+        Task::none()
     }
 
     fn skip(&mut self, num: i32) -> Task {

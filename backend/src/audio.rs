@@ -3,7 +3,7 @@ use std::thread::{self, JoinHandle};
 use std::sync::mpsc::{sync_channel, Receiver, SyncSender, TrySendError};
 use std::time::Duration;
 use crate::AM;
-use orx_linked_list::{DoublyIdx, DoublyList};
+use orx_linked_list::{DoublyIdx, DoublyList, DoublyEnds, DoublyEndsMut};
 use rodio::{Decoder, OutputStream, OutputStreamHandle, Sink};
 use crate::Song;
 use crate::Error;
@@ -119,7 +119,19 @@ impl AudioPlayer {
 impl AudioPlayer { // Queue
     /// Add a song to the end of the queue
     pub fn queue_add_back(&mut self, song: Song) {
+        println!("[queue] adding '{}' to end of queue", &song.name);
+        if let Some(s) = self.queue.get_mut(&self.idx) {
+            if s.IS_NONE() {
+                println!("  -> replacing dummy");
+                *s = song;
+
+                self.queue_post();
+                return;
+            }
+        }
         self.queue.push_back(song);
+
+        self.queue_post();
     }
     
     // /// Add a song to play next in the queue
@@ -127,10 +139,24 @@ impl AudioPlayer { // Queue
     //     let mut q = self.queue;
     // }
 
+    fn queue_at_idx(&mut self, song: Song, idx: DoublyIdx<Song>, after: bool) {
+        if after {
+            self.queue.insert_next_to(&idx, song);
+        } else {
+            self.queue.insert_prev_to(&idx, song);
+        }
+
+        self.queue_post();
+    }
+
+    fn queue_post(&mut self) {
+        if self.current_song.is_none() {
+            self.current_song = Some(self.queue.get(&self.idx).unwrap().clone());
+        }
+    }
+
     // Queue interaction
     pub fn skip(&mut self, forward: bool) -> bool {
-        use orx_linked_list::DoublyEnds;
-
         // TODO: remove
         let next = if forward {
             self.queue.next_idx_of(&self.idx)
