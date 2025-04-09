@@ -2,7 +2,7 @@ use backend::util::format_duration;
 use iced::alignment::{Horizontal, Vertical};
 use iced::widget::image::Handle;
 use iced::widget::{ self, button, column, container, row, slider, stack, svg, text, Space };
-use iced::{Background, Color, Font, Length};
+use iced::{Font, Length};
 use crate::screens::ScreenCore;
 use crate::Task;
 use crate::Message;
@@ -28,7 +28,7 @@ impl Playing {
 }
 impl ScreenCore for Playing {
     type Message = PlayingMessage;
-    fn view<'a>(&self, backend: &backend::Resonance) -> iced::Element<'a, crate::Message> {
+    fn view<'a>(&self, _backend: &backend::Resonance) -> iced::Element<'a, crate::Message> {
         let bg = widget::image(Handle::from_rgba(720, 720, self.bg.to_vec()))
             .width(Length::Fill)
             .height(Length::Fill)

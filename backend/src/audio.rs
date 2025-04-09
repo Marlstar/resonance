@@ -3,7 +3,7 @@ use std::thread::{self, JoinHandle};
 use std::sync::mpsc::{sync_channel, Receiver, SyncSender, TrySendError};
 use std::time::Duration;
 use crate::AM;
-use orx_linked_list::{DoublyIdx, DoublyIterable, DoublyList};
+use orx_linked_list::{DoublyIdx, DoublyList};
 use rodio::{Decoder, OutputStream, OutputStreamHandle, Sink};
 use crate::Song;
 use crate::Error;
