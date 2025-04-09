@@ -1,9 +1,9 @@
 use crate::Message;
 use backend::Song;
 use crate::appearance::{colours, styles};
-use iced::alignment::Vertical;
-use iced::widget::{ button, column, container, hover, image, svg, row, text };
-use iced::{Background, Border, Element, Length, Theme};
+use iced::alignment::{Horizontal, Vertical};
+use iced::widget::{ button, column, container, hover, image, row, svg, text, Space };
+use iced::{Background, Border, Element, Theme, Fill};
 
 pub fn song<'a>(song: &Song) -> Element<'a, crate::Message> {
     const THUMBNAIL_SIZE: u32 = 48;
@@ -12,8 +12,8 @@ pub fn song<'a>(song: &Song) -> Element<'a, crate::Message> {
         .height(THUMBNAIL_SIZE))
         .align_y(Vertical::Center);
 
-    let play_icon = container(svg(crate::assets::icon()).width(Length::Fill).height(Length::Fill))
-        .center(Length::Fill);
+    let play_icon = container(svg(crate::assets::icon()).width(Fill).height(Fill))
+        .center(Fill);
     let play_button = button(play_icon)
         .style(|_: &Theme, _: button::Status| {
             button::Style {
@@ -21,12 +21,12 @@ pub fn song<'a>(song: &Song) -> Element<'a, crate::Message> {
                 ..Default::default()
             }
         })
-        .width(Length::Fill)
-        .height(Length::Fill)
+        .width(Fill)
+        .height(Fill)
         // .on_press(Message::PlaySong(song.id));
         .on_press(Message::Queue(backend::QueueEvent::AddToEnd(song.clone())));
     let play_overlay = container(play_button)
-        .center(Length::Fill);
+        .center(Fill);
     let thumbnail_overlay = hover(thumbnail, play_overlay);
 
     let title = text(song.name.clone())
@@ -64,7 +64,9 @@ pub fn song<'a>(song: &Song) -> Element<'a, crate::Message> {
                 .background(Background::Color(colours::SURFACE0))
                 .border(Border::default().rounded(10))
         })
-        .padding(5);
+        .padding(5)
+        .width(Fill)
+        .align_x(Horizontal::Left);
 
     return Element::new(container);
 }

@@ -25,6 +25,7 @@ impl ScreenCore for Library {
     fn view<'a>(&self, backend: &backend::Resonance) -> iced::Element<'a, crate::Message> {
         let songs = self.songs.iter().map(widgets::song).collect::<Vec<Element<'a, Message>>>();
         let songs = Column::from_vec(songs)
+            .width(Length::Fill)
             .spacing(10);
 
         let mut playing_button = button("Playing");
