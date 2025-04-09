@@ -71,9 +71,13 @@ impl AudioPlayer {
     }
 
     pub fn play_song(&mut self, song: Song) {
+        self.load_song(song);
+        self.resume();
+    }
+
+    pub fn load_song(&mut self, song: Song) {
         self.current_song = Some(song.clone());
-        self.send_command(Command::Play(song));
-        self.playing = true;
+        self.send_command(Command::Load(song));
     }
 
     pub fn pause(&mut self) {
@@ -151,7 +155,8 @@ impl AudioPlayer { // Queue
 
     fn queue_post(&mut self) {
         if self.current_song.is_none() {
-            self.current_song = Some(self.queue.get(&self.idx).unwrap().clone());
+            let song = self.queue.get(&self.idx).unwrap().clone();
+            self.load_song(song);
         }
     }
 
@@ -246,7 +251,7 @@ impl AudioHandler {
 
     fn handle_cmd(&mut self, cmd: Command) {
         match cmd {
-            Command::Play(song) => self.play_song(song),
+            Command::Load(song) => self.load_song(song),
             Command::Pause => self.pause(),
             Command::Resume => self.resume(),
             Command::Seek(pos) => self.seek(pos),
@@ -254,13 +259,17 @@ impl AudioHandler {
     }
 
     fn play_song(&self, song: Song) {
+        self.load_song(song);
+        self.resume();
+    }
+    
+    fn load_song(&self, song: Song) {
         // TODO: error handling
         let path = crate::dirs().song_file(&song.ytid);
         let file = File::open(path).unwrap();
         let source = Decoder::new(file).unwrap();
         self.sink.clear();
         self.sink.append(source);
-        self.resume();
     }
 
     fn pause(&self) {
@@ -301,7 +310,7 @@ impl AudioHandler {
 
 #[derive(Debug, Clone)]
 enum Command {
-    Play(Song),
+    Load(Song),
     Pause,
     Resume,
     Seek(f32),
@@ -316,7 +325,7 @@ impl Command {
         match self {
             Command::Pause => Emit::Pause,
             Command::Resume => Emit::Play,
-            Command::Play(s) => Emit::Song(s.clone()),
+            Command::Load(s) => Emit::Song(s.clone()),
             Command::Seek(pos) => Emit::Seek(*pos),
         }
     }

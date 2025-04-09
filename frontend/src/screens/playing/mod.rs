@@ -12,7 +12,6 @@ use backend::{QueueEvent, Song};
 #[derive(Debug, Clone)]
 pub struct Playing {
     song: Song,
-    playing: bool,
     bg: Box<[u8; 720*720*4]>,
     pos: f32,
     queue_shown: bool,
@@ -22,7 +21,6 @@ impl Playing {
         return Self {
             bg: Box::new([0u8; 720*720*4]),
             song,
-            playing: true,
             pos: 0f32,
             queue_shown: true,
         };
@@ -36,12 +34,12 @@ impl ScreenCore for Playing {
             .height(Length::Fill)
             .content_fit(iced::ContentFit::Cover);
 
-        let icon = if self.playing {assets::pause()} else {assets::play()};
+        let icon = if backend.audio.playing {assets::pause()} else {assets::play()};
         let icon = svg(icon);
             //.style(appearance::styles::colour_svg(Color::BLACK));
         let pause_play = button(container(icon))
             .width(Length::Fixed(83.0))
-            .on_press(if self.playing {Message::PauseSong} else {Message::ResumeSong})
+            .on_press(if backend.audio.playing {Message::PauseSong} else {Message::ResumeSong})
             .style(|_,_| button::Style::default());
         let pause_play = container(pause_play)
             .align_x(Horizontal::Center)
@@ -142,7 +140,7 @@ impl ScreenCore for Playing {
     fn handle_message(&mut self, msg: Self::Message, backend: &mut backend::Resonance) -> crate::Task {
         match msg {
             PlayingMessage::SongUpdate => self.update_song(backend.audio.current_song.clone()),
-            PlayingMessage::PlaybackUpdate => self.update_playing(backend.audio.playing),
+            PlayingMessage::PlaybackUpdate => Task::none(),
             PlayingMessage::PositionUpdate => self.position_update(backend.audio.position),
             PlayingMessage::QueueShown(shown) => {
                 self.queue_shown = shown;
@@ -174,11 +172,6 @@ impl Playing {
         let img = backend::blur(&self.song.ytid, BLUR_SIGMA);
         self.bg.copy_from_slice(&img);
         Task::none()
-    }
-
-    fn update_playing(&mut self, p: bool) -> Task {
-        self.playing = p;
-        return Task::none()
     }
 
     fn position_update(&mut self, pos: f32) -> Task {
