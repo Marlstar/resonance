@@ -37,6 +37,8 @@ async fn mpris() {
         .can_play(true)
         .can_pause(true)
         .can_seek(true)
+        .can_go_previous(true)
+        .can_go_next(true)
         .build().await.unwrap();
 
     let mut met = mpris.metadata().clone();
@@ -55,6 +57,8 @@ async fn mpris() {
     mpris.connect_play_pause(move |_| { sender(Recv::PlayPause) });
     mpris.connect_set_position(move |_,_,t| sender(Recv::Position(t)));
     mpris.connect_seek(move |_,t| sender(Recv::SeekRelative(t)));
+    mpris.connect_next(move |_| sender(Recv::GoNext));
+    mpris.connect_previous(move |_| sender(Recv::GoPrev));
 
     let l = async {
         loop {
@@ -124,4 +128,6 @@ pub enum Recv {
     PlayPause,
     Position(Time),
     SeekRelative(Time),
+    GoNext,
+    GoPrev,
 }
