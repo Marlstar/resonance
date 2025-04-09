@@ -140,8 +140,8 @@ impl super::Resonance {
         // TODO: error handling
         let song = self.backend.get_song(id).unwrap();
         println!("Playing {} by {}", song.name, song.author);
-        // FIX: does not replace dummy in queue
-        self.backend.audio.play_song(song);
+        self.backend.audio.replace_queue(song);
+        self.backend.audio.resume();
         // TODO: don't auto-switch once things are implemented fully
         Task::done(Message::SwitchToPlayingScreen)
     }

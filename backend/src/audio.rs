@@ -153,6 +153,35 @@ impl AudioPlayer { // Queue
         self.queue_post();
     }
 
+    pub fn clear_queue(&mut self) {
+        self.empty_queue_handler(None);
+    }
+
+    pub fn replace_queue(&mut self, song: Song) {
+        self.empty_queue_handler(Some(song));
+    }
+
+    fn empty_queue_handler(&mut self, replacement: Option<Song>) {
+        self.queue.clear();
+        let song: Song;
+
+        if let Some(r) = replacement {
+            song = r;
+        } else {
+            song = match &self.current_song {
+                Some(s) => s.clone(),
+                None => {
+                    self.current_song = None;
+                    Song::NONE()
+                }
+            };
+        }
+
+        self.idx = self.queue.push_front(song);
+
+        self.queue_post();
+    }
+
     fn queue_post(&mut self) {
         if self.current_song.is_none() {
             let song = self.queue.get(&self.idx).unwrap().clone();
