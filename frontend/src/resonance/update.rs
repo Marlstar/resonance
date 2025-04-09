@@ -108,19 +108,22 @@ impl super::Resonance {
     }
 
     fn download(&mut self, url: String) -> Task {
+        self.backend.downloading.insert(url.clone());
         Task::future(tasks::download(url))
     }
 
-    fn download_complete(&mut self, _url: &str, vid: SingleVideo) -> Task {
+    fn download_complete(&mut self, url: &str, vid: SingleVideo) -> Task {
         // TODO: error handling
         println!("Downloaded {} by {}", vid.title.clone().unwrap().purple(), vid.channel.clone().unwrap().purple());
         let _ = self.backend.install_downloaded(vid);
+        self.backend.downloading.remove(url);
         Task::done(Message::Library(LibraryMessage::Refresh))
     }
 
-    fn download_failed(&self, url: &str) -> Task {
+    fn download_failed(&mut self, url: &str) -> Task {
         // TODO: handle failed downloads
         println!("Failed downloading {}", url.purple());
+        self.backend.downloading.remove(url);
         Task::none()
     }
 

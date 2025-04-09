@@ -8,7 +8,7 @@ mod subscription;
 pub struct Resonance {
     backend: backend::Resonance,
     screen: Screen,
-    theme: iced::Theme
+    theme: iced::Theme,
 }
 impl Default for Resonance {
     fn default() -> Self {

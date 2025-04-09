@@ -1,4 +1,5 @@
 use std::thread::JoinHandle;
+use hashbrown::HashSet;
 
 use crate::{AudioPlayer, Database, Error, Song};
 use youtube_dl::SingleVideo;
@@ -9,6 +10,7 @@ use search::{search_youtube_for_ids, get_full_metadata};
 pub struct Resonance {
     db: Database,
     pub audio: AudioPlayer,
+    pub downloading: HashSet<String>,
     _mpris_handle: JoinHandle<()>,
 }
 impl Resonance {
@@ -16,6 +18,7 @@ impl Resonance {
         let s = Self {
             db: Database::load()?,
             audio: AudioPlayer::new()?,
+            downloading: HashSet::new(),
             _mpris_handle: crate::mpris::run(),
         };
         Ok(s)

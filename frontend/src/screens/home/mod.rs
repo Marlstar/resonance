@@ -26,7 +26,7 @@ impl Default for Home {
 impl ScreenCore for Home {
     type Message = HomeMessage;
 
-    fn view<'a>(&self, _backend: &backend::Resonance) -> Element<'a, Message> {
+    fn view<'a>(&self, backend: &backend::Resonance) -> Element<'a, Message> {
         let library_button = button("Library")
             .on_press(Message::SwitchToLibraryScreen);
 
@@ -35,7 +35,7 @@ impl ScreenCore for Home {
         let download_url_input = text_input("Enter URL to download", &self.download_url_input)
             .on_input(|content| Message::Home(HomeMessage::DownloadURLChanged(content)));
 
-        //let downloading = self.downloading_songs.iter().map(|url| widgets::downloading(url)).collect();
+        let downloading = backend.downloading.iter().map(|url| widgets::downloading(url)).collect();
 
         return column![
             library_button,
@@ -43,7 +43,7 @@ impl ScreenCore for Home {
                 download_url_input,
                 download_button,
             ],
-            //Column::from_vec(downloading)
+            iced::widget::Column::from_vec(downloading),
             text(""),
             text(""),
             svg(crate::assets::icon())
