@@ -10,6 +10,7 @@ use crate::Task;
 use crate::screens::Screen;
 use backend::SingleVideo;
 use backend::QueueEvent;
+use backend::Song;
 use colored::Colorize;
 
 impl super::Resonance {
@@ -28,7 +29,7 @@ impl super::Resonance {
 
             Message::DeleteSong(id) => self.delete_song(id),
 
-            Message::PlaySong(id) => self.play_song(id),
+            Message::PlaySong(song) => self.play_song(song),
             Message::Queue(event) => self.queue_event(event),
             Message::Skip(num) => self.skip(num),
             Message::PauseSong => self.pause_song(),
@@ -136,9 +137,8 @@ impl super::Resonance {
         Task::none()
     }
 
-    fn play_song(&mut self, id: i32) -> Task {
+    fn play_song(&mut self, song: Song) -> Task {
         // TODO: error handling
-        let song = self.backend.get_song(id).unwrap();
         println!("Playing {} by {}", song.name, song.author);
         self.backend.audio.replace_queue(song);
         self.backend.audio.resume();

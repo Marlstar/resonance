@@ -23,7 +23,7 @@ impl ScreenCore for Library {
     type Message = LibraryMessage;
 
     fn view<'a>(&self, backend: &backend::Resonance) -> iced::Element<'a, crate::Message> {
-        let songs = self.songs.iter().map(|s| widgets::song(s, Message::PlaySong(s.id), true)).collect();
+        let songs = self.songs.iter().map(|s| widgets::song(s, Message::PlaySong(s.clone()), true)).collect();
         let songs = Column::from_vec(songs)
             .width(Length::Fill)
             .spacing(10);

@@ -153,7 +153,7 @@ impl Playing {
     fn queue<'a>(&self, backend: &backend::Resonance) -> iced::Element<'a, Message> {
         use backend::linked_list::DoublyIterable;
         // TODO: skip to the song in the queue
-        let songs = backend.audio.queue.iter().map(|s| crate::screens::library::widgets::song(s, Message::PlaySong(s.id), false)).collect();
+        let songs = backend.audio.queue.iter().map(|s| crate::screens::library::widgets::song(s, Message::PlaySong(s.clone()), false)).collect();
         let col = Column::from_vec(songs)
             .width(Length::FillPortion(1));
         col.into()
