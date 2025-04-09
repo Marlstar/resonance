@@ -89,6 +89,8 @@ impl super::Resonance {
             Recv::PlayPause => if self.backend.audio.playing { Message::PauseSong } else { Message::ResumeSong },
             Recv::Position(t) => Message::Seek(t.as_secs() as f32),
             Recv::SeekRelative(t) => Message::SeekRelative(t.as_secs() as f32),
+            Recv::GoNext => Message::Skip(1),
+            Recv::GoPrev => Message::Skip(-1),
         })
     }
 
