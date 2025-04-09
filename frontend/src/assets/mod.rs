@@ -25,5 +25,7 @@ svg!(skip_forward, "skip.svg");
 svg!(skip_back, "skip.svg", Radians::PI);
 svg!(queue_next, "queue_next.svg");
 svg!(queue_end, "queue_end.svg");
+svg!(fold_menu_right, "fold_menu.svg");
+svg!(fold_menu_left, "fold_menu.svg", Radians::PI);
 
 svg!(circle, "circle.svg");

@@ -2,6 +2,7 @@ use backend::util::format_duration;
 use iced::alignment::{Horizontal, Vertical};
 use iced::widget::image::Handle;
 use iced::widget::{ self, button, column, container, row, slider, stack, svg, text, Column, Space };
+use iced::Length::Fill;
 use iced::{Font, Length};
 use crate::screens::ScreenCore;
 use crate::Task;
@@ -111,20 +112,33 @@ impl ScreenCore for Playing {
         let main = container(main)
             .align_x(Horizontal::Center);
 
-        let queue = self.queue(backend);
-        let queue = container(queue)
-            .align_x(Horizontal::Center);
-
-        let main = row![
+        let mut main = row![
             main.width(Length::FillPortion(2)),
-            queue,
         ].align_y(Vertical::Center);
+
+        if self.queue_shown {
+            let queue = self.queue(backend);
+            let queue = container(queue)
+                .align_x(Horizontal::Center);
+            main = main.push(queue);
+        }
+
+        // ====
+        let library_button = button("Library")
+            .on_press(Message::SwitchToLibraryScreen);
+        
+        let queue_flyout_button = button(if self.queue_shown {assets::fold_menu_right()} else {assets::fold_menu_left()})
+            .style(|_,_| button::Style::default())
+            .width(40.0)
+            .on_press(Message::Playing(PlayingMessage::QueueShown(!self.queue_shown)));
+
+        let topbar = row![library_button, Space::new(Fill, 0.0), queue_flyout_button]
+            .align_y(Vertical::Top);
 
         stack!(
             bg,
             column![
-                button("Library")
-                .on_press(Message::SwitchToLibraryScreen),
+                topbar,
 
                 container(main)
                     .width(Length::Fill)
