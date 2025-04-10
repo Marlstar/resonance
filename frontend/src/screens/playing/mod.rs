@@ -169,7 +169,7 @@ impl Playing {
     fn queue<'a>(&self, backend: &backend::Resonance) -> iced::Element<'a, Message> {
         use backend::linked_list::DoublyIterable;
         // TODO: skip to the song in the queue
-        let songs = backend.audio.queue.iter().map(|s| crate::screens::library::widgets::song(s, Message::PlaySong(s.clone()), false)).collect();
+        let songs = backend.audio.queue.iter().map(|s| QUEUE_LINE_VIEW_BUILDER.build(s)).collect();
         let col = Column::from_vec(songs)
             .width(Length::FillPortion(1));
         col.into()
@@ -213,3 +213,11 @@ pub enum PlayingMessage {
     PositionUpdate,
     QueueShown(bool),
 }
+
+
+const QUEUE_LINE_VIEW_BUILDER: crate::widgets::song::line_view::Builder = crate::widgets::song::line_view::Builder {
+    // TODO: move around in queue
+    cover_click_message: |s| Message::PlaySong(s.clone()),
+    background: None,
+    show_queue_button: false,
+};

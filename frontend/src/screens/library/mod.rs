@@ -6,8 +6,6 @@ use crate::Task;
 use crate::Message;
 use backend::Song;
 
-pub mod widgets;
-
 #[derive(Debug, Clone)]
 pub struct Library {
     songs: Vec<Song>
@@ -23,7 +21,8 @@ impl ScreenCore for Library {
     type Message = LibraryMessage;
 
     fn view<'a>(&self, backend: &backend::Resonance) -> iced::Element<'a, crate::Message> {
-        let songs = self.songs.iter().map(|s| widgets::song(s, Message::PlaySong(s.clone()), true)).collect();
+        // let songs = self.songs.iter().map(|s| widgets::song(s, Message::PlaySong(s.clone()), true)).collect();
+        let songs = self.songs.iter().map(|s| SONG_LINE_VIEW_BUILDER.build(s)).collect();
         let songs = Column::from_vec(songs)
             .width(Length::Fill)
             .spacing(10);
@@ -63,3 +62,10 @@ impl Library {
 pub enum LibraryMessage {
     Refresh,
 }
+
+
+const SONG_LINE_VIEW_BUILDER: crate::widgets::song::line_view::Builder = crate::widgets::song::line_view::Builder {
+    cover_click_message: |s| Message::PlaySong(s.clone()),
+    background: None,
+    show_queue_button: true,
+};
