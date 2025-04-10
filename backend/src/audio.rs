@@ -181,6 +181,7 @@ impl AudioPlayer { // Queue
 
         if let Some(r) = replacement {
             song = r;
+            self.load_song(song.clone())
         } else {
             song = match &self.current_song {
                 Some(s) => s.clone(),
@@ -191,7 +192,9 @@ impl AudioPlayer { // Queue
             };
         }
 
-        self.idx = self.queue.push_front(song);
+        self.idx = self.queue.push_front(song.clone());
+        // TODO: no song (frontend compatibility) -> will panic if queue is cleared without replacement
+        self.load_song(song);
 
         self.queue_post();
     }
