@@ -12,6 +12,9 @@ pub struct Builder {
     // TODO: use
     pub background: Option<iced::Background>,
     pub show_queue_button: bool,
+    pub alignment: Horizontal,
+    /// `false = left`, `true = right`
+    pub image_side: bool,
 }
 impl Builder {
     pub fn build<'a>(&self, song: &Song) -> Element<'a, Message> {
@@ -61,9 +64,13 @@ impl Builder {
                 text("·"),
                 duration,
             ].spacing(5),
-        ].spacing(5);
+        ].spacing(5).align_x(self.alignment);
 
-            let mut contents = row![thumbnail_overlay, song_info]
+            let mut contents = if self.image_side { // Right
+                row![song_info, thumbnail_overlay]
+            } else { // Left
+                row![thumbnail_overlay, song_info]
+            }
                 .spacing(10)
                 .align_y(Vertical::Center);
         if self.show_queue_button {
@@ -82,9 +89,9 @@ impl Builder {
                 }
                 style
             })
-        .padding(5)
+            .padding(5)
             .width(Fill)
-            .align_x(Horizontal::Left);
+            .align_x(self.alignment);
 
         return Element::new(container);
     }
