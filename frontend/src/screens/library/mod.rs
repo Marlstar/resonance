@@ -1,5 +1,5 @@
 use iced::widget::{ button, column, Column, scrollable };
-use iced::Element;
+use iced::{Background, Element};
 use iced::Length;
 use crate::screens::ScreenCore;
 use crate::Task;
@@ -66,6 +66,6 @@ pub enum LibraryMessage {
 
 const SONG_LINE_VIEW_BUILDER: crate::widgets::song::line_view::Builder = crate::widgets::song::line_view::Builder {
     cover_click_message: |s| Message::PlaySong(s.clone()),
-    background: None,
+    background: Some(Background::Color(crate::appearance::colours::SURFACE0)),
     show_queue_button: true,
 };

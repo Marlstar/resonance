@@ -72,11 +72,15 @@ impl Builder {
         }
 
         // Container style
+        let bg = self.background;
         let container = container(contents)
-            .style(|_theme: &Theme| {
-                container::Style::default()
-                    .background(Background::Color(colours::SURFACE0))
-                    .border(Border::default().rounded(10))
+            .style(move |_theme: &Theme| {
+                let mut style = container::Style::default()
+                    .border(Border::default().rounded(10));
+                if let Some(bg) = bg {
+                    style.background = Some(bg);
+                }
+                style
             })
         .padding(5)
             .width(Fill)
