@@ -1,7 +1,7 @@
 use backend::util::format_duration;
 use iced::alignment::{Horizontal, Vertical};
 use iced::widget::image::Handle;
-use iced::widget::{ self, button, column, container, row, slider, stack, svg, text, Column, Space };
+use iced::widget::{ self, button, column, container, row, scrollable, slider, stack, svg, text, Column, Space };
 use iced::Length::Fill;
 use iced::{Font, Length};
 use crate::screens::ScreenCore;
@@ -172,7 +172,8 @@ impl Playing {
         let songs = backend.audio.queue.iter().map(|s| QUEUE_LINE_VIEW_BUILDER.build(s)).collect();
         let col = Column::from_vec(songs)
             .width(Length::FillPortion(1));
-        col.into()
+        scrollable(col)
+            .into()
     }
 }
 impl Playing {
