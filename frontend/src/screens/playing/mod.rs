@@ -178,9 +178,6 @@ impl Playing {
                 None => break 'before vec![],
             };
 
-            let before = backend.audio.queue.iter_backward_from(&prev).map(|b| b.clone().name).collect::<Vec<String>>();
-            println!("|> {before:?}");
-
             let mut before = backend.audio.queue.iter_backward_from(&prev)
                 .enumerate()
                 .map(|(a,b)| (-(a as isize) - 1, b.clone()))
@@ -191,14 +188,11 @@ impl Playing {
         };
         let current = backend.audio.queue.get(&backend.audio.idx).unwrap().clone(); // TODO: error handling for empty queue?
         
-        println!("Before: {:?}", before.iter().map(|(a,b)| format!("{a} | {}", b.name)).collect::<Vec<String>>());
-
         let after = backend.audio.queue.iter_from(&backend.audio.idx)
             .enumerate()
             .map(|(a,b)| (a as isize, b.clone()))
             .skip(1)
             .collect::<Vec<(isize, Song)>>();
-        println!("After: {:?}\n", after.iter().map(|(a,b)| format!("{a} | {}", b.name)).collect::<Vec<String>>());
 
 
         // let mut songs = Vec::with_capacity(before.len() + after.len() + 1);
