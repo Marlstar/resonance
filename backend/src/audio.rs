@@ -24,7 +24,7 @@ pub struct AudioPlayer {
     // Main song control stuff
     pub playing: bool,
     pub queue: Queue,
-    idx: DoublyIdx<Song>,
+    pub idx: DoublyIdx<Song>,
     pub current_song: Option<Song>,
     pub position: f32,
     pub progress: f32,
@@ -211,6 +211,7 @@ impl AudioPlayer { // Queue
     }
 
     // Queue interaction
+    // TODO: batch skip
     pub fn skip(&mut self, forward: bool) -> bool {
         // TODO: remove
         let next = if forward {

@@ -19,7 +19,7 @@ pub enum Message {
 
     PlaySong(backend::Song),
     Queue(backend::QueueEvent),
-    Skip(i32),
+    Skip(isize),
     ResumeSong,
     PauseSong,
 

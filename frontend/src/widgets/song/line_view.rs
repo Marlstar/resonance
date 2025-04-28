@@ -18,6 +18,10 @@ pub struct Builder {
 }
 impl Builder {
     pub fn build<'a>(&self, song: &Song) -> Element<'a, Message> {
+        self.build_with_msg(song, (self.cover_click_message)(song))
+    }
+
+    pub fn build_with_msg<'a>(&self, song: &Song, msg: Message) -> Element<'a, Message> {
         let thumbnail = container(image(backend::dirs().song_thumbnail(&song.ytid))
             .height(THUMBNAIL_SIZE))
             .align_y(Vertical::Center);
@@ -34,7 +38,7 @@ impl Builder {
         .width(Fill)
             .height(Fill)
             // .on_press(Message::PlaySong(song.id));
-            .on_press((self.cover_click_message)(song));
+            .on_press(msg);
         let play_overlay = container(play_button)
             .center(Fill);
         let thumbnail_overlay = hover(thumbnail, play_overlay);

@@ -154,7 +154,7 @@ impl super::Resonance {
         Task::none()
     }
 
-    fn skip(&mut self, num: i32) -> Task {
+    fn skip(&mut self, num: isize) -> Task {
         for _ in 0..num.abs() {
             self.backend.audio.skip(num > 0);
         }
