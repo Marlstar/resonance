@@ -1,4 +1,4 @@
-use iced::widget::{ text, button, column, row, text_input, svg };
+use iced::widget::{text, button, column, row, text_input};
 use iced::Element;
 use crate::screens::ScreenCore;
 use crate::Task;

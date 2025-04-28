@@ -157,6 +157,7 @@ impl AudioPlayer { // Queue
     //     let mut q = self.queue;
     // }
 
+    #[allow(dead_code)] // TODO: remove
     fn queue_at_idx(&mut self, song: Song, idx: DoublyIdx<Song>, after: bool) {
         if after {
             self.queue.insert_next_to(&idx, song);
@@ -233,6 +234,7 @@ impl AudioPlayer { // Queue
     }
 }
 
+#[allow(dead_code)]
 struct AudioHandler {
     // Rodio
     _stream: OutputStream,
@@ -319,6 +321,7 @@ impl AudioHandler {
         }
     }
 
+    #[allow(dead_code)]
     fn play_song(&self, song: Song) {
         self.load_song(song);
         self.resume();
@@ -349,6 +352,8 @@ impl AudioHandler {
     pub fn playback_pos_secs(&self) -> f32 {
         self.sink.get_pos().as_secs_f32().floor()
     }
+
+    #[allow(dead_code)]
     pub fn playback_remaining(&self) -> f32 {
         return self.duration() - self.playback_pos_secs();
     }

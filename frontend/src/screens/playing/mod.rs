@@ -2,14 +2,14 @@ use backend::linked_list::DoublyEnds;
 use backend::util::format_duration;
 use iced::alignment::{Horizontal, Vertical};
 use iced::widget::image::Handle;
-use iced::widget::{ self, button, column, container, row, scrollable, slider, stack, svg, text, Column, Space };
+use iced::widget::{ self, button, column, container, row, scrollable, slider, stack, text, Column, Space };
 use iced::Length::Fill;
 use iced::{Font, Length};
 use crate::screens::ScreenCore;
 use crate::Task;
 use crate::Message;
 use crate::assets;
-use backend::{QueueEvent, Song};
+use backend::Song;
 
 #[derive(Debug, Clone)]
 pub struct Playing {
@@ -172,13 +172,13 @@ impl Playing {
         // TODO: skip to the song in the queue
         // let songs = backend.audio.queue.iter().map(|s| QUEUE_LINE_VIEW_BUILDER.build(s)).collect();
 
-        let mut before = 'before: {
+        let before = 'before: {
             let prev = match backend.audio.queue.prev_idx_of(&backend.audio.idx) {
                 Some(p) => p,
                 None => break 'before vec![],
             };
 
-            let mut before = backend.audio.queue.iter_backward_from(&prev).map(|b| b.clone().name).collect::<Vec<String>>();
+            let before = backend.audio.queue.iter_backward_from(&prev).map(|b| b.clone().name).collect::<Vec<String>>();
             println!("|> {before:?}");
 
             let mut before = backend.audio.queue.iter_backward_from(&prev)
