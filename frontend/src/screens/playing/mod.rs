@@ -168,25 +168,16 @@ impl ScreenCore for Playing {
 }
 impl Playing {
     fn queue<'a>(&self, backend: &backend::Resonance) -> iced::Element<'a, Message> {
+        // TODO: move some of this logic to the backend
         use backend::linked_list::DoublyIterable;
-        // TODO: skip to the song in the queue
-        // let songs = backend.audio.queue.iter().map(|s| QUEUE_LINE_VIEW_BUILDER.build(s)).collect();
+        let mut before = backend.audio.queue.iter_backward_from(&backend.audio.idx)
+            .enumerate()
+            .map(|(a,b)| (-(a as isize), b.clone()))
+            .collect::<Vec<(isize, Song)>>();
+        before = before.into_iter().rev().collect::<Vec<(isize,Song)>>();
+        let current = before.pop().unwrap().1;
 
-        let before = 'before: {
-            let prev = match backend.audio.queue.prev_idx_of(&backend.audio.idx) {
-                Some(p) => p,
-                None => break 'before vec![],
-            };
-
-            let mut before = backend.audio.queue.iter_backward_from(&prev)
-                .enumerate()
-                .map(|(a,b)| (-(a as isize) - 1, b.clone()))
-                .collect::<Vec<(isize,Song)>>();
-            before = before.into_iter().rev().collect::<Vec<(isize,Song)>>();
-
-            before
-        };
-        let current = backend.audio.queue.get(&backend.audio.idx).unwrap().clone(); // TODO: error handling for empty queue?
+        // let current = backend.audio.queue.get(&backend.audio.idx).unwrap().clone(); // TODO: error handling for empty queue?
         
         let after = backend.audio.queue.iter_from(&backend.audio.idx)
             .enumerate()
