@@ -3,7 +3,7 @@ use std::thread::{self, JoinHandle};
 use std::sync::mpsc::{sync_channel, Receiver, SyncSender, TrySendError};
 use std::time::Duration;
 use crate::AM;
-use orx_linked_list::{DoublyIdx, DoublyList, DoublyEnds, DoublyEndsMut};
+use orx_linked_list::{DoublyIdx, DoublyList, DoublyEnds, DoublyEndsMut, DoublyIterable};
 use rodio::{Decoder, OutputStream, OutputStreamHandle, Sink};
 use crate::Song;
 use crate::Error;
@@ -209,6 +209,39 @@ impl AudioPlayer { // Queue
             let song = self.queue.get(&self.idx).unwrap().clone();
             self.load_song(song);
         }
+    }
+
+    /// From current song backwards
+    pub fn get_previous_songs(&self) -> Vec<Song> {
+        use orx_linked_list::DoublyIterable;
+        let mut before = self.queue.iter_backward_from(&self.idx)
+            .map(Clone::clone)
+            .skip(1) // ignore the current song
+            .collect::<Vec<Song>>();
+        before = before.into_iter().rev().collect::<Vec<Song>>();
+        before
+    }
+
+    pub fn get_next_songs(&self) -> Vec<Song> {
+        let after = self.queue.iter_from(&self.idx)
+            .map(Clone::clone)
+            .skip(1) // ignore the current song
+            .collect::<Vec<Song>>();
+        after
+    }
+
+    pub fn queue_with_offsets(&self) -> Vec<(isize, Song)> {
+        let before = self.get_previous_songs().into_iter().enumerate().map(|(a,b)| (-(a as isize) - 1,b)).collect::<Vec<(isize, Song)>>();
+        let current = self.current_song.as_ref().unwrap().clone(); // TODO: error handling for when there is no song playing at the start
+        let after = self.get_next_songs().into_iter().enumerate().map(|(a,b)| ((a as isize)+1, b)).collect::<Vec<(isize, Song)>>();
+
+        let mut songs = before;
+        songs.push((0,current));
+        for s in after {
+            songs.push(s)
+        }
+
+        songs
     }
 
     // Queue interaction

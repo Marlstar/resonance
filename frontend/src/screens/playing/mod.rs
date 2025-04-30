@@ -169,31 +169,7 @@ impl ScreenCore for Playing {
 impl Playing {
     fn queue<'a>(&self, backend: &backend::Resonance) -> iced::Element<'a, Message> {
         // TODO: move some of this logic to the backend
-        use backend::linked_list::DoublyIterable;
-        let mut before = backend.audio.queue.iter_backward_from(&backend.audio.idx)
-            .enumerate()
-            .map(|(a,b)| (-(a as isize), b.clone()))
-            .collect::<Vec<(isize, Song)>>();
-        before = before.into_iter().rev().collect::<Vec<(isize,Song)>>();
-        let current = before.pop().unwrap().1;
-
-        // let current = backend.audio.queue.get(&backend.audio.idx).unwrap().clone(); // TODO: error handling for empty queue?
-        
-        let after = backend.audio.queue.iter_from(&backend.audio.idx)
-            .enumerate()
-            .map(|(a,b)| (a as isize, b.clone()))
-            .skip(1)
-            .collect::<Vec<(isize, Song)>>();
-
-
-        // let mut songs = Vec::with_capacity(before.len() + after.len() + 1);
-        let mut songs = before;
-        songs.push((0,current));
-        for s in after {
-            songs.push(s)
-        }
-        // dbg!(&songs);
-
+        let songs = backend.audio.queue_with_offsets();
         let songs = songs.into_iter().map(|(offset, song)| QUEUE_LINE_VIEW_BUILDER.build_with_msg(&song, Message::Skip(offset))).collect();
 
         let col = Column::from_vec(songs)
