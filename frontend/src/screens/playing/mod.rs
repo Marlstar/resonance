@@ -1,4 +1,3 @@
-use backend::linked_list::DoublyEnds;
 use backend::util::format_duration;
 use iced::alignment::{Horizontal, Vertical};
 use iced::widget::image::Handle;

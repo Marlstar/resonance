@@ -1,4 +1,3 @@
-use iced::alignment::Horizontal;
 use iced::widget::{ button, column, Column, scrollable };
 use iced::{Background, Element};
 use iced::Length;
