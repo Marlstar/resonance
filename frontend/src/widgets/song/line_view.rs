@@ -12,9 +12,8 @@ pub struct Builder {
     // TODO: use
     pub background: Option<iced::Background>,
     pub show_queue_button: bool,
-    pub alignment: Horizontal,
     /// `false = left`, `true = right`
-    pub image_side: bool,
+    pub alignment_x: bool,
 }
 impl Builder {
     pub fn build<'a>(&self, song: &Song) -> Element<'a, Message> {
@@ -22,6 +21,8 @@ impl Builder {
     }
 
     pub fn build_with_msg<'a>(&self, song: &Song, msg: Message) -> Element<'a, Message> {
+        let alignment = if self.alignment_x { Horizontal::Right } else { Horizontal::Left };
+
         let thumbnail = container(image(backend::dirs().song_thumbnail(&song.ytid))
             .height(THUMBNAIL_SIZE))
             .align_y(Vertical::Center);
@@ -68,9 +69,9 @@ impl Builder {
                 text("·"),
                 duration,
             ].spacing(5),
-        ].spacing(5).align_x(self.alignment);
+        ].spacing(5).align_x(alignment);
 
-            let mut contents = if self.image_side { // Right
+            let mut contents = if self.alignment_x { // Right
                 row![song_info, thumbnail_overlay]
             } else { // Left
                 row![thumbnail_overlay, song_info]
@@ -95,7 +96,7 @@ impl Builder {
             })
             .padding(5)
             .width(Fill)
-            .align_x(self.alignment);
+            .align_x(alignment);
 
         return Element::new(container);
     }

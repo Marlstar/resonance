@@ -69,6 +69,5 @@ const SONG_LINE_VIEW_BUILDER: crate::widgets::song::line_view::Builder = crate::
     cover_click_message: |s| Message::PlaySong(s.clone()),
     background: Some(Background::Color(crate::appearance::colours::SURFACE0)),
     show_queue_button: true,
-    alignment: Horizontal::Left,
-    image_side: false,
+    alignment_x: false,
 };

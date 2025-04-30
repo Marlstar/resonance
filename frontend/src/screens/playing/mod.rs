@@ -223,6 +223,5 @@ const QUEUE_LINE_VIEW_BUILDER: crate::widgets::song::line_view::Builder = crate:
     cover_click_message: |s| Message::PlaySong(s.clone()),
     background: None,
     show_queue_button: false,
-    alignment: Horizontal::Right,
-    image_side: true,
+    alignment_x: true,
 };
