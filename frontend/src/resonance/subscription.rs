@@ -26,5 +26,5 @@ fn mpris_stream() -> impl Sipper<Never, Message> {
     })
 }
 fn mpris_send_seek() -> Subscription<Message> {
-    iced::time::every(Duration::from_millis(250)).map(|_| Message::SeekUpdate)
+    iced::time::every(Duration::from_millis(100)).map(|_| Message::SeekUpdate)
 }

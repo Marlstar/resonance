@@ -63,7 +63,7 @@ impl AudioPlayer {
     fn handle_message(&mut self, message: Message) {
         // TODO: in future, don't send position updates as often, estimate it instead and update occationally?
         match message {
-            Message::Progress { percentage, seconds } => {
+            Message::Progress { percentage, position: seconds } => {
                 self.progress = percentage;
                 self.position = seconds;
             },
@@ -331,16 +331,16 @@ impl AudioHandler {
 
             // Progress updates
             let percentage = handler.playback_percentage();
-            let seconds = handler.playback_pos_secs();
-            if seconds as i32 != pos as i32 {
-                match handler.tx.try_send(Message::Progress { percentage, seconds }) {
+            let new = handler.playback_pos();
+            if (new - pos).abs() > 0.2 {
+                match handler.tx.try_send(Message::Progress { percentage, position: new }) {
                     Ok(_) => {
-                        rt.spawn(async move { mpris_tx.send(Emit::Seek(seconds)).await });
+                        rt.spawn(async move { mpris_tx.send(Emit::Seek(new)).await });
                     },
                     Err(std::sync::mpsc::TrySendError::Full(_)) => {},
                     Err(std::sync::mpsc::TrySendError::Disconnected(_)) => panic!("audio message channel disconnected"),
                 }
-                pos = seconds;
+                pos = new;
             }
         }
     }
@@ -382,18 +382,19 @@ impl AudioHandler {
         self.sink.try_seek(Duration::from_secs_f32(pos)).unwrap();
     }
 
-    pub fn playback_pos_secs(&self) -> f32 {
-        self.sink.get_pos().as_secs_f32().floor()
+    pub fn playback_pos(&self) -> f32 {
+        self.sink.get_pos().as_secs_f32()
     }
 
     #[allow(dead_code)]
     pub fn playback_remaining(&self) -> f32 {
-        return self.duration() - self.playback_pos_secs();
+        return self.duration() - self.playback_pos();
     }
     pub fn duration(&self) -> f32 {
-        match &self.current {
-            Some(s) => s.duration as f32,
-            None => 0.0
+        if let Some(s) = &self.current {
+            s.duration as f32
+        } else {
+            0.0
         }
     }
     fn playback_percentage(&self) -> f32 {
@@ -431,7 +432,7 @@ impl Command {
 }
 #[derive(Debug, Clone)]
 enum Message {
-    Progress{ percentage: f32, seconds: f32 },
+    Progress { percentage: f32, position: f32 },
     Empty,
 }
 

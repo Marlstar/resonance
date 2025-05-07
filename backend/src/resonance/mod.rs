@@ -41,6 +41,7 @@ impl Resonance {
             author = notopic.to_string();
         }
         let album = vid.album.unwrap_or("No album".to_string());
+        // TODO: get higher-accuracy duration from audio file directly
         let duration = vid.duration.expect("failed to get video duration").as_i64().unwrap() as i32;
 
         self.db.add_song(&id, &name, &author, &album, duration)
