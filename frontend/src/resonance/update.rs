@@ -142,8 +142,7 @@ impl super::Resonance {
         println!("Playing {} by {}", song.name, song.author);
         self.backend.audio.replace_queue(song);
         self.backend.audio.resume();
-        // TODO: don't auto-switch once things are implemented fully
-        Task::done(Message::SwitchToPlayingScreen)
+        Task::none()
     }
 
     fn queue_event(&mut self, event: QueueEvent) -> Task {
