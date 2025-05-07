@@ -230,9 +230,15 @@ impl AudioPlayer { // Queue
         after
     }
 
+    /// Get the full queue as a vector of songs with their relative offsets.
+    /// Will panic if there is no song playing.
+    /// ```
+    /// // Example return
+    /// vec![(-1, PrevSong), (0, CurrentSong), (1, NextSong)]
+    ///```
     pub fn queue_with_offsets(&self) -> Vec<(isize, Song)> {
         let before = self.get_previous_songs().into_iter().enumerate().map(|(a,b)| (-(a as isize) - 1,b)).collect::<Vec<(isize, Song)>>();
-        let current = self.current_song.as_ref().unwrap().clone(); // TODO: error handling for when there is no song playing at the start
+        let current = self.current_song.as_ref().unwrap().clone();
         let after = self.get_next_songs().into_iter().enumerate().map(|(a,b)| ((a as isize)+1, b)).collect::<Vec<(isize, Song)>>();
 
         let mut songs = before;
