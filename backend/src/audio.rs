@@ -61,7 +61,6 @@ impl AudioPlayer {
     }
 
     fn handle_message(&mut self, message: Message) {
-        // TODO: in future, don't send position updates as often, estimate it instead and update occationally?
         match message {
             Message::Progress { percentage, position: seconds } => {
                 self.progress = percentage;
