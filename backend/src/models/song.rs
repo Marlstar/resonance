@@ -40,7 +40,6 @@ pub fn create(conn: &mut SqliteConnection, ytid: &str, name: &str, author: &str,
         .get_result(conn)
 }
 
-// TODO: fix this jank after queueing works fully
 impl Song {
     #[allow(non_snake_case)]
     pub fn NONE() -> Song {
@@ -56,5 +55,9 @@ impl Song {
     #[allow(non_snake_case)]
     pub fn IS_NONE(&self) -> bool {
         return self.id == -1;
+    }
+    #[allow(non_snake_case)]
+    pub fn IS_VALID(&self) -> bool {
+        return !self.IS_NONE()
     }
 }
