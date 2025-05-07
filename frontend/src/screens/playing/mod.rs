@@ -167,7 +167,6 @@ impl ScreenCore for Playing {
 }
 impl Playing {
     fn queue<'a>(&self, backend: &backend::Resonance) -> iced::Element<'a, Message> {
-        // TODO: move some of this logic to the backend
         let songs = backend.audio.queue_with_offsets();
         let songs = songs.into_iter().map(|(offset, song)| QUEUE_LINE_VIEW_BUILDER.build_with_msg(&song, Message::Skip(offset))).collect();
 
@@ -218,7 +217,6 @@ pub enum PlayingMessage {
 
 
 const QUEUE_LINE_VIEW_BUILDER: crate::widgets::song::line_view::Builder = crate::widgets::song::line_view::Builder {
-    // TODO: move around in queue
     cover_click_message: |s| Message::PlaySong(s.clone()),
     background: None,
     show_queue_button: false,

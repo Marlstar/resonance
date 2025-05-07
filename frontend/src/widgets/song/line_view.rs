@@ -9,7 +9,6 @@ const THUMBNAIL_SIZE: u32 = 48;
 
 pub struct Builder {
     pub cover_click_message: fn(&Song) -> Message,
-    // TODO: use
     pub background: Option<iced::Background>,
     pub show_queue_button: bool,
     /// `false = left`, `true = right`
