@@ -1,4 +1,5 @@
 use crate::screens::Home;
+use crate::screens::HomeMessage;
 use crate::screens::Library;
 use crate::screens::LibraryMessage;
 use crate::screens::Playing;
@@ -112,7 +113,12 @@ impl super::Resonance {
 
     fn download(&mut self, url: String) -> Task {
         self.backend.downloading.insert(url.clone());
-        Task::future(tasks::download(url))
+        Task::batch([
+            // Clear download url input
+            Task::done(Message::Home(HomeMessage::DownloadURLChanged(String::from("")))),
+            // Download the song
+            Task::future(tasks::download(url)),
+        ])
     }
 
     fn download_complete(&mut self, url: &str, vid: SingleVideo) -> Task {

@@ -33,7 +33,8 @@ impl ScreenCore for Home {
         let download_button = button("Download")
             .on_press(Message::Download(self.download_url_input.clone()));
         let download_url_input = text_input("Enter URL to download", &self.download_url_input)
-            .on_input(|content| Message::Home(HomeMessage::DownloadURLChanged(content)));
+            .on_input(|content| Message::Home(HomeMessage::DownloadURLChanged(content)))
+            .on_submit(Message::Download(self.download_url_input.clone()));
 
         let downloading = backend.downloading.iter().map(|url| widgets::downloading(url)).collect();
 
