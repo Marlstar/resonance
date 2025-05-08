@@ -160,9 +160,7 @@ impl super::Resonance {
     }
 
     fn skip(&mut self, num: isize) -> Task {
-        for _ in 0..num.abs() {
-            self.backend.audio.skip(num > 0);
-        }
+        self.backend.audio.skip(num);
         Task::done(Message::Playing(PlayingMessage::SongUpdate))
     }
 

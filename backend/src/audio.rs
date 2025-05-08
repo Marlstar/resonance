@@ -67,12 +67,11 @@ impl AudioPlayer {
                 self.position = seconds;
             },
             Message::Empty => {
-                if self.song_queued_next() {
-                    self.skip(true);
+                if self.skip(1) == 1 {
                     // TODO: nicer comms than this jank
                     self.song_refresh_pending = true;
-                }
-                else {
+                } else {
+                    // TODO: some sort of marker to fix ended-song seeking issue
                     self.pause();
                 }
             },
@@ -250,25 +249,25 @@ impl AudioPlayer { // Queue
     }
 
     // Queue interaction
-    // TODO: batch skip
-    pub fn skip(&mut self, forward: bool) -> bool {
-        // TODO: remove
-        let next = if forward {
-            self.queue.next_idx_of(&self.idx)
-        } else {
-            self.queue.prev_idx_of(&self.idx)
-        };
-        if let Some(next) = next {
-            let s = self.queue.get(&next).unwrap().clone();
-            self.current_song = Some(s.clone());
-            self.idx = next;
-            self.play_song(s);
-            return true;
+    pub fn skip(&mut self, count: isize) -> usize {
+        for i in 0..count.unsigned_abs() {
+            let next = if count > 0 {
+                self.queue.next_idx_of(&self.idx)
+            } else {
+                self.queue.prev_idx_of(&self.idx)
+            };
+            if let Some(next) = next {
+                let s = self.queue.get(&next).unwrap().clone();
+                self.current_song = Some(s.clone());
+                self.idx = next;
+                self.play_song(s);
+            }
+            else {
+                println!("No song in queue to skip to! (skipped {i}/{count})");
+                return i;
+            }
         }
-        else {
-            println!("No song in queue to skip to!");
-        }
-        return false;
+        return count.unsigned_abs();
     }
 }
 
