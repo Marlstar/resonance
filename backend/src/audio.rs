@@ -320,7 +320,7 @@ impl AudioHandler {
         let mpris_tx = crate::mpris::CTX.get().unwrap();
         let rt = tokio::runtime::Runtime::new().unwrap();
         let mut pos = 0f32;
-        let mut was_empty = false;
+        let mut was_empty = true;
         loop {
             // Handle pending commands
             while let Ok(cmd) = handler.rx.try_recv() {
