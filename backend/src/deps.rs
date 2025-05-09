@@ -66,3 +66,21 @@ pub async fn install_ffmpeg() {
         println!("[deps] ffmpeg installation found");
     }
 }
+
+pub async fn install_ytdlp() {
+    use youtube_dl::downloader::download_yt_dlp;
+    let path = crate::dirs().deps().join("yt-dlp");
+    if path.exists() {
+        println!("[deps] yt-dlp installation found")
+    } else {
+        match download_yt_dlp(path).await {
+            Ok(_) => {
+                println!("[install-yt-dlp] installation complete");
+            },
+            Err(e) => {
+                println!("[install-yt-dlp] installation failed with error {e:?}");
+                std::process::exit(1);
+            }
+        }
+    }
+}
