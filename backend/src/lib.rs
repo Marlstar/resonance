@@ -11,6 +11,8 @@ pub use resonance::Resonance;
 mod download;
 pub use download::download_song;
 
+pub mod deps;
+
 mod blur;
 pub use blur::blur;
 
