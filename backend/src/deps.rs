@@ -1,3 +1,5 @@
+use youtube_dl::YoutubeDl;
+
 use crate::util::flush_stdout;
 
 struct ProgressBar {
@@ -23,6 +25,9 @@ impl ProgressBar {
     }
 }
 
+pub fn ffmpeg_path() -> std::path::PathBuf {
+    crate::dirs().deps().join("ffmpeg").join("ffmpeg")
+}
 pub async fn install_ffmpeg() {
     use essi_ffmpeg::FFmpeg;
     use essi_ffmpeg::FFmpegDownloadProgress;
@@ -67,6 +72,17 @@ pub async fn install_ffmpeg() {
     }
 }
 
+pub fn ytdlp(url: impl Into<String>) -> YoutubeDl {
+    let mut ytdlp = YoutubeDl::new(url);
+    ytdlp.youtube_dl_path(ytdlp_path());
+    ytdlp.extra_arg("--ffmpeg-location");
+    ytdlp.extra_arg(format!("{}", ytdlp_path().display()));
+        
+    return ytdlp;
+}
+pub fn ytdlp_path() -> std::path::PathBuf {
+    crate::dirs().deps().join("yt-dlp").join("yt-dlp")
+}
 pub async fn install_ytdlp() {
     use youtube_dl::downloader::download_yt_dlp;
     let path = crate::dirs().deps().join("yt-dlp");

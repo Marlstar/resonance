@@ -1,8 +1,8 @@
-use youtube_dl::{SingleVideo, YoutubeDl};
+use youtube_dl::SingleVideo;
 use crate::Error;
 
 pub async fn download_song(url: &str) -> Result<SingleVideo, Error> {
-    let mut ytdl = YoutubeDl::new(url);
+    let mut ytdl = crate::deps::ytdlp(url);
     ytdl.format("ba");
 
     // TODO: songs/playlists both in this function
