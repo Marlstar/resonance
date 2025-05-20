@@ -4040,7 +4040,7 @@ dependencies = [
 
 [[package]]
 name = "resonance_backend"
-version = "1.0.0"
+version = "1.0.1"
 dependencies = [
  "colored",
  "diesel",
@@ -4059,7 +4059,7 @@ dependencies = [
 
 [[package]]
 name = "resonance_frontend"
-version = "1.0.0"
+version = "1.0.1"
 dependencies = [
  "bytes",
  "colored",
