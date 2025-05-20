@@ -33,3 +33,8 @@ features = [
 [dependencies.backend]
 path = "../backend"
 package = "resonance_backend"
+
+# The profile that 'dist' will build with
+[profile.dist]
+inherits = "release"
+lto = "thin"
