@@ -11,7 +11,7 @@ github-build-setup = "../install_deps.yml"
 # The installers to generate for each app
 installers = ["shell"]
 # Target platforms to build apps for (Rust target-triple syntax)
-targets = ["aarch64-unknown-linux-gnu", "x86_64-unknown-linux-gnu"]
+targets = ["x86_64-unknown-linux-gnu"]
 # Path that installers should place binaries in
 install-path = "CARGO_HOME"
 # Whether to install an updater program
@@ -19,5 +19,5 @@ install-updater = true
 
 [dist.github-custom-runners]
 global = "ubuntu-latest"
-aarch64-unknown-linux-gnu = "ubuntu-latest"
+# aarch64-unknown-linux-gnu = "ubuntu-latest"
 x86_64-unknown-linux-gnu = "ubuntu-latest"
