@@ -2,3 +2,5 @@ backend/target
 backend/.env
 
 frontend/target
+
+/target
