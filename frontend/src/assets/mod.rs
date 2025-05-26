@@ -29,3 +29,11 @@ svg!(fold_menu_right, "fold_menu.svg");
 svg!(fold_menu_left, "fold_menu.svg", Radians::PI);
 
 svg!(circle, "circle.svg");
+
+pub fn icon_rgba_256() -> &'static Vec<u8> {
+    use std::sync::OnceLock;
+    static BYTES: OnceLock<Vec<u8>> = OnceLock::new();
+    let bytes = include_bytes!("resonance.png");
+
+    BYTES.get_or_init(|| image::load_from_memory_with_format(bytes, image::ImageFormat::Png).unwrap().to_rgba8().into_vec())
+}

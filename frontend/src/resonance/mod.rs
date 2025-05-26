@@ -40,4 +40,11 @@ impl Resonance {
     pub fn theme(&self) -> iced::Theme {
         self.theme.clone()
     }
+
+    pub fn window_settings() -> iced::window::Settings {
+        iced::window::Settings {
+            icon: Some(iced::window::icon::from_rgba(crate::assets::icon_rgba_256().to_vec(), 256, 256).unwrap()),
+            ..Default::default()
+        }
+    }
 }
