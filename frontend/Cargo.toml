@@ -1,6 +1,6 @@
 [package]
 name = "resonance_frontend"
-version = "1.0.2"
+version = "1.1.0"
 edition = "2024"
 authors = ["Marley <marley@marlstar.com>"]
 homepage = "https://github.com/Marlstar/resonance"
