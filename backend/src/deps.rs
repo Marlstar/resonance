@@ -1,4 +1,6 @@
 use youtube_dl::YoutubeDl;
+use essi_ffmpeg::FFmpeg;
+use essi_ffmpeg::FFmpegDownloadProgress;
 
 use crate::util::flush_stdout;
 
@@ -29,9 +31,6 @@ pub fn ffmpeg_path() -> std::path::PathBuf {
     crate::dirs().deps().join("ffmpeg").join("ffmpeg")
 }
 pub async fn install_ffmpeg() {
-    use essi_ffmpeg::FFmpeg;
-    use essi_ffmpeg::FFmpegDownloadProgress;
-
     FFmpeg::override_downloaded_ffmpeg_path(crate::dirs().deps()).unwrap();
 
     if let Some((_handle, mut progress)) = FFmpeg::auto_download().await.unwrap() {
@@ -79,7 +78,7 @@ pub fn ytdlp(url: impl Into<String>) -> YoutubeDl {
     let mut ytdlp = YoutubeDl::new(url);
     ytdlp.youtube_dl_path(ytdlp_path());
     ytdlp.extra_arg("--ffmpeg-location");
-    ytdlp.extra_arg(format!("{}", ytdlp_path().display()));
+    ytdlp.extra_arg(FFmpeg::get_program().unwrap().unwrap());
         
     return ytdlp;
 }
