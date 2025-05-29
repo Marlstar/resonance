@@ -1,5 +1,6 @@
 use crate::screens;
 use backend::SingleVideo;
+use std::sync::Arc;
 
 #[derive(Debug, Clone)]
 pub enum Message {
@@ -13,7 +14,7 @@ pub enum Message {
     /// Download a song by URL
     Download(String),
     DownloadComplete(String, SingleVideo),
-    DownloadFailed(String),
+    DownloadFailed(String, Arc<backend::Error>),
 
     DeleteSong(i32),
 

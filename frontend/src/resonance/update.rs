@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use crate::screens::Home;
 use crate::screens::HomeMessage;
 use crate::screens::Library;
@@ -26,7 +28,7 @@ impl super::Resonance {
 
             Message::Download(url) => self.download(url),
             Message::DownloadComplete(url, vid) => self.download_complete(&url, vid),
-            Message::DownloadFailed(url) => self.download_failed(&url),
+            Message::DownloadFailed(url, e) => self.download_failed(&url, e),
 
             Message::DeleteSong(id) => self.delete_song(id),
 
@@ -129,9 +131,9 @@ impl super::Resonance {
         Task::done(Message::Library(LibraryMessage::Refresh))
     }
 
-    fn download_failed(&mut self, url: &str) -> Task {
+    fn download_failed(&mut self, url: &str, err: Arc<backend::Error>) -> Task {
         // TODO: handle failed downloads
-        println!("Failed downloading {}", url.purple());
+        println!("Failed downloading {}: {err:?}", url.purple());
         self.backend.downloading.remove(url);
         Task::none()
     }
