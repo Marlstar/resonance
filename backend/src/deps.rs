@@ -71,6 +71,9 @@ pub async fn install_ffmpeg() {
         println!("[deps] ffmpeg installation found");
     }
 }
+pub fn ffmpeg_installed() -> bool {
+    return crate::dirs().deps().join("ffmpeg/ffmpeg").exists();
+}
 
 pub fn ytdlp(url: impl Into<String>) -> YoutubeDl {
     let mut ytdlp = YoutubeDl::new(url);
@@ -99,4 +102,17 @@ pub async fn install_ytdlp() {
             }
         }
     }
+}
+pub fn ytdlp_installed() -> bool {
+    return crate::dirs().deps().join("yt-dlp/yt-dlp").exists();
+}
+
+pub fn install_deps() {
+    let f = ffmpeg_installed();
+    let y = ytdlp_installed();
+    if f && y { return; }
+
+    let rt = tokio::runtime::Runtime::new().unwrap();
+    if !f { rt.block_on(install_ffmpeg()); }
+    if !y { rt.block_on(install_ytdlp()); }
 }
