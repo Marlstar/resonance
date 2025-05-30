@@ -77,8 +77,11 @@ pub fn ffmpeg_installed() -> bool {
 pub fn ytdlp(url: impl Into<String>) -> YoutubeDl {
     let mut ytdlp = YoutubeDl::new(url);
     ytdlp.youtube_dl_path(ytdlp_path());
-    ytdlp.extra_arg("--ffmpeg-location");
-    ytdlp.extra_arg(FFmpeg::get_program().unwrap().unwrap());
+
+    if FFmpeg::get_program().unwrap() != Some("ffmpeg".to_string()) {
+        ytdlp.extra_arg("--ffmpeg-location");
+        ytdlp.extra_arg(FFmpeg::get_program().unwrap().unwrap());
+    }
         
     return ytdlp;
 }
