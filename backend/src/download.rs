@@ -8,7 +8,7 @@ pub async fn download_song(url: &str) -> Result<SingleVideo, Error> {
     // TODO: songs/playlists both in this function
     // `ytdl_output` is an enum of playlist and single video
     // see https://docs.rs/youtube_dl/0.10.0/youtube_dl/enum.YoutubeDlOutput.html
-    let info = match ytdl.run()?.into_single_video() {
+    let info = match ytdl.run_async().await?.into_single_video() {
         Some(a) => a,
         None => return Err(Error::YtDlNotSingleVideo),
     };
