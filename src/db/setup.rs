@@ -5,6 +5,9 @@ use diesel::Connection;
 
 pub const MIGRATIONS: EmbeddedMigrations = embed_migrations!("migrations");
 
+/// Setup the sqlite database locally.
+/// Runs all migrations (which are embedded into the binary).
+/// To actually connect to the database, see [`crate::db::connect()`]
 pub fn run_migrations() {
     let url = format!("{}", crate::dirs::DATABASE.display());
     let mut connection = diesel::sqlite::SqliteConnection::establish(&url)
