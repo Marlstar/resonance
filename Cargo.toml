@@ -14,6 +14,7 @@ colored = "*"
 diesel = { version = "2.2.10", default-features = false, features = ["sqlite", "returning_clauses_for_sqlite_3_35"] }
 diesel_migrations = { version = "2.2.0", features = ["sqlite"] }
 directories = "6.0.0"
+essi-ffmpeg = { version = "0.3.0", features = ["native-tls-vendored"] }
 image = { version = "0.25.5", default-features = false, features = ["jpeg", "png"] }
 tokio = { version = "1.45.1", features = ["macros", "rt-multi-thread", "time", "sync", "fs", "io-std", "io-util"] }
 
