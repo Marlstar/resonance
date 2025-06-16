@@ -17,6 +17,7 @@ directories = "6.0.0"
 essi-ffmpeg = { version = "0.3.0", features = ["native-tls-vendored"] }
 image = { version = "0.25.5", default-features = false, features = ["jpeg", "png"] }
 tokio = { version = "1.45.1", features = ["macros", "rt-multi-thread", "time", "sync", "fs", "io-std", "io-util"] }
+youtube_dl = { version = "0.10.0", features = ["downloader-native-tls"] }
 
 [dependencies.iced]
 version = "0.14.0-dev"

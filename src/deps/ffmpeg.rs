@@ -24,15 +24,18 @@ pub async fn install() {
             }
         }
     } else {
-        let install_type = match path().to_str().unwrap() {
-            "ffmpeg" => "system",
-            _ => "local",
+        let install_type = match is_local_installation() {
+            true => "system",
+            false => "local",
         };
         println!("[deps/ffmpeg] installation found ({install_type})");
     }
 }
 pub fn is_installed() -> bool {
     return path().exists();
+}
+pub fn is_local_installation() -> bool {
+    return path().to_str().unwrap() == "ffmpeg";
 }
 pub fn path() -> PathBuf {
     return FFmpeg::get_program().unwrap().unwrap().into();
