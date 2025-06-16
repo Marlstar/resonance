@@ -8,5 +8,6 @@ fn main() -> iced::Result {
         .theme(Resonance::theme)
         .subscription(Resonance::subscription)
         .window(Resonance::window_settings())
+        .antialiasing(true)
         .run()
 }
