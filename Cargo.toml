@@ -9,3 +9,21 @@ description = "A desktop music client"
 keywords = ["music", "youtube", "spotify"]
 
 [dependencies]
+bytes = "1.10.1"
+colored = "*"
+image = { version = "0.25.5", default-features = false, features = ["jpeg", "png"] }
+tokio = { version = "1.45.1", features = ["macros", "rt-multi-thread", "time", "sync", "fs", "io-std", "io-util"] }
+
+[dependencies.iced]
+version = "0.14.0-dev"
+git = "https://github.com/iced-rs/iced.git"
+features = [
+	"image",
+	"svg",
+	"sipper",
+	"advanced",
+	"tokio",
+	"fira-sans",
+	"wgpu",
+	"tiny-skia"
+]
