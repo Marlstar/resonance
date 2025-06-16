@@ -11,6 +11,7 @@ pub struct Song {
     pub artist: Option<i32>,
     pub album: Option<i32>,
     pub duration: i32,
+    pub downloaded: bool,
 }
 
 #[derive(Insertable)]
@@ -21,6 +22,7 @@ pub struct NewSong<'a> {
     pub artist: Option<i32>,
     pub album: Option<i32>,
     pub duration: i32,
+    pub downloaded: bool,
 }
 
 impl Song {
@@ -39,7 +41,8 @@ impl Song {
             name,
             artist,
             album,
-            duration
+            duration,
+            downloaded: false,
         };
 
         insert_into(songs::table)

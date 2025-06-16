@@ -1,0 +1,3 @@
+-- Your SQL goes here
+ALTER TABLE songs
+ADD COLUMN downloaded BOOLEAN NOT NULL DEFAULT FALSE;

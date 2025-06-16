@@ -24,6 +24,7 @@ diesel::table! {
         artist -> Nullable<Integer>,
         album -> Nullable<Integer>,
         duration -> Integer,
+        downloaded -> Bool,
     }
 }
 
