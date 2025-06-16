@@ -6,6 +6,9 @@ pub fn new(url: impl Into<String>) -> YoutubeDl {
     let mut ytdlp = YoutubeDl::new(url);
     ytdlp.youtube_dl_path(path());
 
+    // TODO: make this an app setting
+    ytdlp.extra_arg("--no-check-certificate");
+
     if ffmpeg::is_local_installation() {
         ytdlp.extra_arg("--ffmpeg-location");
         ytdlp.extra_arg(display_path(&ffmpeg::path()));
