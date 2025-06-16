@@ -10,3 +10,7 @@ pub fn ytid_from_yt_url(url: &str) -> Option<String> {
     let captures = re.captures(url)?;
     return Some(captures["id"].to_string());
 }
+
+pub fn yt_url_from_ytid(id: &str) -> String {
+    return format!("https://music.youtube.com/watch?v={id}");
+}
