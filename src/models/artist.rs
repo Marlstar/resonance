@@ -15,18 +15,20 @@ pub struct NewArtist<'a> {
     pub name: &'a str,
 }
 
-pub fn create(
-    conn: &mut SqliteConnection,
-    name: &str,
-) -> Result<Artist, diesel::result::Error> {
-    use crate::db::schema::artists;
+impl Artist {
+    pub fn create(
+        conn: &mut SqliteConnection,
+        name: &str,
+    ) -> Result<Artist, diesel::result::Error> {
+        use crate::db::schema::artists;
 
-    let new_artist = NewArtist {
-        name,
-    };
+        let new_artist = NewArtist {
+            name,
+        };
 
-    insert_into(artists::table)
-        .values(&new_artist)
-        .returning(Artist::as_returning())
-        .get_result(conn)
+        insert_into(artists::table)
+            .values(&new_artist)
+            .returning(Artist::as_returning())
+            .get_result(conn)
+    }
 }

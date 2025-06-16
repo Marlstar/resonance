@@ -23,26 +23,28 @@ pub struct NewSong<'a> {
     pub duration: i32,
 }
 
-pub fn create(
-    conn: &mut SqliteConnection,
-    ytid: Option<&str>,
-    name: &str,
-    artist: Option<i32>,
-    album: Option<i32>,
-    duration: i32
-) -> Result<Song, diesel::result::Error> {
-    use crate::db::schema::songs;
+impl Song {
+    pub fn create(
+        conn: &mut SqliteConnection,
+        ytid: Option<&str>,
+        name: &str,
+        artist: Option<i32>,
+        album: Option<i32>,
+        duration: i32
+    ) -> Result<Song, diesel::result::Error> {
+        use crate::db::schema::songs;
 
-    let new_song = NewSong {
-        ytid,
-        name,
-        artist,
-        album,
-        duration
-    };
+        let new_song = NewSong {
+            ytid,
+            name,
+            artist,
+            album,
+            duration
+        };
 
-    insert_into(songs::table)
-        .values(&new_song)
-        .returning(Song::as_returning())
-        .get_result(conn)
+        insert_into(songs::table)
+            .values(&new_song)
+            .returning(Song::as_returning())
+            .get_result(conn)
+    }
 }

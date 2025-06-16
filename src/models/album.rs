@@ -19,22 +19,24 @@ pub struct NewAlbum<'a> {
     pub length: i32,
 }
 
-pub fn create(
-    conn: &mut SqliteConnection,
-    name: &str,
-    artist: Option<i32>,
-    length: i32,
-) -> Result<Album, diesel::result::Error> {
-    use crate::db::schema::albums;
+impl Album {
+    pub fn create(
+        conn: &mut SqliteConnection,
+        name: &str,
+        artist: Option<i32>,
+        length: i32,
+    ) -> Result<Album, diesel::result::Error> {
+        use crate::db::schema::albums;
 
-    let new_album = NewAlbum {
-        name,
-        artist,
-        length,
-    };
+        let new_album = NewAlbum {
+            name,
+            artist,
+            length,
+        };
 
-    insert_into(albums::table)
-        .values(&new_album)
-        .returning(Album::as_returning())
-        .get_result(conn)
+        insert_into(albums::table)
+            .values(&new_album)
+            .returning(Album::as_returning())
+            .get_result(conn)
+    }
 }
