@@ -1,5 +1,9 @@
 #![allow(clippy::needless_return)]
 
+mod error;
+pub use error::Error;
+pub use error::Result;
+
 pub mod common;
 pub use common::dirs;
 
