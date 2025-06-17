@@ -10,10 +10,10 @@ pub enum Error {
     YTDLP(youtube_dl::Error),
     Regex(regex::Error),
     Image(image::ImageError),
-    StdIO(std::io::Error),
+    IO(std::io::Error),
 }
 
 e!(youtube_dl::Error, YTDLP);
 e!(regex::Error, Regex);
 e!(image::ImageError, Image);
-e!(std::io::Error, StdIO);
+e!(std::io::Error, IO);
