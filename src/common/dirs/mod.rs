@@ -4,6 +4,8 @@ use directories::BaseDirs;
 pub static BASE: LazyLock<BaseDirs> = LazyLock::new(|| BaseDirs::new().unwrap());
 pub static SHARE: LazyLock<PathBuf> = LazyLock::new(|| BASE.data_dir().join("resonancev2"));
 
+pub mod song;
+
 macro_rules! share {
     ($name:ident, $ext:expr) => {
         pub static $name: LazyLock<PathBuf> = LazyLock::new(|| (&*SHARE).join($ext).to_path_buf());
@@ -15,3 +17,4 @@ macro_rules! share {
 
 share!(DATABASE, "resonance.db");
 share!(DEPENDENCIES, "deps/");
+share!(SONGS, "songs/");
