@@ -5,6 +5,7 @@ pub static BASE: LazyLock<BaseDirs> = LazyLock::new(|| BaseDirs::new().unwrap())
 pub static SHARE: LazyLock<PathBuf> = LazyLock::new(|| BASE.data_dir().join("resonancev2"));
 
 pub mod song;
+pub mod cover;
 
 macro_rules! share {
     ($name:ident, $ext:expr) => {

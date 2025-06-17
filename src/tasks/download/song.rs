@@ -17,4 +17,5 @@ fn ytdlp_args(ytdlp: &mut YoutubeDl, filename: &str) {
     ytdlp.extract_audio(true);
     ytdlp.extra_arg("--audio-format");
     ytdlp.extra_arg(super::AUDIO_FORMAT);
+    ytdlp.extra_arg("--write-thumbnail");
 }
