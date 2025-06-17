@@ -35,4 +35,9 @@ impl AudioHandler { // Actions
         self.sink.append(Decoder::new(Cursor::new(bytes))?);
         return Ok(());
     }
+    
+    pub fn set_volume(&mut self, volume: f32) {
+        self.sink.set_volume(volume);
+        self.volume = volume;
+    }
 }
