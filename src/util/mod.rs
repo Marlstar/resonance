@@ -9,7 +9,10 @@ pub fn display_path(p: &Path) -> String {
 
 pub fn ytid_from_yt_url(url: &str) -> Result<String, Error> {
     let re = Regex::new(r".*\.youtube\.com/watch\?v=(?<id>(?:\w|-)+).*")?;
-    let captures = re.captures(url)?;
+    let captures = match re.captures(url) {
+        Some(a) => a,
+        None => return Err(Error::InvalidYTURL),
+    };
     return Ok(captures["id"].to_string());
 }
 
@@ -21,7 +24,7 @@ mod tests {
     #[test]
     pub fn ytid_from_yt_url() {
         assert_eq!(
-            super::ytid_from_yt_url("https://music.youtube.com/watch?v=ZqVDbGlDzzo&si=pBYLnOQnrJ5-o7xV"),
+            super::ytid_from_yt_url("https://music.youtube.com/watch?v=ZqVDbGlDzzo&si=pBYLnOQnrJ5-o7xV").ok(),
             Some("ZqVDbGlDzzo".to_string())
         );
     }
