@@ -41,3 +41,12 @@ impl AudioHandler { // Actions
         self.volume = volume;
     }
 }
+impl AudioHandler { // Misc
+    pub fn tick(&mut self) {
+        self.position = self.sink_position();
+    }
+
+    fn sink_position(&self) -> i32 {
+        return self.sink.get_pos().as_millis() as i32;
+    }
+}
