@@ -35,7 +35,7 @@ pub fn is_installed() -> bool {
     return path().exists();
 }
 pub fn is_local_installation() -> bool {
-    return path().to_str().unwrap() == "ffmpeg";
+    return path().to_str().unwrap() != "ffmpeg";
 }
 pub fn path() -> PathBuf {
     return FFmpeg::get_program().unwrap().unwrap().into();
