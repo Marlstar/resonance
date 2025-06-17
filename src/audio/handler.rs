@@ -7,9 +7,9 @@ pub struct AudioHandler {
     _stream: OutputStream,
     _stream_handle: OutputStreamHandle,
 
-    current: Option<Song>,
-    volume: f32,
-    position: i32,
+    pub current: Option<Song>,
+    pub volume: f32,
+    pub position: i32,
 }
 impl AudioHandler {
     pub fn new() -> crate::Result<Self> {
@@ -23,8 +23,15 @@ impl AudioHandler {
             position: 0,
         });
     }
-
-    pub fn load_next(&mut self, bytes: Vec<u8>) -> crate::Result<()> {
+}
+impl AudioHandler { // Actions
+    pub fn load_song(&mut self, song: Song, bytes: Vec<u8>) -> crate::Result<()> {
+        self.sink_load(bytes)?;
+        self.current = Some(song);
+        return Ok(());
+    }
+    fn sink_load(&mut self, bytes: Vec<u8>) -> crate::Result<()> {
+        self.sink.clear();
         self.sink.append(Decoder::new(Cursor::new(bytes))?);
         return Ok(());
     }
