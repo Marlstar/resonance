@@ -12,5 +12,7 @@ pub mod tasks;
 pub mod db;
 pub mod models;
 
+pub mod audio;
+
 pub mod deps;
 pub mod util;
