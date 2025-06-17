@@ -11,9 +11,15 @@ pub enum Error {
     Regex(regex::Error),
     Image(image::ImageError),
     IO(std::io::Error),
+    RodioStream(rodio::StreamError),
+    RodioPlay(rodio::PlayError),
+    RodioDecode(rodio::decoder::DecoderError),
 }
 
 e!(youtube_dl::Error, YTDLP);
 e!(regex::Error, Regex);
 e!(image::ImageError, Image);
 e!(std::io::Error, IO);
+e!(rodio::StreamError, RodioStream);
+e!(rodio::PlayError, RodioPlay);
+e!(rodio::decoder::DecoderError, RodioDecode);
