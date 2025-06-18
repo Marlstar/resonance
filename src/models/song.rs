@@ -1,4 +1,5 @@
 use diesel::{insert_into, prelude::*};
+use crate::db::handler::DBHandler;
 
 #[derive(Debug, Clone, PartialEq)]
 #[derive(Queryable, Selectable)]
@@ -27,7 +28,7 @@ pub struct NewSong<'a> {
 
 impl Song {
     pub fn create(
-        conn: &mut SqliteConnection,
+        conn: &mut DBHandler,
         ytid: Option<&str>,
         name: &str,
         artist: Option<i32>,
@@ -48,6 +49,6 @@ impl Song {
         insert_into(songs::table)
             .values(&new_song)
             .returning(Song::as_returning())
-            .get_result(conn)
+            .get_result(&mut conn.db)
     }
 }

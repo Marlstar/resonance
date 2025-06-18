@@ -1,4 +1,5 @@
 use crate::audio::handler::AudioHandler;
+use crate::db::handler::DBHandler;
 use crate::iced::types::Task;
 
 mod update;
@@ -12,6 +13,7 @@ pub use message::Message;
 
 pub struct Daemon {
     audio: AudioHandler,
+    db: DBHandler,
 
     ffmpeg_ready: bool,
     ytdlp_ready: bool,
@@ -19,9 +21,11 @@ pub struct Daemon {
 impl Daemon {
     pub fn new() -> Self {
         let audio = AudioHandler::new().expect("failed to initialise audio handler");
+        let db = DBHandler::new().expect("failed to initialise DB handler");
 
         return Self {
             audio,
+            db,
             ffmpeg_ready: false,
             ytdlp_ready: false,
         };

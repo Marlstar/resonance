@@ -14,6 +14,7 @@ pub enum Error {
     RodioStream(rodio::StreamError),
     RodioPlay(rodio::PlayError),
     RodioDecode(rodio::decoder::DecoderError),
+    DBConnection(diesel::ConnectionError),
 }
 
 e!(youtube_dl::Error, YTDLP);
@@ -23,3 +24,4 @@ e!(std::io::Error, IO);
 e!(rodio::StreamError, RodioStream);
 e!(rodio::PlayError, RodioPlay);
 e!(rodio::decoder::DecoderError, RodioDecode);
+e!(diesel::ConnectionError, DBConnection);

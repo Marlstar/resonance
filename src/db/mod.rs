@@ -1,4 +1,5 @@
 pub mod schema;
+pub mod handler;
 
 mod setup;
 pub use setup::run_migrations as setup;
