@@ -1,5 +1,7 @@
 #![allow(clippy::needless_return)]
 
+pub mod iced;
+
 mod error;
 pub use error::Error;
 pub use error::Result;
