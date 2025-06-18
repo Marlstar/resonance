@@ -22,3 +22,4 @@ pub mod audio;
 
 pub mod deps;
 pub mod util;
+pub mod assets;
