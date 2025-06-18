@@ -1,5 +1,8 @@
 pub mod install_deps;
 
+mod exit;
+pub use exit::exit;
+
 #[macro_export]
 macro_rules! run_and_return_message {
     ($fun:path, $msg:expr $(, $opt:expr),*) => {
