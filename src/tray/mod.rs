@@ -1,5 +1,5 @@
 use tray_icon::menu::{Menu, MenuEvent, MenuItemBuilder, MenuId};
-use tray_icon::{TrayIcon, TrayIconBuilder};
+use tray_icon::{Icon, TrayIcon, TrayIconBuilder};
 use async_channel::{Receiver, unbounded};
 use std::sync::OnceLock;
 
@@ -61,6 +61,7 @@ impl TrayHandler {
     fn tray_icon_builder(menu: Menu) -> TrayIconBuilder {
         return TrayIconBuilder::new()
             .with_title("Resonance")
+            .with_icon(Icon::from_rgba(crate::assets::icon_rgba_256().clone(), 256, 256).unwrap())
             .with_menu(Box::new(menu))
     }
 }
