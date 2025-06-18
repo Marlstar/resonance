@@ -25,8 +25,8 @@ pub async fn install() {
         }
     } else {
         let install_type = match is_local_installation() {
-            true => "system",
-            false => "local",
+            true => "local",
+            false => "system",
         };
         println!("[deps/ffmpeg] installation found ({install_type})");
     }
