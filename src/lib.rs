@@ -2,6 +2,8 @@
 
 pub mod daemon;
 
+pub mod tray;
+
 pub mod iced;
 
 mod error;

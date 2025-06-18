@@ -3,6 +3,7 @@ use crate::iced::types::Task;
 
 mod update;
 mod view;
+mod subscriptions;
 
 pub mod tasks;
 

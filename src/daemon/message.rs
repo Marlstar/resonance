@@ -5,4 +5,6 @@ type ArcResult<T> = Arc<crate::Result<T>>;
 pub enum Message {
     FFmpegDownloaded,
     YtDlpDownloaded,
+
+    Tray(tray_icon::menu::MenuEvent),
 }
