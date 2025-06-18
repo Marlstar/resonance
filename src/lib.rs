@@ -1,5 +1,7 @@
 #![allow(clippy::needless_return)]
 
+pub mod daemon;
+
 pub mod iced;
 
 mod error;
