@@ -1,4 +1,4 @@
-#![allow(clippy::needless_return)]
+#![allow(clippy::needless_return, clippy::new_without_default)]
 
 pub mod daemon;
 
