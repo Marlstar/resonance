@@ -1,12 +1,11 @@
 use crate::audio::handler::AudioHandler;
 use crate::db::handler::DBHandler;
 use crate::iced::types::Task;
+use crate::tasks;
 
 mod update;
 mod view;
 mod subscriptions;
-
-pub mod tasks;
 
 mod message;
 pub use message::Message;
