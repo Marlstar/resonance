@@ -1,6 +1,6 @@
 use youtube_dl::SingleVideo;
 use std::sync::Arc;
-use crate::models::Song;
+use crate::models::{Artist, Song};
 use crate::iced::types::Task;
 use crate::daemon::Message;
 
@@ -13,7 +13,12 @@ impl super::super::Daemon {
                 return Task::none();
             }
         };
-        match Song::create(&mut self.db, Some(&job_id), song.title.as_ref().unwrap(), None, None, 123456) {
+
+        let artist = if let Some(a) = &song.artist {
+            Artist::get_or_create(&mut self.db, a).ok().map(|a| a.id)
+        } else { None };
+
+        match Song::create(&mut self.db, Some(&job_id), song.title.as_ref().unwrap(), artist, None, 123456) {
             Ok(_) => Task::none(),
             Err(e) => Task::done(Message::InsertFailed(Arc::new(e)))
         }
