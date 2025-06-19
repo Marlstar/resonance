@@ -1,4 +1,7 @@
-use diesel::{insert_into, prelude::*};
+use diesel::prelude::*;
+use crate::db::handler::DBHandler;
+use crate::db::schema::artists;
+
 
 #[derive(Debug, Clone, PartialEq)]
 #[derive(Queryable, Selectable)]
@@ -17,18 +20,33 @@ pub struct NewArtist<'a> {
 
 impl Artist {
     pub fn create(
-        conn: &mut SqliteConnection,
+        db: &mut DBHandler,
         name: &str,
     ) -> Result<Artist, diesel::result::Error> {
-        use crate::db::schema::artists;
-
         let new_artist = NewArtist {
             name,
         };
 
-        insert_into(artists::table)
+        diesel::insert_into(artists::table)
             .values(&new_artist)
             .returning(Artist::as_returning())
-            .get_result(conn)
+            .get_result(&mut db.db)
+    }
+
+    pub fn search(
+        db: &mut DBHandler,
+        name: &str,
+    ) -> Result<Option<Artist>, diesel::result::Error> {
+        artists::table
+            .filter(artists::name.eq(name))
+            .first(&mut db.db)
+            .optional()
+    }
+
+    pub fn get_or_create(db: &mut DBHandler, name: &str) -> Result<Artist, diesel::result::Error> {
+        if let Some(artist) = Self::search(db, name)? {
+            return Ok(artist);
+        }
+        return Self::create(db, name);
     }
 }
