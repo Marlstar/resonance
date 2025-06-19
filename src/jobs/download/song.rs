@@ -2,16 +2,16 @@ use std::path::Path;
 use youtube_dl::YoutubeDl;
 use super::COVER_FORMAT;
 
-pub async fn yt(ytid: &str) -> crate::Result<()> {
+pub async fn yt(ytid: String) -> crate::Result<()> {
     let path = &*crate::dirs::SONGS; // Base path, not the specific song
-    let url = crate::util::yt_url_from_ytid(ytid);
+    let url = crate::util::yt_url_from_ytid(&ytid);
     let mut ytdlp = crate::deps::ytdlp::new(url);
 
     ytdlp_args(&mut ytdlp, &format!("y-{ytid}"));
 
     ytdlp.download_to_async(path).await?;
 
-    convert_thumbnail(&crate::dirs::cover::yt_intermediate(ytid))?;
+    convert_thumbnail(&crate::dirs::cover::yt_intermediate(&ytid))?;
 
     return Ok(());
 }
