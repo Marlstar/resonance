@@ -1,8 +1,9 @@
 use diesel::{insert_into, prelude::*};
 use crate::db::handler::DBHandler;
+use crate::db::schema::songs;
 
 #[derive(Debug, Clone, PartialEq)]
-#[derive(Queryable, Selectable)]
+#[derive(Queryable, Selectable, Identifiable, AsChangeset)]
 #[diesel(table_name = crate::db::schema::songs)]
 #[diesel(check_for_backend(diesel::sqlite::Sqlite))]
 pub struct Song {
@@ -50,5 +51,13 @@ impl Song {
             .values(&new_song)
             .returning(Song::as_returning())
             .get_result(&mut conn.db)
+    }
+
+    pub fn push_updates(&self, db: &mut DBHandler) -> Result<(), diesel::result::Error> {
+        diesel::update(songs::table)
+            .filter(songs::id.eq(self.id))
+            .set(self)
+            .execute(&mut db.db)
+            .map(|_| ())
     }
 }
