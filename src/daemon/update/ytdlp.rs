@@ -24,7 +24,12 @@ impl super::super::Daemon {
         } else { None };
 
         let album = if let Some(a) = &song.album {
-            Album::get_or_create(&mut self.db, a, artist).ok().map(|a| a.id)
+            Album::get_or_create(&mut self.db, a, artist).ok().map(|mut a| {
+                // Increment album length to include the new song
+                a.length += 1;
+                a.push_updates(&mut self.db).unwrap();
+                a.id
+            })
         } else { None };
 
         match Song::create(&mut self.db, Some(&job_id), song.title.as_ref().unwrap(), artist, album, 123456) {

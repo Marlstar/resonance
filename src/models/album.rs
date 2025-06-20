@@ -58,7 +58,7 @@ impl Album {
         if let Some(album) = Self::search(db, name, artist)? {
             return Ok(album);
         }
-        return Self::create(db, name, artist, 1);
+        return Self::create(db, name, artist, 0);
     }
 
     pub fn push_updates(&self, db: &mut DBHandler) -> Result<(), diesel::result::Error> {
