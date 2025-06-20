@@ -5,6 +5,11 @@ use crate::iced::types::Task;
 use crate::daemon::Message;
 
 impl super::super::Daemon {
+    pub(super) fn get_song_metadata(&mut self, ytid: String) -> Task {
+        return iced::Task::future(crate::jobs::metadata::song::yt(ytid.clone()))
+            .map(move |r| Message::SongMetadata(ytid.clone(), Arc::new(r)));
+    }
+
     pub(super) fn song_metadata_callback(&mut self, job_id: String, result: Arc<crate::Result<Box<SingleVideo>>>) -> Task {
         let song = match &*result {
             Ok(vid) => vid,

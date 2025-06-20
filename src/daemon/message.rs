@@ -5,6 +5,7 @@ pub enum Message {
     FFmpegDownloaded,
     YtDlpDownloaded,
 
+    GetSongMetadata(String),
     SongMetadata(String, Arc<crate::Result<Box<youtube_dl::SingleVideo>>>),
 
     // Database
