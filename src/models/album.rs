@@ -3,7 +3,7 @@ use crate::db::schema::albums;
 use crate::db::handler::DBHandler;
 
 #[derive(Debug, Clone, PartialEq)]
-#[derive(Queryable, Selectable)]
+#[derive(Queryable, Selectable, Identifiable, AsChangeset)]
 #[diesel(table_name = crate::db::schema::albums)]
 #[diesel(check_for_backend(diesel::sqlite::Sqlite))]
 pub struct Album {
@@ -59,5 +59,13 @@ impl Album {
             return Ok(album);
         }
         return Self::create(db, name, artist, 1);
+    }
+
+    pub fn push_updates(&self, db: &mut DBHandler) -> Result<(), diesel::result::Error> {
+        diesel::update(albums::table)
+            .filter(albums::id.eq(self.id))
+            .set(self)
+            .execute(&mut db.db)
+            .map(|_| ())
     }
 }
