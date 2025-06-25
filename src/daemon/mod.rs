@@ -11,11 +11,11 @@ mod message;
 pub use message::Message;
 
 pub struct Daemon {
-    audio: AudioHandler,
-    db: DBHandler,
+    pub audio: AudioHandler,
+    pub db: DBHandler,
 
-    ffmpeg_ready: bool,
-    ytdlp_ready: bool,
+    pub ffmpeg_ready: bool,
+    pub ytdlp_ready: bool,
 }
 impl Daemon {
     pub fn new() -> Self {
