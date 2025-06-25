@@ -15,7 +15,7 @@ pub enum Message {
     SongDownload(Song, Arc<crate::Result<()>>),
 
     // Database
-    InsertFailed(Arc<diesel::result::Error>),
+    DatabaseError(Arc<diesel::result::Error>),
 
     Tray(tray_icon::menu::MenuEvent),
 }

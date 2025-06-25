@@ -19,9 +19,10 @@ impl super::Daemon {
 
             Message::DownloadSong(song) => self.download_song(song),
             Message::SongDownload(song, result) => self.download_song_callback(song, result),
+            Message::SongDownload(result) => self.download_song_callback(result),
 
             // Database
-            Message::InsertFailed(e) => self.handle_database_error(e),
+            Message::DatabaseError(e) => self.handle_database_error(e),
         
             Message::Tray(event) => self.handle_tray_event(event),
         }

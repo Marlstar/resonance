@@ -35,7 +35,7 @@ impl super::super::Daemon {
         match Song::create(&mut self.db, Some(&job_id), song.title.as_ref().unwrap(), artist, album, 123456) {
             // TODO: remove auto download
             Ok(s) => Task::done(s.download()),
-            Err(e) => Task::done(Message::InsertFailed(Arc::new(e)))
+            Err(e) => Task::done(Message::DatabaseError(Arc::new(e)))
         }
     }
 
