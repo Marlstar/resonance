@@ -32,11 +32,12 @@ impl super::super::Daemon {
             })
         } else { None };
 
-        match Song::create(&mut self.db, Some(&job_id), song.title.as_ref().unwrap(), artist, album, 123456) {
-            // TODO: remove auto download
-            Ok(s) => Task::done(s.download()),
-            Err(e) => Task::done(Message::DatabaseError(Arc::new(e)))
-        }
+        let song = match Song::create(&mut self.db, Some(&job_id), song.title.as_ref().unwrap(), artist, album, 123456) {
+            Ok(s) => s,
+            Err(e) => return Task::done(Message::DatabaseError(Arc::new(e)))
+        };
+
+        return Task::none();
     }
 
     pub(super) fn download_song(&self, song: Song) -> Task {
