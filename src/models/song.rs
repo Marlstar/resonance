@@ -1,6 +1,8 @@
 use diesel::{insert_into, prelude::*};
+use crate::daemon::Message;
 use crate::db::handler::DBHandler;
 use crate::db::schema::songs;
+use crate::iced::types::Task;
 
 #[derive(Debug, Clone, PartialEq)]
 #[derive(Queryable, Selectable, Identifiable, AsChangeset)]
@@ -59,5 +61,11 @@ impl Song {
             .set(self)
             .execute(&mut db.db)
             .map(|_| ())
+    }
+
+    pub fn download(&self) -> Message {
+        if self.ytid.is_some() {
+            Message::DownloadSong(self.clone())
+        } else { Message::None }
     }
 }
