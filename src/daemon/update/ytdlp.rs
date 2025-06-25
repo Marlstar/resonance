@@ -33,8 +33,22 @@ impl super::super::Daemon {
         } else { None };
 
         match Song::create(&mut self.db, Some(&job_id), song.title.as_ref().unwrap(), artist, album, 123456) {
-            Ok(_) => Task::none(),
+            // TODO: remove auto download
+            Ok(s) => Task::done(s.download()),
             Err(e) => Task::done(Message::InsertFailed(Arc::new(e)))
         }
+    }
+
+    pub(super) fn download_song(&self, song: Song) -> Task {
+        iced::Task::future(crate::jobs::download::song::yt(song.ytid.as_ref().expect("tried to download a non-yt song").clone()))
+            .map(move |r| Message::SongDownload(song.clone(), Arc::new(r)))
+    }
+
+    pub(super) fn download_song_callback(&mut self, mut song: Song, result: Arc<crate::Result<()>>) -> Task {
+        // TODO: check if song actually downloaded successfully
+        song.downloaded = true;
+        song.push_updates(&mut self.db);
+        println!("[dl] \"{:?}\" by \"{:?}\" downloaded successfully", song.name, song.artist);
+        Task::none()
     }
 }

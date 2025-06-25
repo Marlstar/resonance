@@ -17,6 +17,9 @@ impl super::Daemon {
             Message::GetSongMetadata(ytid) => self.get_song_metadata(ytid),
             Message::SongMetadata(job_id, result) => self.song_metadata_callback(job_id, result),
 
+            Message::DownloadSong(song) => self.download_song(song),
+            Message::SongDownload(song, result) => self.download_song_callback(song, result),
+
             // Database
             Message::InsertFailed(e) => self.handle_database_error(e),
         
