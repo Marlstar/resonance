@@ -20,12 +20,27 @@ pub fn yt_url_from_ytid(id: &str) -> String {
     return format!("https://music.youtube.com/watch?v={id}");
 }
 
+pub fn millis_to_formatted_duration(millis: i32) -> String {
+    let seconds = millis / 1000;
+    let minutes = seconds / 60;
+    let seconds = seconds - (minutes * 60);
+    format!("{minutes}:{seconds}")
+}
+
 mod tests {
     #[test]
     pub fn ytid_from_yt_url() {
         assert_eq!(
             super::ytid_from_yt_url("https://music.youtube.com/watch?v=ZqVDbGlDzzo&si=pBYLnOQnrJ5-o7xV").ok(),
             Some("ZqVDbGlDzzo".to_string())
+        );
+    }
+
+    #[test]
+    pub fn millis_to_duration() {
+        assert_eq!(
+            super::millis_to_formatted_duration(78300),
+            "1:18"
         );
     }
 }
