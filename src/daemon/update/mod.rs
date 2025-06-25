@@ -18,7 +18,6 @@ impl super::Daemon {
             Message::SongMetadata(job_id, result) => self.song_metadata_callback(job_id, result),
 
             Message::DownloadSong(song) => self.download_song(song),
-            Message::SongDownload(song, result) => self.download_song_callback(song, result),
             Message::SongDownload(result) => self.download_song_callback(result),
 
             // Database

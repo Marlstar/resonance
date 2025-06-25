@@ -12,7 +12,7 @@ pub enum Message {
     SongMetadata(String, Arc<crate::Result<Box<youtube_dl::SingleVideo>>>),
 
     DownloadSong(Song),
-    SongDownload(Song, Arc<crate::Result<()>>),
+    SongDownload(Arc<crate::Result<Song>>),
 
     // Database
     DatabaseError(Arc<diesel::result::Error>),

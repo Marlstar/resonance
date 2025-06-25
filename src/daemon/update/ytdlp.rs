@@ -41,14 +41,18 @@ impl super::super::Daemon {
 
     pub(super) fn download_song(&self, song: Song) -> Task {
         iced::Task::future(crate::jobs::download::song::yt(song.ytid.as_ref().expect("tried to download a non-yt song").clone()))
-            .map(move |r| Message::SongDownload(song.clone(), Arc::new(r)))
+            .map(move |r| Message::SongDownload(Arc::new(r.map(|_| song.clone()))))
     }
 
-    pub(super) fn download_song_callback(&mut self, mut song: Song, result: Arc<crate::Result<()>>) -> Task {
+    pub(super) fn download_song_callback(&mut self, result: Arc<crate::Result<Song>>) -> Task {
         // TODO: check if song actually downloaded successfully
+        let mut song = match &*result {
+            Ok(song) => song.clone(),
+            Err(e) => { println!("[dl] error downloading song: {e:?}"); return Task::none(); }
+        };
         song.downloaded = true;
-        song.push_updates(&mut self.db);
-        println!("[dl] \"{:?}\" by \"{:?}\" downloaded successfully", song.name, song.artist);
+        if let Err(e) = song.push_updates(&mut self.db) { return Task::done(Message::DatabaseError(Arc::new(e))) };
+        println!("[dl] {:?} downloaded successfully", song.name);
         Task::none()
     }
 }
