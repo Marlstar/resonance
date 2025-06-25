@@ -2,6 +2,8 @@ use std::sync::Arc;
 
 #[derive(Debug, Clone)]
 pub enum Message {
+    None,
+
     FFmpegDownloaded,
     YtDlpDownloaded,
 

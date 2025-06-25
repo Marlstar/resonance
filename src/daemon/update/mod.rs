@@ -8,6 +8,8 @@ mod database;
 impl super::Daemon {
     pub fn update(&mut self, msg: Message) -> Task {
         match msg {
+            Message::None => Task::none(),
+
             // Dependencies
             Message::FFmpegDownloaded => { self.ffmpeg_ready = true; Task::none() },
             Message::YtDlpDownloaded => { self.ytdlp_ready = true; Task::none() },
