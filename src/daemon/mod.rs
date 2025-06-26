@@ -1,6 +1,8 @@
 use crate::audio::handler::AudioHandler;
 use crate::db::handler::DBHandler;
 use crate::iced::types::Task;
+use crate::windows::Windows;
+use crate::screens::Screens;
 use crate::tasks;
 
 mod update;
@@ -13,6 +15,9 @@ pub use message::Message;
 pub struct Daemon {
     pub audio: AudioHandler,
     pub db: DBHandler,
+    
+    pub windows: Windows,
+    pub screens: Screens,
 
     pub ffmpeg_ready: bool,
     pub ytdlp_ready: bool,
@@ -25,6 +30,8 @@ impl Daemon {
         return Self {
             audio,
             db,
+            windows: Windows::default(),
+            screens: Screens::default(),
             ffmpeg_ready: false,
             ytdlp_ready: false,
         };
@@ -34,6 +41,7 @@ impl Daemon {
         let task = Task::batch([
             tasks::install_deps::ffmpeg(),
             tasks::install_deps::ytdlp(),
+            Task::done(Message::OpenMain),
         ]);
         return (Self::new(), task);
     }

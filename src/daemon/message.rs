@@ -5,6 +5,9 @@ use crate::models::Song;
 pub enum Message {
     None,
 
+    // Windows
+    OpenMain,
+
     FFmpegDownloaded,
     YtDlpDownloaded,
 

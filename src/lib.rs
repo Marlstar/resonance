@@ -1,6 +1,8 @@
 #![allow(clippy::needless_return, clippy::new_without_default)]
 
 pub mod daemon;
+pub mod windows;
+pub mod screens;
 pub mod tasks;
 pub mod iced;
 

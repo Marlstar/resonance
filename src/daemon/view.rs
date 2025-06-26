@@ -1,8 +1,9 @@
 use crate::iced::types::*;
-use iced::widget;
+use crate::windows::main::MainWindow;
 
 impl super::Daemon {
     pub fn view(&self, window: iced::window::Id) -> Element {
-        return widget::text("Hello, world!").into();
+        if Some(window) == self.windows.main { MainWindow::view(self) }
+        else { iced::widget::text("Unknown window").into() }
     }
 }

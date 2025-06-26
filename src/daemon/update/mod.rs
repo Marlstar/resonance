@@ -4,11 +4,14 @@ use crate::iced::types::Task;
 mod tray;
 mod ytdlp;
 mod database;
+mod windows;
 
 impl super::Daemon {
     pub fn update(&mut self, msg: Message) -> Task {
         match msg {
             Message::None => Task::none(),
+
+            Message::OpenMain => self.open_main_window(),
 
             // Dependencies
             Message::FFmpegDownloaded => { self.ffmpeg_ready = true; Task::none() },
