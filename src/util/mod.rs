@@ -24,6 +24,7 @@ pub fn millis_to_formatted_duration(millis: i32) -> String {
     let seconds = millis / 1000;
     let minutes = seconds / 60;
     let seconds = seconds - (minutes * 60);
+    let seconds = if seconds < 10 { format!("0{seconds}") } else { format!("{seconds}") };
     format!("{minutes}:{seconds}")
 }
 
