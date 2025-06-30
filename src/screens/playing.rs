@@ -26,8 +26,8 @@ impl Default for PlayingScreen {
 }
 impl PlayingScreen {
     pub fn fullscreen(&self, daemon: &Daemon) -> Element {
-        let ytid = self.song.as_ref().map(|song| song.ytid.as_ref())
-            .unwrap_or(None);
+        let ytid = self.song.as_ref()
+            .and_then(|song| song.ytid.as_ref());
         let cover = if let Some(ytid) = ytid {
             let image = widget::image(dirs::cover::yt(ytid));
             Element::new(image)
