@@ -1,3 +1,5 @@
+use iced::alignment::Horizontal;
+use iced::alignment::Vertical;
 use iced::widget;
 use iced::Length;
 use iced::Length::Fill;
@@ -7,6 +9,7 @@ use crate::dirs;
 use crate::daemon::Daemon;
 use crate::daemon::Message;
 use crate::util::millis_to_formatted_duration;
+use crate::assets;
 
 const COVER_SIZE: u32 = 240;
 
@@ -63,16 +66,30 @@ impl PlayingScreen {
         // ======== \\
         // CONTROLS \\
         // ======== \\
-        let playpause = widget::button("playpause");
-        let skip_next = widget::button("next");
-        let skip_prev = widget::button("prev");
+        fn containerise_svg(s: widget::Svg, width: u32, height: u32) -> widget::Container<Message> {
+            widget::container(s).width(width).height(height)
+                .align_x(Horizontal::Center)
+                .align_y(Vertical::Center)
+        }
+        let playpause = widget::button(
+            containerise_svg(
+                if daemon.audio.playing {assets::pause()} else {assets::play()},
+                60, 60
+            )
+        ).width(60).height(60)
+            .style(|_,_| widget::button::Style::default()); // Transparent bg
+
+        let _skip_size = 55;
+        let skip_next = widget::button(containerise_svg(assets::skip_forward(), _skip_size, _skip_size))
+            .width(_skip_size).height(_skip_size)
+            .style(|_,_| widget::button::Style::default()); // Transparent bg
+        let skip_prev = widget::button(containerise_svg(assets::skip_back(), _skip_size, _skip_size))
+            .width(_skip_size).height(_skip_size)
+            .style(|_,_| widget::button::Style::default()); // Transparent bg
 
         // ====== \\
         // LAYOUT \\
         // ====== \\
-        fn wfillp(i:u16) -> widget::Space { widget::Space::with_width(Length::FillPortion(i)) }
-        fn hfillp(i:u16) -> widget::Space { widget::Space::with_height(Length::FillPortion(i)) }
-
         let info = widget::column![
             title,
             artist,
@@ -85,14 +102,12 @@ impl PlayingScreen {
         ].spacing(10);
 
         let controls = widget::row![
-            wfillp(2),
+            widget::horizontal_space(),
             skip_prev,
-            wfillp(1),
             playpause,
-            wfillp(1),
             skip_next,
-            wfillp(2),
-        ];
+            widget::horizontal_space(),
+        ].align_y(Vertical::Center);
 
         let everything = widget::column![
             info_with_cover,
