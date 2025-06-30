@@ -8,7 +8,7 @@ use crate::daemon::Daemon;
 use crate::daemon::Message;
 use crate::util::millis_to_formatted_duration;
 
-const COVER_SIZE: u32 = 300;
+const COVER_SIZE: u32 = 240;
 
 pub struct PlayingScreen {
     song: Option<Song>,
@@ -29,7 +29,7 @@ impl PlayingScreen {
         let ytid = self.song.as_ref()
             .and_then(|song| song.ytid.as_ref());
         let cover = if let Some(ytid) = ytid {
-            let image = widget::image(dirs::cover::yt(ytid));
+            let image = widget::image(dirs::cover::yt(ytid)).width(COVER_SIZE).height(COVER_SIZE);
             Element::new(image)
         } else {
             let space = widget::Space::new(COVER_SIZE, COVER_SIZE);
@@ -70,29 +70,35 @@ impl PlayingScreen {
         // ====== \\
         // LAYOUT \\
         // ====== \\
+        fn wfillp(i:u16) -> widget::Space { widget::Space::with_width(Length::FillPortion(i)) }
+        fn hfillp(i:u16) -> widget::Space { widget::Space::with_height(Length::FillPortion(i)) }
 
         let info = widget::column![
             title,
             artist,
             position,
-        ];
+        ].spacing(20);
 
         let info_with_cover = widget::row![
             cover,
             info,
-        ];
+        ].spacing(10);
 
         let controls = widget::row![
+            wfillp(2),
             skip_prev,
+            wfillp(1),
             playpause,
+            wfillp(1),
             skip_next,
+            wfillp(2),
         ];
 
         let everything = widget::column![
             info_with_cover,
             progress,
             controls,
-        ].width(Length::Shrink);
+        ].width(Length::Shrink).spacing(10);
 
         let centered = widget::container(everything)
             .center_x(Fill)
