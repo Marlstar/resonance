@@ -10,6 +10,7 @@ pub struct AudioHandler {
     pub current: Option<Song>,
     pub volume: f32,
     pub position: i32,
+    pub playing: bool,
 }
 impl AudioHandler {
     pub fn new() -> crate::Result<Self> {
@@ -21,6 +22,7 @@ impl AudioHandler {
             current: None,
             volume: super::DEFAULT_VOLUME,
             position: 0,
+            playing: false,
         });
     }
 }
