@@ -39,7 +39,7 @@ impl PlayingScreen {
         let title = match &self.song {
             Some(song) => widget::text(&song.name),
             None => widget::text("Nothing playing")
-        };
+        }.size(22).font(*crate::fonts::BOLD);
 
         let artist = match &self.artist {
             Some(artist) => widget::text(artist),
