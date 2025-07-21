@@ -4,6 +4,7 @@ use crate::models::Song;
 #[derive(Debug, Clone)]
 pub enum Message {
     None,
+    
 
     // Windows
     OpenMain,
@@ -25,8 +26,13 @@ pub enum Message {
     WindowClosed(iced::window::Id),
 }
 
+impl Message {
+    pub fn task(self) -> iced::Task<Message> {
+        iced::Task::<Message>::done(self)
+    }
+}
 impl Into<iced::Task<Message>> for Message {
     fn into(self) -> iced::Task<Message> {
-        iced::Task::<Message>::done(self)
+        self.task()
     }
 }
