@@ -24,3 +24,9 @@ pub enum Message {
 
     WindowClosed(iced::window::Id),
 }
+
+impl Into<iced::Task<Message>> for Message {
+    fn into(self) -> iced::Task<Message> {
+        iced::Task::<Message>::done(self)
+    }
+}
