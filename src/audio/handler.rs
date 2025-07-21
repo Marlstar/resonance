@@ -42,6 +42,16 @@ impl AudioHandler { // Actions
         self.sink.set_volume(volume);
         self.volume = volume;
     }
+
+    pub fn resume(&mut self) {
+        self.sink.play();
+        self.playing = true;
+    }
+
+    pub fn pause(&mut self) {
+        self.sink.pause();
+        self.playing = false;
+    }
 }
 impl AudioHandler { // Misc
     pub fn tick(&mut self) {
