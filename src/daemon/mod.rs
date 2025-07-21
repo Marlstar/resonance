@@ -1,6 +1,5 @@
 use crate::audio::handler::AudioHandler;
 use crate::db::handler::DBHandler;
-use crate::iced::types::Task;
 use crate::windows::Windows;
 use crate::screens::Screens;
 use crate::tasks;
@@ -8,6 +7,7 @@ use crate::tasks;
 mod update;
 mod view;
 mod subscriptions;
+mod boot;
 
 mod message;
 pub use message::Message;
@@ -35,15 +35,6 @@ impl Daemon {
             ffmpeg_ready: false,
             ytdlp_ready: false,
         };
-    }
-
-    pub fn boot() -> (Self, Task) {
-        let task = Task::batch([
-            tasks::install_deps::ffmpeg(),
-            tasks::install_deps::ytdlp(),
-            Task::done(Message::OpenMain),
-        ]);
-        return (Self::new(), task);
     }
 }
 impl Default for Daemon {
