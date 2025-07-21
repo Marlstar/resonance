@@ -5,6 +5,7 @@ impl super::super::Daemon {
     pub(super) fn open_main_window(&mut self) -> Task {
         let (id, task) = iced::window::open(Settings::default());
         self.windows.main = Some(id);
+        notify_open("main");
         task.map(|_| Message::None)
     }
 
@@ -12,4 +13,8 @@ impl super::super::Daemon {
         self.windows.update_closed(id);
         Task::none()
     }
+}
+
+fn notify_open(name: &str) {
+    println!("[window] opened {name}")
 }
