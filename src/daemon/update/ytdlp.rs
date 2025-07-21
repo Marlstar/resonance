@@ -37,7 +37,7 @@ impl super::super::Daemon {
             Err(e) => return Task::done(Message::DatabaseError(Arc::new(e)))
         };
 
-        return Task::none();
+        return Task::done(Message::SongInstalled(song));
     }
 
     pub(super) fn download_song(&self, song: Song) -> Task {
@@ -54,6 +54,11 @@ impl super::super::Daemon {
         song.downloaded = true;
         if let Err(e) = song.push_updates(&mut self.db) { return Task::done(Message::DatabaseError(Arc::new(e))) };
         println!("[dl] {:?} downloaded successfully", song.name);
+        Task::none()
+    }
+
+    pub(super) fn handle_song_installed(&mut self, song: Song) -> Task {
+        println!("[met] installed \"{}\"", song.name);
         Task::none()
     }
 }
