@@ -2,7 +2,6 @@ use diesel::{insert_into, prelude::*};
 use crate::daemon::Message;
 use crate::db::handler::DBHandler;
 use crate::db::schema::songs;
-use crate::iced::types::Task;
 
 #[derive(Debug, Clone, PartialEq)]
 #[derive(Queryable, Selectable, Identifiable, AsChangeset)]
