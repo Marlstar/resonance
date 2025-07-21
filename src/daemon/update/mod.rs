@@ -27,6 +27,8 @@ impl super::Daemon {
             Message::DatabaseError(e) => self.handle_database_error(e),
         
             Message::Tray(event) => self.handle_tray_event(event),
+
+            Message::WindowClosed(id) => self.handle_window_closed(id),
         }
     }
 }

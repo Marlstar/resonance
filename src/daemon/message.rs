@@ -21,4 +21,6 @@ pub enum Message {
     DatabaseError(Arc<diesel::result::Error>),
 
     Tray(tray_icon::menu::MenuEvent),
+
+    WindowClosed(iced::window::Id),
 }
