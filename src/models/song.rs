@@ -1,3 +1,4 @@
+use std::path::PathBuf;
 use diesel::{insert_into, prelude::*};
 use crate::daemon::Message;
 use crate::db::handler::DBHandler;
@@ -66,5 +67,12 @@ impl Song {
         if self.ytid.is_some() {
             Message::DownloadSong(self.clone())
         } else { Message::None }
+    }
+
+    pub fn path(&self) -> PathBuf {
+        if let Some(id) = &self.ytid {
+            return crate::dirs::song::yt(id);
+        }
+        todo!("non-yt song path")
     }
 }
