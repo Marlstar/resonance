@@ -1,6 +1,6 @@
 use diesel::prelude::*;
 use crate::db::schema::albums;
-use crate::db::handler::DBHandler;
+use crate::db::pool;
 
 #[derive(Debug, Clone, PartialEq)]
 #[derive(Queryable, Selectable, Identifiable, AsChangeset)]
@@ -23,7 +23,6 @@ pub struct NewAlbum<'a> {
 
 impl Album {
     pub fn create(
-        db: &mut DBHandler,
         name: &str,
         artist: Option<i32>,
         length: i32,
@@ -39,40 +38,39 @@ impl Album {
         diesel::insert_into(albums::table)
             .values(&new_album)
             .returning(Album::as_returning())
-            .get_result(&mut db.db)
+            .get_result(&mut pool::get())
     }
 
     pub fn search(
-        db: &mut DBHandler,
         name: &str,
         artist: Option<i32>,
     ) -> Result<Option<Album>, diesel::result::Error> {
         albums::table
             .filter(albums::name.eq(name))
             .filter(albums::artist.eq(artist))
-            .first(&mut db.db)
+            .first(&mut pool::get())
             .optional()
     }
 
-    pub fn get_or_create(db: &mut DBHandler, name: &str, artist: Option<i32>) -> Result<Album, diesel::result::Error> {
-        if let Some(album) = Self::search(db, name, artist)? {
+    pub fn get_or_create(name: &str, artist: Option<i32>) -> Result<Album, diesel::result::Error> {
+        if let Some(album) = Self::search(name, artist)? {
             return Ok(album);
         }
-        return Self::create(db, name, artist, 0);
+        return Self::create(name, artist, 0);
     }
 
-    pub fn get(id: i32, db: &mut DBHandler) -> Result<Option<Self>, diesel::result::Error> {
+    pub fn get(id: i32) -> Result<Option<Self>, diesel::result::Error> {
         albums::table
             .filter(albums::id.eq(id))
-            .first(&mut db.db)
+            .first(&mut pool::get())
             .optional()
     }
 
-    pub fn push_updates(&self, db: &mut DBHandler) -> Result<(), diesel::result::Error> {
+    pub fn push_updates(&self) -> Result<(), diesel::result::Error> {
         diesel::update(albums::table)
             .filter(albums::id.eq(self.id))
             .set(self)
-            .execute(&mut db.db)
+            .execute(&mut pool::get())
             .map(|_| ())
     }
 }

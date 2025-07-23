@@ -13,7 +13,7 @@ impl super::super::Daemon {
 
     pub(super) fn load_song_into_sink(&mut self, song: Song, bytes: Vec<u8>) -> Task {
         let name = song.name.clone();
-        if let Err(e) = self.audio.load_song(song, bytes) {
+        if let Err(e) = self.audio.load_song(song.clone(), bytes) {
             println!("[io] failed to load song \"{}\" ({e:?})", name);
         }
 

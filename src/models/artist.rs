@@ -1,6 +1,6 @@
 use diesel::prelude::*;
-use crate::db::handler::DBHandler;
 use crate::db::schema::artists;
+use crate::db::pool;
 
 
 #[derive(Debug, Clone, PartialEq)]
@@ -19,10 +19,7 @@ pub struct NewArtist<'a> {
 }
 
 impl Artist {
-    pub fn create(
-        db: &mut DBHandler,
-        name: &str,
-    ) -> Result<Artist, diesel::result::Error> {
+    pub fn create(name: &str) -> Result<Artist, diesel::result::Error> {
         let new_artist = NewArtist {
             name,
         };
@@ -30,30 +27,27 @@ impl Artist {
         diesel::insert_into(artists::table)
             .values(&new_artist)
             .returning(Artist::as_returning())
-            .get_result(&mut db.db)
+            .get_result(&mut pool::get())
     }
 
-    pub fn search(
-        db: &mut DBHandler,
-        name: &str,
-    ) -> Result<Option<Artist>, diesel::result::Error> {
+    pub fn search(name: &str) -> Result<Option<Artist>, diesel::result::Error> {
         artists::table
             .filter(artists::name.eq(name))
-            .first(&mut db.db)
+            .first(&mut pool::get())
             .optional()
     }
 
-    pub fn get(id: i32, db: &mut DBHandler) -> Result<Option<Self>, diesel::result::Error> {
+    pub fn get(id: i32) -> Result<Option<Self>, diesel::result::Error> {
         artists::table
             .filter(artists::id.eq(id))
-            .first(&mut db.db)
+            .first(&mut pool::get())
             .optional()
     }
 
-    pub fn get_or_create(db: &mut DBHandler, name: &str) -> Result<Artist, diesel::result::Error> {
-        if let Some(artist) = Self::search(db, name)? {
+    pub fn get_or_create(name: &str) -> Result<Artist, diesel::result::Error> {
+        if let Some(artist) = Self::search(name)? {
             return Ok(artist);
         }
-        return Self::create(db, name);
+        return Self::create(name);
     }
 }
