@@ -12,6 +12,7 @@ impl super::super::Daemon {
     }
 
     pub(super) fn song_metadata_callback(&mut self, job_id: String, result: Arc<crate::Result<Box<SingleVideo>>>) -> Task {
+        let db = crate::db::pool::get();
         let song = match &*result {
             Ok(vid) => vid,
             Err(e) => {
