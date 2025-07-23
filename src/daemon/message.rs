@@ -5,6 +5,12 @@ use crate::models::Song;
 pub enum Message {
     None,
     
+    // Music control
+    LoadSong(Song),
+    LoadSongIntoSink(Song, Vec<u8>),
+    Resume,
+    Pause,
+    Skip(isize),
 
     // Windows
     OpenMain,
@@ -14,6 +20,7 @@ pub enum Message {
 
     GetSongMetadata(String),
     SongMetadata(String, Arc<crate::Result<Box<youtube_dl::SingleVideo>>>),
+    SongInstalled(Song),
 
     DownloadSong(Song),
     SongDownload(Arc<crate::Result<Song>>),

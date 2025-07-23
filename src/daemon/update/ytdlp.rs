@@ -6,6 +6,7 @@ use crate::daemon::Message;
 
 impl super::super::Daemon {
     pub(super) fn get_song_metadata(&mut self, ytid: String) -> Task {
+        println!("[met] getting metadata for job {ytid}");
         return iced::Task::future(crate::jobs::metadata::song::yt(ytid.clone()))
             .map(move |r| Message::SongMetadata(ytid.clone(), Arc::new(r)));
     }
@@ -13,8 +14,8 @@ impl super::super::Daemon {
     pub(super) fn song_metadata_callback(&mut self, job_id: String, result: Arc<crate::Result<Box<SingleVideo>>>) -> Task {
         let song = match &*result {
             Ok(vid) => vid,
-            Err(_) => {
-                println!("[metadata] error getting metadata for job {job_id}");
+            Err(e) => {
+                println!("[met] error getting metadata for job {job_id} ({e:?})");
                 return Task::none();
             }
         };
@@ -41,6 +42,7 @@ impl super::super::Daemon {
     }
 
     pub(super) fn download_song(&self, song: Song) -> Task {
+        println!("[dl] downloading \"{}\"", song.name);
         iced::Task::future(crate::jobs::download::song::yt(song.ytid.as_ref().expect("tried to download a non-yt song").clone()))
             .map(move |r| Message::SongDownload(Arc::new(r.map(|_| song.clone()))))
     }
