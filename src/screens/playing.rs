@@ -3,7 +3,7 @@ use iced::alignment::Vertical;
 use iced::widget;
 use iced::Length;
 use iced::Length::Fill;
-use crate::models::Song;
+use crate::models::prelude::*;
 use crate::iced::types::Element;
 use crate::dirs;
 use crate::daemon::Daemon;
@@ -126,8 +126,8 @@ impl PlayingScreen {
     pub fn update_song(&mut self, song: Option<Song>) {
         if let Some(song) = song {
             // TODO: get artist and album
-            self.artist = None;
-            self.album = None;
+            self.artist = song.artist.and_then(|a| a.get_artist()).map(|a| a.name);
+            self.album = song.album.and_then(|a| a.get_album()).map(|a| a.name);
             self.song = Some(song);
         } else {
             self.song = None;
