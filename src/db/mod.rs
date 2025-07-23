@@ -1,8 +1,11 @@
+pub type SingleDBConn = diesel::SqliteConnection;
+pub type DBConn = diesel::r2d2::PooledConnection<diesel::r2d2::ConnectionManager<diesel::SqliteConnection>>;
 pub mod schema;
-pub mod handler;
+
+pub mod pool;
+pub use pool::POOL;
 
 mod setup;
 pub use setup::run_migrations as setup;
 
-mod connect;
-pub use connect::connect;
+pub mod connect;
