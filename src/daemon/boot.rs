@@ -7,7 +7,7 @@ impl super::Daemon {
         let task = Task::batch([
             tasks::install_deps::ffmpeg(),
             tasks::install_deps::ytdlp(),
-            Task::done(Message::OpenMain),
+            Message::OpenMain.task(),
         ]);
         return (Self::new(), task);
     }

@@ -36,10 +36,10 @@ impl super::super::Daemon {
 
         let song = match Song::create(Some(&job_id), song.title.as_ref().unwrap(), artist, album, 123456) {
             Ok(s) => s,
-            Err(e) => return Task::done(Message::DatabaseError(Arc::new(e)))
+            Err(e) => return Message::DatabaseError(Arc::new(e)).task()
         };
 
-        return Task::done(Message::SongInstalled(song));
+        return Message::SongInstalled(song).task();
     }
 
     pub(super) fn download_song(&self, song: Song) -> Task {
@@ -55,7 +55,7 @@ impl super::super::Daemon {
             Err(e) => { println!("[dl] error downloading song: {e:?}"); return Task::none(); }
         };
         song.downloaded = true;
-        if let Err(e) = song.push_updates() { return Task::done(Message::DatabaseError(Arc::new(e))) };
+        if let Err(e) = song.push_updates() { return Message::DatabaseError(Arc::new(e)).task() };
         println!("[dl] {:?} downloaded successfully", song.name);
         Task::none()
     }

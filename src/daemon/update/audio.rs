@@ -8,7 +8,7 @@ impl super::super::Daemon {
         println!("[song] loading \"{}\"", song.name);
         iced::Task::future(jobs::io::load_song_bytes(song.path()))
             .map(Result::ok)
-            .and_then(move |bytes| Task::done(Message::LoadSongIntoSink(song.clone(), bytes)))
+            .and_then(move |bytes| Message::LoadSongIntoSink(song.clone(), bytes).task())
     }
 
     pub(super) fn load_song_into_sink(&mut self, song: Song, bytes: Vec<u8>) -> Task {

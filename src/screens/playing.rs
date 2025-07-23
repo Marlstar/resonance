@@ -3,7 +3,7 @@ use iced::alignment::Vertical;
 use iced::widget;
 use iced::Length;
 use iced::Length::Fill;
-use crate::models::prelude::*;
+use crate::models::*;
 use crate::iced::types::Element;
 use crate::dirs;
 use crate::daemon::Daemon;
