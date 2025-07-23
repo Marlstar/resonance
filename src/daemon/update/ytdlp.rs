@@ -34,7 +34,17 @@ impl super::super::Daemon {
                 album.id
             });
 
-        let song = match Song::create(Some(&job_id), song.title.as_ref().unwrap(), artist, album, 123456) {
+        let song = match Song::create(
+            Some(&job_id),
+            song.title.as_ref().unwrap(),
+            artist,
+            album,
+            song.duration.as_ref()
+                .and_then(|a| a.as_i64())
+                .map(|a| a as i32)
+                .unwrap_or(0)
+                * 1000, // convert to milliseconds
+        ) {
             Ok(s) => s,
             Err(e) => return Message::DatabaseError(Arc::new(e)).task()
         };
