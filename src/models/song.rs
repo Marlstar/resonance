@@ -1,8 +1,8 @@
 use std::path::PathBuf;
 use diesel::{insert_into, prelude::*};
 use crate::daemon::Message;
-use crate::db::handler::DBHandler;
 use crate::db::schema::songs;
+use crate::db::pool;
 
 #[derive(Debug, Clone, PartialEq)]
 #[derive(Queryable, Selectable, Identifiable, AsChangeset)]
@@ -31,7 +31,6 @@ pub struct NewSong<'a> {
 
 impl Song {
     pub fn create(
-        conn: &mut DBHandler,
         ytid: Option<&str>,
         name: &str,
         artist: Option<i32>,
@@ -52,14 +51,14 @@ impl Song {
         insert_into(songs::table)
             .values(&new_song)
             .returning(Song::as_returning())
-            .get_result(&mut conn.db)
+            .get_result(&mut pool::get())
     }
 
-    pub fn push_updates(&self, db: &mut DBHandler) -> Result<(), diesel::result::Error> {
+    pub fn push_updates(&self) -> Result<(), diesel::result::Error> {
         diesel::update(songs::table)
             .filter(songs::id.eq(self.id))
             .set(self)
-            .execute(&mut db.db)
+            .execute(&mut pool::get())
             .map(|_| ())
     }
 
@@ -76,10 +75,10 @@ impl Song {
         todo!("non-yt song path")
     }
 
-    pub fn get(id: i32, db: &mut DBHandler) -> Result<Option<Self>, diesel::result::Error> {
+    pub fn get(id: i32) -> Result<Option<Self>, diesel::result::Error> {
         songs::table
             .filter(songs::id.eq(id))
-            .first(&mut db.db)
+            .first(&mut pool::get())
             .optional()
     }
 }

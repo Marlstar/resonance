@@ -1,5 +1,4 @@
 use crate::audio::handler::AudioHandler;
-use crate::db::handler::DBHandler;
 use crate::windows::Windows;
 use crate::screens::Screens;
 use crate::tasks;
@@ -14,7 +13,6 @@ pub use message::Message;
 
 pub struct Daemon {
     pub audio: AudioHandler,
-    pub db: DBHandler,
     
     pub windows: Windows,
     pub screens: Screens,
@@ -25,11 +23,9 @@ pub struct Daemon {
 impl Daemon {
     pub fn new() -> Self {
         let audio = AudioHandler::new().expect("failed to initialise audio handler");
-        let db = DBHandler::new().expect("failed to initialise DB handler");
 
         return Self {
             audio,
-            db,
             windows: Windows::default(),
             screens: Screens::default(),
             ffmpeg_ready: false,

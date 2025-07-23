@@ -12,7 +12,6 @@ impl super::super::Daemon {
     }
 
     pub(super) fn song_metadata_callback(&mut self, job_id: String, result: Arc<crate::Result<Box<SingleVideo>>>) -> Task {
-        let db = crate::db::pool::get();
         let song = match &*result {
             Ok(vid) => vid,
             Err(e) => {
@@ -21,20 +20,21 @@ impl super::super::Daemon {
             }
         };
 
-        let artist = if let Some(a) = &song.artist {
-            Artist::get_or_create(&mut self.db, a).ok().map(|a| a.id)
-        } else { None };
+        let artist = song.artist.as_ref()
+            .map(|a| Artist::get_or_create(a))
+            .and_then(Result::ok)
+            .map(|a| a.id);
 
-        let album = if let Some(a) = &song.album {
-            Album::get_or_create(&mut self.db, a, artist).ok().map(|mut a| {
-                // Increment album length to include the new song
-                a.length += 1;
-                a.push_updates(&mut self.db).unwrap();
-                a.id
-            })
-        } else { None };
+        let album = song.album.as_ref()
+            .map(|a| Album::get_or_create(a, artist))
+            .and_then(Result::ok)
+            .map(|mut album| {
+                album.length += 1;
+                album.push_updates().unwrap();
+                album.id
+            });
 
-        let song = match Song::create(&mut self.db, Some(&job_id), song.title.as_ref().unwrap(), artist, album, 123456) {
+        let song = match Song::create(Some(&job_id), song.title.as_ref().unwrap(), artist, album, 123456) {
             Ok(s) => s,
             Err(e) => return Task::done(Message::DatabaseError(Arc::new(e)))
         };
@@ -55,7 +55,7 @@ impl super::super::Daemon {
             Err(e) => { println!("[dl] error downloading song: {e:?}"); return Task::none(); }
         };
         song.downloaded = true;
-        if let Err(e) = song.push_updates(&mut self.db) { return Task::done(Message::DatabaseError(Arc::new(e))) };
+        if let Err(e) = song.push_updates() { return Task::done(Message::DatabaseError(Arc::new(e))) };
         println!("[dl] {:?} downloaded successfully", song.name);
         Task::none()
     }
