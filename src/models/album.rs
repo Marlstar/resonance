@@ -61,6 +61,13 @@ impl Album {
         return Self::create(db, name, artist, 0);
     }
 
+    pub fn get(id: i32, db: &mut DBHandler) -> Result<Option<Self>, diesel::result::Error> {
+        albums::table
+            .filter(albums::id.eq(id))
+            .first(&mut db.db)
+            .optional()
+    }
+
     pub fn push_updates(&self, db: &mut DBHandler) -> Result<(), diesel::result::Error> {
         diesel::update(albums::table)
             .filter(albums::id.eq(self.id))

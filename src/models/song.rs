@@ -75,4 +75,11 @@ impl Song {
         }
         todo!("non-yt song path")
     }
+
+    pub fn get(id: i32, db: &mut DBHandler) -> Result<Option<Self>, diesel::result::Error> {
+        songs::table
+            .filter(songs::id.eq(id))
+            .first(&mut db.db)
+            .optional()
+    }
 }

@@ -43,6 +43,13 @@ impl Artist {
             .optional()
     }
 
+    pub fn get(id: i32, db: &mut DBHandler) -> Result<Option<Self>, diesel::result::Error> {
+        artists::table
+            .filter(artists::id.eq(id))
+            .first(&mut db.db)
+            .optional()
+    }
+
     pub fn get_or_create(db: &mut DBHandler, name: &str) -> Result<Artist, diesel::result::Error> {
         if let Some(artist) = Self::search(db, name)? {
             return Ok(artist);
