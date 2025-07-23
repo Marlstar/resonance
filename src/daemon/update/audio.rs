@@ -16,6 +16,8 @@ impl super::super::Daemon {
         if let Err(e) = self.audio.load_song(song, bytes) {
             println!("[io] failed to load song \"{}\" ({e:?})", name);
         }
+
+        self.screens.playing.update_song(Some(song));
         Task::none()
     }
 }
