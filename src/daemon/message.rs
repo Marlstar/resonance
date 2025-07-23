@@ -31,8 +31,8 @@ impl Message {
         iced::Task::<Message>::done(self)
     }
 }
-impl Into<iced::Task<Message>> for Message {
-    fn into(self) -> iced::Task<Message> {
-        self.task()
+impl From<Message> for iced::Task<Message> {
+    fn from(value: Message) -> Self {
+        value.task()
     }
 }
