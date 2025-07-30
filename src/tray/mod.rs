@@ -1,4 +1,4 @@
-use tray_icon::menu::{Menu, MenuEvent, MenuItemBuilder, MenuId};
+use tray_icon::menu::{Menu, MenuEvent, MenuId, MenuItem, MenuItemBuilder};
 use tray_icon::{Icon, TrayIcon, TrayIconBuilder};
 use async_channel::{Receiver, unbounded};
 use std::sync::OnceLock;
@@ -44,21 +44,19 @@ impl TrayHandler {
     }
 
     fn build_menu() -> Menu {
+        fn item(title: &str, id: &str) -> MenuItem {
+            MenuItemBuilder::new()
+                .id(MenuId::new(id))
+                .text(title)
+                .enabled(true)
+                .build()
+        }
+
         // let menu = Menu::new();
         let menu = Menu::with_id_and_items(MenuId::new("main_menu"), &[
-            // Open
-            &MenuItemBuilder::new()
-                .id(MenuId::new("open"))
-                .text("Open")
-                .enabled(true)
-                .build(),
-
-            // Exit
-            &MenuItemBuilder::new()
-                .id(MenuId::new("exit"))
-                .text("Exit")
-                .enabled(true)
-                .build(),
+            &item("Open", "open"),
+            &item("Settings", "settings"),
+            &item("Exit", "exit"),
         ]).expect("failed to create menu");
         // TODO: error handling
 
