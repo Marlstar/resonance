@@ -33,7 +33,7 @@ pub enum Message {
     // Database
     DatabaseError(Arc<diesel::result::Error>),
 
-    Tray(tray_icon::menu::MenuEvent),
+    Tray(crate::tray::TrayEvent),
 
     WindowClosed(iced::window::Id),
 }

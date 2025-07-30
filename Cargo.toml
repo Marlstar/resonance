@@ -22,7 +22,7 @@ rodio = { version = "0.20.1", features = ["crossbeam-channel"] }
 ron = "0.10.1"
 serde = { version = "1.0.219", features = ["derive"] }
 tokio = { version = "1.45.1", features = ["macros", "rt-multi-thread", "time", "sync", "fs", "io-std", "io-util"] }
-tray-icon = "0.20.1"
+tray-item = { version = "0.10.0", features = ["ksni"] }
 youtube_dl = { version = "0.10.0", features = ["downloader-native-tls"] }
 
 [dependencies.iced]
@@ -38,7 +38,3 @@ features = [
 	"wgpu",
 	"tiny-skia"
 ]
-
-# We only need gtk to init tray icons on linux
-[target."cfg(target_os = \"linux\")".dependencies]
-gtk = "*"
