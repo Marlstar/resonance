@@ -19,5 +19,15 @@ impl Windows {
             }
         }
         closed!(main, id)
+
+    pub fn get_title(&self, id: Id) -> String {
+        println!("{self:?}");
+        macro_rules! title {
+            ($window:ident, $title:expr, $id:expr) => {
+                if self.$window == Some($id) { return String::from($title); }
+            }
+        }
+        title!(main, "Main | Resonance", id);
+        format!("Unknown window ({id}) | Resonance") // Default
     }
 }

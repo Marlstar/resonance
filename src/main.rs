@@ -9,6 +9,7 @@ fn main() -> iced::Result {
     daemon(Daemon::boot, Daemon::update, Daemon::view)
         .title("Resonance")
         .subscription(Daemon::subscriptions)
+        .title(Daemon::window_titles)
         .antialiasing(true)
         .run()
 }
