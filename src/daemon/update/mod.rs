@@ -6,6 +6,7 @@ mod tray;
 mod ytdlp;
 mod database;
 mod windows;
+mod settings;
 
 impl super::Daemon {
     pub fn update(&mut self, msg: Message) -> Task {
@@ -20,10 +21,14 @@ impl super::Daemon {
             Message::Skip(offset) => todo!("skipping"),
 
             Message::OpenMain => self.open_main_window(),
+            Message::OpenSettings => self.open_settings_window(),
 
             // Dependencies
             Message::FFmpegDownloaded => { self.ffmpeg_ready = true; Task::none() },
             Message::YtDlpDownloaded => { self.ytdlp_ready = true; Task::none() },
+
+            Message::SettingsUpdate(settings) => self.settings_update(settings),
+            Message::SettingChanged(setting) => { self.screens.settings.handle_change(setting); Task::none() }
 
             Message::GetSongMetadata(ytid) => self.get_song_metadata(ytid),
             Message::SongMetadata(job_id, result) => self.song_metadata_callback(job_id, result),

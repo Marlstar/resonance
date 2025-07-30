@@ -5,7 +5,14 @@ impl super::super::Daemon {
     pub(super) fn open_main_window(&mut self) -> Task {
         let (id, task) = iced::window::open(Settings::default());
         self.windows.main = Some(id);
-        notify_open("main");
+        notify_open("main", id);
+        task.map(|_| Message::None)
+    }
+
+    pub(super) fn open_settings_window(&mut self) -> Task {
+        let (id, task) = iced::window::open(Settings::default());
+        self.windows.settings = Some(id);
+        notify_open("settings", id);
         task.map(|_| Message::None)
     }
 
@@ -15,6 +22,6 @@ impl super::super::Daemon {
     }
 }
 
-fn notify_open(name: &str) {
-    println!("[window] opened {name}")
+fn notify_open(name: &str, id: Id) {
+    println!("[window] opened {name} (id {id})")
 }

@@ -1,4 +1,5 @@
 use crate::audio::handler::AudioHandler;
+use crate::settings::Settings;
 use crate::windows::Windows;
 use crate::screens::Screens;
 use crate::tasks;
@@ -7,6 +8,7 @@ mod update;
 mod view;
 mod subscriptions;
 mod boot;
+mod exit;
 
 mod message;
 pub use message::Message;
@@ -19,18 +21,29 @@ pub struct Daemon {
 
     pub ffmpeg_ready: bool,
     pub ytdlp_ready: bool,
+
+    pub settings: Settings,
 }
 impl Daemon {
     pub fn new() -> Self {
         let audio = AudioHandler::new().expect("failed to initialise audio handler");
+        let settings = Settings::load_or_default();
+
+        let windows = Windows::default();
+        let screens = Screens::create(settings.clone());
 
         return Self {
             audio,
-            windows: Windows::default(),
-            screens: Screens::default(),
+            windows,
+            screens,
             ffmpeg_ready: false,
             ytdlp_ready: false,
+            settings,
         };
+    }
+
+    pub fn window_titles(&self, id: iced::window::Id) -> String {
+        self.windows.get_title(id)
     }
 }
 impl Default for Daemon {

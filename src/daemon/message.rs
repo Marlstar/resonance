@@ -1,5 +1,6 @@
 use std::sync::Arc;
 use crate::models::Song;
+use crate::settings::Settings;
 
 #[derive(Debug, Clone)]
 pub enum Message {
@@ -14,9 +15,13 @@ pub enum Message {
 
     // Windows
     OpenMain,
+    OpenSettings,
 
     FFmpegDownloaded,
     YtDlpDownloaded,
+
+    SettingsUpdate(Settings),
+    SettingChanged(crate::screens::settings::SettingChanged),
 
     GetSongMetadata(String),
     SongMetadata(String, Arc<crate::Result<Box<youtube_dl::SingleVideo>>>),

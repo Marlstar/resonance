@@ -4,11 +4,17 @@ use crate::tasks;
 
 impl super::Daemon {
     pub fn boot() -> (Self, Task) {
+        let daemon = Self::new();
+        let settings = &daemon.settings;
+
         let task = Task::batch([
+            // Install dependencies
             tasks::install_deps::ffmpeg(),
             tasks::install_deps::ytdlp(),
-            Message::OpenMain.task(),
+
+            // Open main window (unless disabled)
+            if !settings.start_minimised { Message::OpenMain.task() } else { Task::none() },
         ]);
-        return (Self::new(), task);
+        return (daemon, task);
     }
 }

@@ -19,3 +19,4 @@ macro_rules! share {
 share!(DATABASE, "resonance.db");
 share!(DEPENDENCIES, "deps/");
 share!(SONGS, "songs/");
+share!(SETTINGS, "settings.ron");
