@@ -33,7 +33,6 @@ impl SettingsScreen {
 impl SettingsScreen {
     pub fn view(&self) -> Element {
         let settings = widget::container(widget::column![
-            // Widgets::checkbox("Start minimised", self.new.start_minimised, self.current.start_minimised, SettingChanged::StartMinimised),
             setting_widgets::checkbox!("Start minimised", start_minimised, StartMinimised, self),
         ]).center(Fill);
 
