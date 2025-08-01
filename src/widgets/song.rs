@@ -17,7 +17,6 @@ impl Builder {
     }
 
     pub fn build_with_msg<'a>(&self, song: Song, msg: Message) -> Element<'a> {
-        println!("building song {}", song.name);
         let thumbnail = widget::container(widget::image(crate::dirs::cover::yt(song.ytid.as_ref().unwrap()))
             .height(THUMBNAIL_SIZE))
             .align_y(Vertical::Center);
