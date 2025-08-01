@@ -57,8 +57,8 @@ impl Builder {
                 album,
                 widget::text("·"),
                 duration,
-                widget::text("·"),
-                widget::text(song.ytid.as_ref().unwrap().clone()),
+                // widget::text("·"),
+                // widget::text(song.ytid.as_ref().unwrap().clone()),
             ].spacing(5),
         ].spacing(5).align_x(Horizontal::Left);
 
