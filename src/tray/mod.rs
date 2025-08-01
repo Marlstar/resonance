@@ -6,11 +6,14 @@ use async_channel::{unbounded, Sender, Receiver};
 mod subscription;
 pub use subscription::subscription;
 
+mod change;
+pub use change::TrayChangesExt;
+
 static EVENT_RX: OnceLock<Receiver<TrayEvent>> = OnceLock::new();
 
 pub fn create() -> TrayItem {
     let (tx, rx) = unbounded::<TrayEvent>();
-    let _ = EVENT_RX.get_or_init(move || rx);
+     EVENT_RX.set(rx).unwrap();
 
     let icon = crate::assets::icon_rgba_256().to_vec();
     let mut bytes = Vec::<u8>::with_capacity(icon.len());
@@ -32,9 +35,20 @@ pub fn create() -> TrayItem {
     };
     let mut tray = TrayItem::new("Resonance", icon).expect("failed to initialise tray icon");
     
+    let song_item_id = tray.inner_mut().add_menu_item_with_id("Song", || ()).unwrap();
+    let album_item_id = tray.inner_mut().add_menu_item_with_id("Album", || ()).unwrap();
+    let artist_item_id = tray.inner_mut().add_menu_item_with_id("Artist", || ()).unwrap();
+    // tray.inner_mut().add_separator().unwrap();
+    tray.add_label(" ").unwrap(); // Separator
     tray.add_menu_item("Open", sender(tx.clone(), TrayEvent::Open)).unwrap();
     tray.add_menu_item("Settings", sender(tx.clone(), TrayEvent::Settings)).unwrap();
     tray.add_menu_item("Exit", sender(tx.clone(), TrayEvent::Exit)).unwrap();
+
+    change::CHANGEABLE_ITEMS.set(change::TrayChangeableItems {
+        song: song_item_id,
+        album: album_item_id,
+        artist: artist_item_id,
+    }).unwrap();
 
     return tray;
 }

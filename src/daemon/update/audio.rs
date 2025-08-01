@@ -2,6 +2,8 @@ use crate::iced::types::Task;
 use crate::daemon::Message;
 use crate::models::Song;
 use crate::jobs;
+use crate::tray::TrayChangesExt;
+use crate::models::ModelsExt;
 
 impl super::super::Daemon {
     pub(super) fn load_song(&mut self, song: Song) -> Task {
@@ -25,6 +27,10 @@ impl super::super::Daemon {
 
     pub(super) fn update_song(&mut self, song: Song) -> Task {
         self.screens.playing.update_song(Some(song.clone()));
+
+        self.tray.change_song(&song.name);
+        self.tray.change_artist(&song.artist.as_ref().unwrap().get_artist().unwrap().name);
+        self.tray.change_album(&song.album.as_ref().unwrap().get_album().unwrap().name);
 
         Task::none()
     }
