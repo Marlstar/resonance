@@ -4,7 +4,7 @@ use crate::db::pool;
 
 
 #[derive(Debug, Clone, PartialEq)]
-#[derive(Queryable, Selectable)]
+#[derive(Queryable, Selectable, Identifiable, AsChangeset)]
 #[diesel(table_name = crate::db::schema::artists)]
 #[diesel(check_for_backend(diesel::sqlite::Sqlite))]
 pub struct Artist {
@@ -49,5 +49,13 @@ impl Artist {
             return Ok(artist);
         }
         return Self::create(name);
+    }
+
+    pub fn push_updates(&self) -> Result<(), diesel::result::Error> {
+        diesel::update(artists::table)
+            .filter(artists::id.eq(self.id))
+            .set(self)
+            .execute(&mut pool::get())
+            .map(|_| ())
     }
 }
