@@ -51,6 +51,11 @@ impl Artist {
         return Self::create(name);
     }
 
+    pub fn all() -> Result<Vec<Self>, diesel::result::Error> {
+        artists::table
+            .load(&mut pool::get())
+    }
+
     pub fn push_updates(&self) -> Result<(), diesel::result::Error> {
         diesel::update(artists::table)
             .filter(artists::id.eq(self.id))

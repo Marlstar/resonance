@@ -66,6 +66,11 @@ impl Album {
             .optional()
     }
 
+    pub fn all() -> Result<Vec<Self>, diesel::result::Error> {
+        albums::table
+            .load(&mut pool::get())
+    }
+
     pub fn push_updates(&self) -> Result<(), diesel::result::Error> {
         diesel::update(albums::table)
             .filter(albums::id.eq(self.id))

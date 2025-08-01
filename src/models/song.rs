@@ -87,6 +87,11 @@ impl Song {
             .optional()
     }
 
+    pub fn all() -> Result<Vec<Self>, diesel::result::Error> {
+        songs::table
+            .load(&mut pool::get())
+    }
+
     pub fn push_updates(&self) -> Result<(), diesel::result::Error> {
         diesel::update(songs::table)
             .filter(songs::id.eq(self.id))
