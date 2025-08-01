@@ -17,6 +17,7 @@ impl super::Daemon {
             // Music control
             Message::LoadSong(song) => self.load_song(song),
             Message::LoadSongIntoSink(song, bytes) => self.load_song_into_sink(song, bytes),
+            Message::UpdateSong(song) => self.update_song(song),
             Message::Resume => { self.audio.resume(); Task::none() },
             Message::Pause => { self.audio.pause(); Task::none() },
             Message::Skip(offset) => todo!("skipping"),

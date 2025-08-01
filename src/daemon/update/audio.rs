@@ -17,7 +17,15 @@ impl super::super::Daemon {
             println!("[io] failed to load song \"{}\" ({e:?})", name);
         }
 
-        self.screens.playing.update_song(Some(song));
-        return Message::Resume.task();
+        return Task::batch([
+            Message::Resume.task(),
+            Message::UpdateSong(song).task(),
+        ]);
+    }
+
+    pub(super) fn update_song(&mut self, song: Song) -> Task {
+        self.screens.playing.update_song(Some(song.clone()));
+
+        Task::none()
     }
 }

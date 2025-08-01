@@ -10,6 +10,7 @@ pub enum Message {
     // Music control
     LoadSong(Song),
     LoadSongIntoSink(Song, Vec<u8>),
+    UpdateSong(Song),
     Resume,
     Pause,
     Skip(isize),
