@@ -75,6 +75,19 @@ impl Song {
         todo!("non-yt song path")
     }
 
+    pub fn search(
+        name: &str,
+        artist: Option<i32>,
+        album: Option<i32>,
+    ) -> Result<Option<Song>, diesel::result::Error> {
+        songs::table
+            .filter(songs::name.like(format!("%{name}%")))
+            .filter(songs::artist.eq(artist))
+            .filter(songs::album.eq(album))
+            .first(&mut pool::get())
+            .optional()
+    }
+
     pub fn get(id: i32) -> Result<Option<Self>, diesel::result::Error> {
         songs::table
             .filter(songs::id.eq(id))
