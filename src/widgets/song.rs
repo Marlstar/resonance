@@ -37,7 +37,7 @@ impl Builder {
         let artist = widget::text(song.artist.and_then(|a| a.get_artist().map(|a| a.name)).unwrap_or("No artist".to_string()))
             // .style(styles::grey_text)
             .size(16);
-        let album = widget::text(song.album.and_then(|a| a.get_artist().map(|a| a.name)).unwrap_or("No album".to_string()))
+        let album = widget::text(song.album.and_then(|a| a.get_album().map(|a| a.name)).unwrap_or("No album".to_string()))
             // .style(styles::grey_text)
             .size(16);
         let duration = widget::text(crate::util::millis_to_formatted_duration(song.duration))
