@@ -4,18 +4,14 @@ use iced::window::{Id, Settings};
 use iced::Size;
 use iced::Task;
 
-#[derive(Default)]
-pub struct SettingsWindow;
-impl SettingsWindow {
-    pub fn open() -> (Id, Task<Id>) {
-        iced::window::open(Settings {
-            resizable: false,
-            size: Size {width: 400.0, height: 600.0},
-            ..Default::default()
-        })
-    }
+pub fn open() -> (Id, Task<Id>) {
+    iced::window::open(Settings {
+        resizable: false,
+        size: Size {width: 400.0, height: 600.0},
+        ..Default::default()
+    })
+}
 
-    pub fn view(daemon: &Daemon) -> Element {
-        daemon.screens.settings.view()
-    }
+pub fn view(daemon: &Daemon) -> Element {
+    daemon.screens.settings.view()
 }

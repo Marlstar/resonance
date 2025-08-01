@@ -1,16 +1,18 @@
 use iced::window::Id;
-use crate::{daemon::Message, iced::types::Task};
+use crate::daemon::Message;
+use crate::iced::types::Task;
+use crate::windows;
 
 impl super::super::Daemon {
     pub(super) fn open_main_window(&mut self) -> Task {
-        let (id, task) = crate::windows::main::MainWindow::open();
+        let (id, task) = windows::main::open();
         self.windows.main = Some(id);
         notify_open("main", id);
         task.map(|_| Message::None)
     }
 
     pub(super) fn open_settings_window(&mut self) -> Task {
-        let (id, task) = crate::windows::settings::SettingsWindow::open();
+        let (id, task) = windows::settings::open();
         self.windows.settings = Some(id);
         notify_open("settings", id);
         task.map(|_| Message::None)
