@@ -18,6 +18,6 @@ impl super::super::Daemon {
         }
 
         self.screens.playing.update_song(Some(song));
-        Task::none()
+        return Message::Resume.task();
     }
 }
