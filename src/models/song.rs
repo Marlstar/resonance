@@ -54,14 +54,6 @@ impl Song {
             .get_result(&mut pool::get())
     }
 
-    pub fn push_updates(&self) -> Result<(), diesel::result::Error> {
-        diesel::update(songs::table)
-            .filter(songs::id.eq(self.id))
-            .set(self)
-            .execute(&mut pool::get())
-            .map(|_| ())
-    }
-
     pub fn download(&self) -> Message {
         if self.ytid.is_some() {
             Message::DownloadSong(self.clone())
@@ -93,5 +85,13 @@ impl Song {
             .filter(songs::id.eq(id))
             .first(&mut pool::get())
             .optional()
+    }
+
+    pub fn push_updates(&self) -> Result<(), diesel::result::Error> {
+        diesel::update(songs::table)
+            .filter(songs::id.eq(self.id))
+            .set(self)
+            .execute(&mut pool::get())
+            .map(|_| ())
     }
 }
