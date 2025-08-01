@@ -1,7 +1,7 @@
 use crate::audio::handler::AudioHandler;
 use crate::settings::Settings;
 use crate::windows::Windows;
-use crate::screens::Screens;
+use crate::screens::{Screen, Screens};
 use crate::tasks;
 
 mod update;
@@ -20,9 +20,10 @@ pub struct Daemon {
     pub windows: Windows,
     pub screens: Screens,
 
+    pub current_screen: Screen,
+
     pub ffmpeg_ready: bool,
     pub ytdlp_ready: bool,
-
 
     pub settings: Settings,
 }
@@ -41,6 +42,7 @@ impl Daemon {
             tray,
             windows,
             screens,
+            current_screen: Screen::Library,
             ffmpeg_ready: false,
             ytdlp_ready: false,
             settings,

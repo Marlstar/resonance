@@ -14,6 +14,8 @@ impl super::Daemon {
 
             // Open main window (unless disabled)
             if !settings.start_minimised { Message::OpenMain.task() } else { Task::none() },
+
+            Message::GetSongMetadata("2mXNRsyTitA".to_string()).task(),
         ]);
         return (daemon, task);
     }

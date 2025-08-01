@@ -6,6 +6,7 @@ mod tray;
 mod ytdlp;
 mod database;
 mod windows;
+mod screens;
 mod settings;
 
 impl super::Daemon {
@@ -22,6 +23,8 @@ impl super::Daemon {
 
             Message::OpenMain => self.open_main_window(),
             Message::OpenSettings => self.open_settings_window(),
+
+            Message::FocusScreen(screen) => self.focus_screen(screen),
 
             // Dependencies
             Message::FFmpegDownloaded => { self.ffmpeg_ready = true; Task::none() },

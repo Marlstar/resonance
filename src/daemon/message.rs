@@ -1,5 +1,6 @@
 use std::sync::Arc;
 use crate::models::Song;
+use crate::screens::Screen;
 use crate::settings::Settings;
 
 #[derive(Debug, Clone)]
@@ -16,6 +17,9 @@ pub enum Message {
     // Windows
     OpenMain,
     OpenSettings,
+
+    // Screens
+    FocusScreen(Screen),
 
     FFmpegDownloaded,
     YtDlpDownloaded,

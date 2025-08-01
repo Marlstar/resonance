@@ -1,7 +1,7 @@
-use iced::window::Id;
 use crate::daemon::Message;
 use crate::iced::types::Task;
 use crate::windows;
+use iced::window::Id;
 
 macro_rules! open_window {
     ($window:ident, $s:expr) => {{

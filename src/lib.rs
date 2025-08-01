@@ -3,6 +3,7 @@
 pub mod daemon;
 pub mod windows;
 pub mod screens;
+pub mod widgets;
 pub mod tasks;
 pub mod iced;
 
