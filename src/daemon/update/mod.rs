@@ -40,6 +40,7 @@ impl super::Daemon {
 
             Message::DownloadSong(song) => self.download_song(song),
             Message::SongDownload(result) => self.download_song_callback(result),
+            Message::DownloadCover(song) => self.download_cover(song),
 
             // Database
             Message::DatabaseError(e) => self.handle_database_error(e),

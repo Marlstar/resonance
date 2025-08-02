@@ -67,11 +67,18 @@ impl super::super::Daemon {
         song.downloaded = true;
         if let Err(e) = song.push_updates() { return Message::DatabaseError(Arc::new(e)).task() };
         println!("[dl] {:?} downloaded successfully", song.name);
-        Task::none()
+        // Task::none()
+        Message::DownloadCover(song).task()
     }
 
     pub(super) fn handle_song_installed(&mut self, song: Song) -> Task {
         println!("[met] installed \"{}\"", song.name);
         Task::none()
+    }
+
+    pub(super) fn download_cover(&self, song: Song) -> Task {
+        println!("[dl] fetching cover for \"{}\"", song.name);
+        iced::Task::future(crate::jobs::download::song::yt(song.ytid.as_ref().expect("tried to fetch cover for a non-yt song").clone()))
+            .map(|_| Message::None)
     }
 }

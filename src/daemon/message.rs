@@ -33,6 +33,7 @@ pub enum Message {
     SongInstalled(Song),
 
     DownloadSong(Song),
+    DownloadCover(Song),
     SongDownload(Arc<crate::Result<Song>>),
 
     // Database
