@@ -59,7 +59,6 @@ impl super::super::Daemon {
     }
 
     pub(super) fn download_song_callback(&mut self, result: Arc<crate::Result<Song>>) -> Task {
-        // TODO: check if song actually downloaded successfully
         let mut song = match &*result {
             Ok(song) => song.clone(),
             Err(e) => { println!("[dl] error downloading song: {e:?}"); return Task::none(); }

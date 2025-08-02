@@ -125,7 +125,6 @@ impl PlayingScreen {
 impl PlayingScreen {
     pub fn update_song(&mut self, song: Option<Song>) {
         if let Some(song) = song {
-            // TODO: get artist and album
             self.artist = song.artist.and_then(|a| a.get_artist()).map(|a| a.name);
             self.album = song.album.and_then(|a| a.get_album()).map(|a| a.name);
             self.song = Some(song);
