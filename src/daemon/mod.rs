@@ -2,7 +2,6 @@ use crate::audio::handler::AudioHandler;
 use crate::settings::Settings;
 use crate::windows::Windows;
 use crate::screens::{Screen, Screens};
-use crate::tasks;
 
 mod update;
 mod view;

@@ -25,7 +25,9 @@ impl super::Daemon {
             Message::OpenMain => self.open_main_window(),
             Message::OpenSettings => self.open_settings_window(),
 
+            // Screens
             Message::FocusScreen(screen) => self.focus_screen(screen),
+            Message::UpdateLibrary => self.update_library(),
 
             // Dependencies
             Message::FFmpegDownloaded => { self.ffmpeg_ready = true; Task::none() },

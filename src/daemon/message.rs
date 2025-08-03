@@ -21,6 +21,8 @@ pub enum Message {
 
     // Screens
     FocusScreen(Screen),
+    // Library
+    UpdateLibrary,
 
     FFmpegDownloaded,
     YtDlpDownloaded,

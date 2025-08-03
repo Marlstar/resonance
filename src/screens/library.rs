@@ -20,6 +20,12 @@ impl LibraryScreen {
         let songs = self.songs.iter().map(|s| SONG_WIDGET_BUILDER.build(s.clone()));
         return widget::Column::from_iter(songs).into();
     }
+
+    pub fn refresh_songs(&mut self) {
+        println!("[library] refreshing songs");
+        // TODO: make async on the iced runtime
+        self.songs = Song::all().unwrap();
+    }
 }
 
 static SONG_WIDGET_BUILDER: widgets::song::Builder = widgets::song::Builder {
