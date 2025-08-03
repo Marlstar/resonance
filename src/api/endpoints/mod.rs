@@ -10,10 +10,8 @@ pub enum Endpoint {
     Control(control::Control),
 }
 
-macro_rules! e {
-    ($from:path, $to:ident) => {
-        impl From<$from> for Endpoint { fn from(value: $from) -> Self { Self::$to(value) } }
-    }
-}
+macro_rules! e { ($from:path, $to:ident) => {
+    impl From<$from> for Endpoint { fn from(value: $from) -> Self { Self::$to(value) } }
+}}
 
 e!(control::Control, Control);

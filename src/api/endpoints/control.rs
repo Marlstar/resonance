@@ -1,12 +1,7 @@
-use axum::routing::{post, MethodRouter};
-use super::macros::send;
+use super::macros::post;
 
-pub fn resume() -> MethodRouter {
-    post(|| async { send!(Control::Resume); })
-}
-pub fn pause() -> MethodRouter {
-    post(|| async { send!(Control::Pause); })
-}
+post!(resume, Control::Resume);
+post!(pause, Control::Pause);
 
 #[derive(Debug, Clone)]
 pub enum Control {
