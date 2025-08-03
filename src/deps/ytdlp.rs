@@ -1,13 +1,15 @@
 use youtube_dl::YoutubeDl;
 use super::ffmpeg;
 use crate::util::display_path;
+use crate::settings::Settings;
 
 pub fn new(url: impl Into<String>) -> YoutubeDl {
+    let settings = Settings::get_blocking();
+
     let mut ytdlp = YoutubeDl::new(url);
     ytdlp.youtube_dl_path(path());
 
-    // TODO: make this an app setting
-    ytdlp.extra_arg("--no-check-certificate");
+    if !settings.use_ssl { ytdlp.extra_arg("--no-check-certificate"); }
 
     if ffmpeg::is_local_installation() {
         ytdlp.extra_arg("--ffmpeg-location");

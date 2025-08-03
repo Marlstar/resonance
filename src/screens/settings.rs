@@ -27,6 +27,7 @@ impl SettingsScreen {
         println!("[settings] update: {setting:?}");
         match setting {
             StartMinimised(s) => self.new.start_minimised = s,
+            UseSSL(s) => self.new.use_ssl = s,
         }
     }
 }
@@ -34,7 +35,8 @@ impl SettingsScreen {
     pub fn view(&self) -> Element {
         let settings = widget::container(widget::column![
             setting_widgets::checkbox!("Start minimised", start_minimised, StartMinimised, self),
-        ]).center(Fill);
+            setting_widgets::checkbox!("Use SSL for downloads", use_ssl, UseSSL, self),
+        ].spacing(5)).center(Fill);
 
         let mut apply = widget::button("Apply");
         if self.new != self.current { apply = apply.on_press_with(|| Message::SettingsUpdate(self.new.clone()))};
@@ -72,5 +74,6 @@ mod setting_widgets {
 
 #[derive(Debug, Clone)]
 pub enum SettingChanged {
-    StartMinimised(bool)
+    StartMinimised(bool),
+    UseSSL(bool),
 }

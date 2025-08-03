@@ -7,6 +7,16 @@ mod instance;
 #[derive(Debug, Clone, PartialEq)]
 pub struct Settings {
     pub start_minimised: bool,
+    pub use_ssl: bool,
+}
+
+impl Default for Settings {
+    fn default() -> Self {
+        Self {
+            start_minimised: false,
+            use_ssl: true,
+        }
+    }
 }
 
 impl Settings {
@@ -42,15 +52,6 @@ impl Settings {
             .into_bytes();
         std::fs::write(&*crate::dirs::SETTINGS, &bytes)?;
         Ok(())
-    }
-}
-
-#[allow(clippy::derivable_impls)]
-impl Default for Settings {
-    fn default() -> Self {
-        Self {
-            start_minimised: false,
-        }
     }
 }
 
