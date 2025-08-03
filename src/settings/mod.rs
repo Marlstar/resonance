@@ -5,6 +5,7 @@ mod instance;
 
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Debug, Clone, PartialEq)]
+#[serde(default)]
 pub struct Settings {
     pub start_minimised: bool,
     pub use_ssl: bool,
