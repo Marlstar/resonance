@@ -12,6 +12,7 @@ impl super::Daemon {
             // Install dependencies
             tasks::install_deps::ffmpeg(),
             tasks::install_deps::ytdlp(),
+            tasks::api::run(),
 
             // Open main window (unless disabled)
             if !settings.start_minimised { Message::OpenMain.task() } else { Task::none() },
