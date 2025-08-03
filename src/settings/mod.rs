@@ -1,6 +1,8 @@
 use std::fs::File;
 use std::io::Read;
 
+mod instance;
+
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Debug, Clone, PartialEq)]
 pub struct Settings {
@@ -28,7 +30,7 @@ impl Settings {
     }
 
 
-    pub fn save(&self) {
+    pub fn save_to_file(&self) {
         match self.write() {
             Ok(_) => println!("[settings] saved successfully"),
             Err(e) => println!("[settings] error saving settings ({e:?})"),

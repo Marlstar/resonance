@@ -1,4 +1,5 @@
 pub mod install_deps;
+pub mod settings;
 
 mod exit;
 pub use exit::exit;

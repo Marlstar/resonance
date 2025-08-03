@@ -1,11 +1,12 @@
 use crate::iced::types::Task;
 use crate::daemon::Message;
+use crate::settings::Settings;
 use crate::tasks;
 
 impl super::Daemon {
     pub fn boot() -> (Self, Task) {
         let daemon = Self::new();
-        let settings = &daemon.settings;
+        let settings = Settings::get_blocking();
 
         let task = Task::batch([
             // Install dependencies

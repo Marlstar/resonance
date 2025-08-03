@@ -24,18 +24,16 @@ pub struct Daemon {
 
     pub ffmpeg_ready: bool,
     pub ytdlp_ready: bool,
-
-    pub settings: Settings,
 }
 impl Daemon {
     pub fn new() -> Self {
         let audio = AudioHandler::new().expect("failed to initialise audio handler");
-        let settings = Settings::load_or_default();
+        let settings = Settings::get_blocking();
 
         let tray = crate::tray::create();
 
         let windows = Windows::default();
-        let screens = Screens::create(settings.clone());
+        let screens = Screens::create(settings);
 
         return Self {
             audio,
@@ -45,7 +43,6 @@ impl Daemon {
             current_screen: Screen::Library,
             ffmpeg_ready: false,
             ytdlp_ready: false,
-            settings,
         };
     }
 
