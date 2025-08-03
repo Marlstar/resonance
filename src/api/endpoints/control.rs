@@ -1,10 +1,11 @@
 use axum::routing::{post, MethodRouter};
+use super::macros::send;
 
 pub fn resume() -> MethodRouter {
-    post(|| async { super::send!(Control::Resume); })
+    post(|| async { send!(Control::Resume); })
 }
 pub fn pause() -> MethodRouter {
-    post(|| async { super::send!(Control::Pause); })
+    post(|| async { send!(Control::Pause); })
 }
 
 #[derive(Debug, Clone)]

@@ -1,4 +1,5 @@
 pub mod control;
+mod macros;
 
 use async_channel::{unbounded, Sender, Receiver};
 use std::sync::LazyLock;
@@ -16,9 +17,3 @@ macro_rules! e {
 }
 
 e!(control::Control, Control);
-
-#[macro_export]
-macro_rules! send {
-    ($item:expr) => { $crate::api::endpoints::CHANNEL.0.clone().send($item.into()).await.unwrap(); }
-}
-pub(super) use send;
