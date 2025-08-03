@@ -1,8 +1,10 @@
 pub mod install_deps;
 pub mod settings;
+pub mod api;
 
 mod exit;
 pub use exit::exit;
+
 
 #[macro_export]
 macro_rules! run_and_return_message {

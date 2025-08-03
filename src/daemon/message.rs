@@ -42,6 +42,7 @@ pub enum Message {
     DatabaseError(Arc<diesel::result::Error>),
 
     Tray(crate::tray::TrayEvent),
+    API(crate::api::Endpoint),
 
     WindowClosed(iced::window::Id),
 }
